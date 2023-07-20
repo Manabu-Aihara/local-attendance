@@ -1,0 +1,300 @@
+{% extends 'home.html' %}
+
+{% block child_content %}
+<h3>職員一覧画面（２６日基準）　　　対象期間：　{{ m - 1}}月　26日　～　{{ m }}月　25日</h3>
+<hr>
+<br>
+<div class="text-center">
+    <a href="{{ url_for('jimu_select_page', STAFFID=current_user.STAFFID) }}" class="btn btn-success">戻　る</a>　　　
+</div>
+<br>
+<br>
+<div>
+    <form method="POST" action="{{ url_for('jimu_oncall_count_26', STAFFID=STAFFID) }}">
+        {{ form_month.csrf_token }}
+        <input type="{{ typ[1] }}" id="select_month" class="h5" name="workday_nm" value="{{ workday_dat }}">　月選択
+
+        <br><br>
+
+        {% if jimu_usr.TEAM_CODE == 1 %}
+        <select class="form-control form-control-sm w-25" name="select_team">
+            <option value="">選択してください</option>
+            <option value="{{ dat[0] }}">{{ syozoku[1] }}</option>
+            <option value="{{ dat[1] }}">{{ syozoku[2] }}</option>
+            <option value="{{ dat[2] }}">{{ syozoku[3] }}</option>
+            <option value="{{ dat[3] }}">{{ syozoku[4] }}</option>
+            <option value="{{ dat[4] }}">{{ syozoku[5] }}</option>
+            <option value="{{ dat[5] }}">{{ syozoku[6] }}</option>
+            <option value="{{ dat[6] }}">{{ syozoku[7] }}</option>
+        </select>
+        {% endif %}
+        
+        <br><br>
+
+        {{ wtf.form_field(form_month.slct, class="btn btn-primary") }}
+    </form>
+    <br>
+</div>
+
+<br><br>
+
+<div id="adm-tbl" class="col-12 center-block">
+    <div>
+        <h4>{{ y }}年 {{ m }}月
+            {% if team == "2" %}
+            　宇都宮
+            {% elif team == "3" %}
+            　下野
+            {% elif team == "4" %}
+            　鹿沼
+            {% elif team == "5" %}
+            　KODOMOTO
+            {% elif team == "6" %}
+            　在宅支援
+            {% elif team == "7" %}
+            　KOそうだん
+            {% elif team == "8" %}
+            　つくば
+            {% endif %}
+        </h4>
+        <br><br>
+        <table id="fv-table" class="table table-striped table-hover">
+            <thead>
+                <tr class="st3 text-center">
+                    <th><small>氏名</small></th>
+                    <th><small>オンコール当番（月～金）</small></th>
+                    <th><small>オンコール当番（土日）</small></th>
+                    <th><small>オンコール対応</small></th>
+                    <th><small>エンゼルケア</small></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                {% for cnt_for_tbl in cfts %}
+                {% if u.OUTDAY is none %}
+                {% if u.STAFFID ==  cnt_for_tbl.STAFFID %}
+
+                {% if team == "" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "2" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 2 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "3" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 3 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "4" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 4 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "5" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 5 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "6" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 6 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "7" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 7 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% elif team == "8" %}
+                {%  if jimu_usr.TEAM_CODE == 1 and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 8 %}
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if jimu_usr.TEAM_CODE == 2 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 2 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 3 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 3 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 4 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 4 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 5 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 5 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 6 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 6 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 7 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 7 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% elif jimu_usr.TEAM_CODE == 8 and (jimu_usr.JOBTYPE_CODE == 2 or jimu_usr.POST_CODE == 1) and u.JOBTYPE_CODE == 1 and u.CONTRACT_CODE != 2 and u.TEAM_CODE == 8 %}  
+                <tr>
+                    <td><small>{{ u.LNAME }} {{ u.FNAME }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_HOLIDAY }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ONCALL_COUNT }}</small></td>
+                    <td><small>{{ cnt_for_tbl.ENGEL_COUNT }}</small></td>
+                </tr>
+                {% endif %}
+
+                {% endif %}
+                {% endif %}               
+                {% endfor %}
+                {% endfor %}              
+            </tbody>
+        </table>
+        <br><br>
+        <table id="fv-table" class="table table-striped table-hover mx-auto">
+            <thead>
+                {% if jimu_usr.TEAM_CODE == 2 or (jimu_usr.TEAM_CODE == 1 and (team == "2" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[1] }}　合計</th>
+                    <th>{{ length_oncall_2 }}</th>
+                    <th>{{ length_onchol_2 }}</th>
+                    <th>{{ length_oncnum_2 }}</th>
+                    <th>{{ length_angelnum_2 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 3 or (jimu_usr.TEAM_CODE == 1 and (team == "3" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[2] }}　合計</th>
+                    <th>{{ length_oncall_3 }}</th>
+                    <th>{{ length_onchol_3 }}</th>
+                    <th>{{ length_oncnum_3 }}</th>
+                    <th>{{ length_angelnum_3 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 4 or (jimu_usr.TEAM_CODE == 1 and (team == "4" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[3] }}　合計</th>
+                    <th>{{ length_oncall_4 }}</th>
+                    <th>{{ length_onchol_4 }}</th>
+                    <th>{{ length_oncnum_4 }}</th>
+                    <th>{{ length_angelnum_4 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 5 or (jimu_usr.TEAM_CODE == 1 and (team == "5" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[4] }}　合計</th>
+                    <th>{{ length_oncall_5 }}</th>
+                    <th>{{ length_onchol_5 }}</th>
+                    <th>{{ length_oncnum_5 }}</th>
+                    <th>{{ length_angelnum_5 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 6 or (jimu_usr.TEAM_CODE == 1 and (team == "6" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[5] }}　合計</th>
+                    <th>{{ length_oncall_6 }}</th>
+                    <th>{{ length_onchol_6 }}</th>
+                    <th>{{ length_oncnum_6 }}</th>
+                    <th>{{ length_angelnum_6 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 7 or (jimu_usr.TEAM_CODE == 1 and (team == "7" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[6] }}　合計</th>
+                    <th>{{ length_oncall_7 }}</th>
+                    <th>{{ length_onchol_7 }}</th>
+                    <th>{{ length_oncnum_7 }}</th>
+                    <th>{{ length_angelnum_7 }}</th>
+                </tr>
+                {% endif %}
+                {% if jimu_usr.TEAM_CODE == 8 or (jimu_usr.TEAM_CODE == 1 and (team == "8" or team == "")) %}
+                <tr>
+                    <th style="width: 15%">{{ syozoku[7] }}　合計</th>
+                    <th>{{ length_oncall_8 }}</th>
+                    <th>{{ length_onchol_8 }}</th>
+                    <th>{{ length_oncnum_8 }}</th>
+                    <th>{{ length_angelnum_8 }}</th>
+                </tr>
+                {% endif %}
+            </thead>
+        </table>
+    </div>
+
+    <div class="h1">
+        <br><br><br><br><br>
+        <br><br><br><br><br>
+    </div>       
+
+<div>
+
+{% endblock %}

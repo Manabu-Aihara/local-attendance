@@ -1,0 +1,16 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-migrate
+flask-bootstrap
+flask-moment
+flask-bcrypt
+flask-wtf
+jpholiday
+pymysql
+Wtforms-html5
+python-dateutil
+itsdangerous==2.0.1
+MonthDelta
+numpy
+gunicorn

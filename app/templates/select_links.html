@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}yoboiryo株式会社 System - サインイン{% endblock %}
+{% block content %}
+<div class="container my-2">
+  <h1> Select Page </h1>
+  <h3>社員番号：{{ current_user.STAFFID }}　氏名：{{ u.LNAME }} {{ u.FNAME }}</h3>
+  <hr><br>
+  <a href="{{ url_for('indextime', STAFFID=u.STAFFID) }}" class="btn btn-loyal">出退勤入力</a> 
+  <br><br>
+  {% if u.POST_CODE == 1 or jobtype == 2 or (team ==1 and jobtype == 2) or u.STAFFID == 128 %}
+  <a class="btn btn-blue" href="{{ url_for('jimu_select_page') }}">所属スタッフ出退勤確認</a>
+  {% endif %}
+  <br><br>
+  <form method="POST" action="{{ url_for('reset_token_self') }}">
+    <div {{ othr }}>
+      <input type="{{ typ[0] }}" name="row" value="パスワード変更" class="btn btn-gr" />
+    </div>
+  </form>
+  <br><br>  
+  {% if stf_login.ADMIN is true %}
+  <a class="btn btn-purple" href="{{url_for('home_admin')}}">管理者</a>
+  {% endif %}
+  <br><br>
+  <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
+</div>
+{% endblock %}
