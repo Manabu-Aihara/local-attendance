@@ -10,7 +10,13 @@
   {% if u.POST_CODE == 1 or jobtype == 2 or (team ==1 and jobtype == 2) or u.STAFFID == 128 %}
   <a class="btn btn-blue" href="{{ url_for('jimu_select_page') }}">所属スタッフ出退勤確認</a>
   {% endif %}
-  <br><br>
+  <br>
+
+  <a class="btn" href="{{url_for('get_approval_list', STAFFID=u.STAFFID)}}">届出申請</a>
+  <br>
+  <a class="btn" href="{{url_for('', STAFFID=u.STAFFID)}}">届出承認</a>
+  <br>
+
   <form method="POST" action="{{ url_for('reset_token_self') }}">
     <div {{ othr }}>
       <input type="{{ typ[0] }}" name="row" value="パスワード変更" class="btn btn-gr" />
