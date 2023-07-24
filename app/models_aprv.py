@@ -2,17 +2,19 @@ from app import db
 
 class Approval(db.Model):
     __tablename__ = "M_APPROVAL"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     STAFFID = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.STAFFID'), index=True, nullable=False)
     TYPE = db.Column(db.String(10), index=True, nullable=False)
     GROUPNAME = db.Column(db.String(50), nullable=False)
 
     def __init__(self, STAFFID, TYPE, GROUPNAME):
         self.STAFFID = STAFFID
-        self.TYPE = TYPE
-        self.GROUPNAME = GROUPNAME
+        # self.TYPE = TYPE
+        # self.GROUPNAME = GROUPNAME
 
 class NotificationList(db.Model):
     __tablename__ = "D_NOTIFICATION_LIST"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     STAFFID = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.STAFFID'), index=True, nullable=False)
     N_CODE = db.Column(db.Integer, db.ForeignKey('M_NOTIFICATION.CODE'), index=True, nullable=False)
     STATUS = db.Column(db.Integer, index=True, nullable=False)

@@ -13,7 +13,6 @@ from jinja2 import Environment
 from flask_wtf.csrf import CSRFProtect, CSRFError
 from datetime import timedelta
 
-
 LOGFILE_NAME = "DEBUG.log"
 
 app = Flask(__name__)
@@ -23,9 +22,11 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(minutes=360),
+    DEBUG=True
 )
 
 app.config.from_object(Config)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
@@ -43,7 +44,7 @@ log_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(log_handler)
 
 
-from app import routes, models, errors
+from app import routes, models, errors, routes_approvals
 
 
 if not app.debug:

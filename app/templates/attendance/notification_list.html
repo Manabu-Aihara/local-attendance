@@ -17,7 +17,10 @@
       </tr>
   </thead>
   <tbody>
-      {% for nl in notice_list %}
+    {% if nlst is none %}
+      <p>{{ stf_login.STAFFID }}</p>
+    {% else %}
+      {% for nl in nlst %}
         <tr>
           <td>{{ nl.STAFFID }}</td>
           <td>{{ nl.N_CODE }}</td>
@@ -29,5 +32,7 @@
           <td>{{ nl.REMARK}}</td>       
         </tr>
       {% endfor %}
+    {% endif %}
   </tbody>
 </table>
+{% endblock %}

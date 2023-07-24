@@ -12,9 +12,7 @@
   {% endif %}
   <br>
 
-  <a class="btn" href="{{url_for('get_approval_list', STAFFID=u.STAFFID)}}">届出申請</a>
-  <br>
-  <a class="btn" href="{{url_for('', STAFFID=u.STAFFID)}}">届出承認</a>
+  <a class="btn" href="{{ url_for('get_approval_list', STAFFID=u.STAFFID) }}">届出申請</a>
   <br>
 
   <form method="POST" action="{{ url_for('reset_token_self') }}">
@@ -25,6 +23,8 @@
   <br><br>  
   {% if stf_login.ADMIN is true %}
   <a class="btn btn-purple" href="{{url_for('home_admin')}}">管理者</a>
+  {% else %}
+  <p>管理者ではありません</p>
   {% endif %}
   <br><br>
   <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
