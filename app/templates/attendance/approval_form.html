@@ -5,16 +5,17 @@
 
 <form method="post" action="">
   <div class="w-25">
-    <select class="form-control form-control-sm" name="select_page">
-        <option value="">選択してください</option>
-        <option value="{{ dat[0] }}">遅刻</option>
-        <option value="{{ dat[1] }}">早退</option>
-        <option value="{{ dat[2] }}">年休</option>
+    <select class="form-control form-control-sm" name="notice">
+      <option value="">選択してください</option>
+      {% for notice in n_all %}
+        <option value="{{ notice.CODE }}">{{ notice.NAME}}</option>
+      {% endfor %}
     </select>
-    対象日<input type="date">〜
-    対象終了日<input type="date">
-    開始時刻<input type="time">〜
-    終了時刻<input type="time">
-    備考：<input type="text">
+    対象日<input type="date" name="start-day">〜
+    対象終了日<input type="date" name="end-day">
+    開始時刻<input type="time" name="start-time">〜
+    終了時刻<input type="time" name="end-time">
+    備考：<input type="text" name="remark">
     <input type="button" value="申請依頼">
 </form>
+{% endblock %}

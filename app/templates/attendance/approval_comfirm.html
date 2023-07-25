@@ -1,0 +1,9 @@
+{% extends 'home.html' %}
+
+{% block child_content %}
+<ul>
+  {% for one_data in one_notice %}
+  <li>{{ one_data.N_CODE }}</li>
+</ul>
+
+{% endblock %}
