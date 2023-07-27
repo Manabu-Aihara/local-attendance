@@ -1,0 +1,15 @@
+{% extends 'home.html' %}
+
+{% block child_content %}
+{{ stf_login.STAFFID }}
+<ul>
+  <li>{{ one_data.N_CODE }}</li>
+  <li>{{ one_data.STATUS }}</li>
+  <li>{{ one_data.START_DAY }}</li>
+  <li>{{ one_data.END_DAY }}</li>
+  <li>{{ one_data.START_TIME }}</li>
+  <li>{{ one_data.END_TIME }}</li>
+  <li>{{ one_data.REMARK }}</li>
+</ul>
+
+{% endblock %}

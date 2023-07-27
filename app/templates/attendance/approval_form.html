@@ -3,12 +3,13 @@
 {% block child_content %}
 <h3>スタッフ申請フォーム</h3>
 
-<form method="post" action="">
+{{ stf_login.STAFFID }}
+<form method="post" action="/confirm">
   <div class="w-25">
     <select class="form-control form-control-sm" name="notice">
       <option value="">選択してください</option>
-      {% for notice in n_all %}
-        <option value="{{ notice.CODE }}">{{ notice.NAME}}</option>
+      {% for n in n_all %}
+        <option value="{{ n[0] }}">{{ n[1] }}</option>
       {% endfor %}
     </select>
     対象日<input type="date" name="start-day">〜
@@ -16,6 +17,6 @@
     開始時刻<input type="time" name="start-time">〜
     終了時刻<input type="time" name="end-time">
     備考：<input type="text" name="remark">
-    <input type="button" value="申請依頼">
+    <button type="submit">申請依頼</button>
 </form>
 {% endblock %}
