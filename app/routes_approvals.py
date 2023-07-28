@@ -1,16 +1,18 @@
+from datetime import datetime
+
 from flask import render_template, redirect, request
 from flask_login import current_user
 from flask_login.utils import login_required
 from flask.helpers import url_for
 
-from app import app
+from app import app, db
 from app.common_func import GetPullDownList
 from app.models import StaffLoggin, Todokede
 from app.models_aprv import NotificationList
 
 """
     結局使わないデコレータ
-"""
+    """
 # def stuff_login_require(num):
 def stuff_login_require(func):
     def wrapper(*args, **kwargs):
@@ -25,7 +27,7 @@ def stuff_login_require(func):
 """
     戻り値に代入される変数は、必ずstf_login！！
     """
-def appare_global_staff():
+def appare_global_staff() -> StaffLoggin:
     current_staff = StaffLoggin.query.get(current_user.STAFFID)
     return current_staff
 
@@ -37,7 +39,14 @@ def get_approval_list(STAFFID):
                            nlst=notification_list,
                            stf_login=appare_global_staff()
                            )
-
+"""
+    申請理由プルダウンリスト
+    @Param
+    Table object
+    Table code
+    Table name
+    sort基準
+    """
 def get_notification_list():
     todokede_list = GetPullDownList(Todokede, Todokede.CODE, Todokede.NAME,
                                   Todokede.CODE)
@@ -52,27 +61,47 @@ def get_notification_form():
                         n_all=notification_all
                         )
 
+def retrieve_form_data(list_data: list) -> list:
+    form_data = []
+    for ldata in list_data:
+        form_data.append(request.form.get(ldata))
+    
+    return form_data
 
-@app.route('/approval-form', methods=['POST'])
+@app.route('/confirm', methods=['POST'])
 @login_required
 def post_approval():
-    form_reason = request.form.get('notice')
-    form_start_day = request.form.get('start-day')
-    form_end_day = request.form.get('end-day')
-    form_start_time = request.form.get('start-time')
-    form_end_time = request.form.get('end-day')
+    approval_list = ['content', 'start-day', 'end-day', 'start-time', 'end-time', 'remark']
+    form_list_data = retrieve_form_data(approval_list)
+
+    return render_template('attendance/approval_confirm.html', 
+                           one_data=form_list_data,
+                           stf_login=appare_global_staff())
+
+def convert_str_to_date(arg) -> datetime:
+    conv_date = datetime.strptime(arg, '%Y-%m-%d')
+    return conv_date
+
+def convert_str_to_time(arg) -> datetime:
+    conv_time = datetime.strptime(arg, '%H:%M')
+    return conv_time
+
+# @app.route('/confirm', methods=['GET', 'POST'])
+# @login_required
+def append_approval():
+    form_content = request.form.get('content')
+    form_start_day = convert_str_to_date(request.form.get('start-day'))
+    form_end_day = convert_str_to_date(request.form.get('end-day'))
+    form_start_time = convert_str_to_time(request.form.get('start-time'))
+    form_end_time = convert_str_to_time(request.form.get('end-time'))
     form_remark = request.form.get('remark')
 
     one_notification = NotificationList(
-        current_user.STAFFID, form_reason, 0, form_start_day, form_start_time,
+        current_user.STAFFID, form_content, form_start_day, form_start_time,
         form_end_day, form_end_time, form_remark
     )
 
-    return redirect(url_for('get_confirm', value=one_notification))
+    db.session.add(one_notification)
+    db.session.commit()
 
-@app.route('/confirm', methods=['GET', 'POST'])
-@login_required
-def get_confirm(value: NotificationList):
-    return render_template('attendance/approval_confirm.html', 
-                           one_data=value,
-                           stf_login=appare_global_staff())
+    return redirect('/')

@@ -19,7 +19,3 @@ def app_context():
   with app.app_context():
     db.create_all()
     yield
-
-# @pytest.fixture(name='testdb')
-# def connect_db():
-#     return db

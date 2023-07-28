@@ -3,13 +3,23 @@
 {% block child_content %}
 {{ stf_login.STAFFID }}
 <ul>
-  <li>{{ one_data.N_CODE }}</li>
-  <li>{{ one_data.STATUS }}</li>
-  <li>{{ one_data.START_DAY }}</li>
-  <li>{{ one_data.END_DAY }}</li>
-  <li>{{ one_data.START_TIME }}</li>
-  <li>{{ one_data.END_TIME }}</li>
-  <li>{{ one_data.REMARK }}</li>
+  申請内容：<li>{{ one_data[0] }}</li>
+  対象開始日：<li>{{ one_data[1] }}</li>
+  対象終了日：<li>{{ one_data[2] }}</li>
+  開始時刻：<li>{{ one_data[3] }}</li>
+  終了時刻：<li>{{ one_data[4] }}</li>
+  備考：<li>{{ one_data[5] }}</li>
 </ul>
+<form method="post" action="/append_approval">
+  <input type="text" name="content" value="{{ one_data[0] }}">
+  対象日<input type="date" name="start-day" value="{{ one_data[1] }}">〜
+  対象終了日<input type="date" name="end-day" value="{{ one_data[2] }}">
+  開始時刻<input type="time" name="start-time" value="{{ one_data[3] }}">〜
+  終了時刻<input type="time" name="end-time" value="{{ one_data[4] }}">
+  備考：<input type="text" name="remark" value="{{ one_data[5] }}">
+  <input type="submit" value="申請依頼">
+</form>
+
+<a href="#">戻る</a>
 
 {% endblock %}

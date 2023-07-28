@@ -6,7 +6,7 @@
 {{ stf_login.STAFFID }}
 <form method="post" action="/confirm">
   <div class="w-25">
-    <select class="form-control form-control-sm" name="notice">
+    <select class="form-control form-control-sm" name="content">
       <option value="">選択してください</option>
       {% for n in n_all %}
         <option value="{{ n[0] }}">{{ n[1] }}</option>
