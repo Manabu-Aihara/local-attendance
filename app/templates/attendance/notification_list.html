@@ -5,9 +5,12 @@
 
 <a href="{{ url_for('get_notification_form') }}">届出申請</a>
 
-<table id="fv-table" class="table table-striped table-hover">
-  <thead>
-      <tr class="st3 text-center">
+{% if nlst is none %}
+  <p>{{ stf_login.STAFFID }}</p>
+{% else %}
+  <table id="fv-table" class="table table-striped table-hover">
+    <thead>
+        <tr class="st3 text-center">
           <th>スタッフID</th>
           <th></th>
           <th>承認状態</th>
@@ -16,12 +19,9 @@
           <th>終了日</th>
           <th>終了時間</th>
           <th>備考</th>
-      </tr>
-  </thead>
-  <tbody>
-    {% if nlst is none %}
-      <p>{{ stf_login.STAFFID }}</p>
-    {% else %}
+        </tr>
+    </thead>
+    <tbody>
       {% for nl in nlst %}
         <tr>
           <td>{{ nl.STAFFID }}</td>
@@ -34,7 +34,8 @@
           <td>{{ nl.REMARK}}</td>       
         </tr>
       {% endfor %}
-    {% endif %}
-  </tbody>
-</table>
+    </tbody>
+  </table>
+{% endif %}
+
 {% endblock %}

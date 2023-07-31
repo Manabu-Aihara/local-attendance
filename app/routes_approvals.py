@@ -34,7 +34,7 @@ def appare_global_staff() -> StaffLoggin:
 @app.route('/approval-list/<STAFFID>', methods=['GET'])
 @login_required
 def get_approval_list(STAFFID):
-    notification_list = NotificationList.query.get(STAFFID)
+    notification_list = NotificationList.query.filter(NotificationList.STAFFID == STAFFID).all()
     return render_template('attendance/notification_list.html', 
                            nlst=notification_list,
                            stf_login=appare_global_staff()
@@ -52,21 +52,24 @@ def get_notification_list():
                                   Todokede.CODE)
     return todokede_list
 
-@app.route('/approval-form')
-@login_required
-def get_notification_form():
-    notification_all = get_notification_list()
-    return render_template('attendance/approval_form.html', 
-                        stf_login=appare_global_staff(),
-                        n_all=notification_all
-                        )
-
 def retrieve_form_data(list_data: list) -> list:
     form_data = []
     for ldata in list_data:
         form_data.append(request.form.get(ldata))
     
     return form_data
+
+@app.route('/approval-form', methods=['GET', 'POST'])
+@login_required
+def get_notification_form():
+    # if request.method == 'GET':
+        notification_all = get_notification_list()
+        return render_template('attendance/approval_form.html', 
+                            stf_login=appare_global_staff(),
+                            n_all=notification_all
+                            )
+    
+    # elif request.method == 'POST':
 
 @app.route('/confirm', methods=['POST'])
 @login_required
@@ -75,25 +78,32 @@ def post_approval():
     form_list_data = retrieve_form_data(approval_list)
 
     return render_template('attendance/approval_confirm.html', 
-                           one_data=form_list_data,
-                           stf_login=appare_global_staff())
+                        one_data=form_list_data,
+                        stf_login=appare_global_staff())
 
-def convert_str_to_date(arg) -> datetime:
-    conv_date = datetime.strptime(arg, '%Y-%m-%d')
-    return conv_date
 
-def convert_str_to_time(arg) -> datetime:
-    conv_time = datetime.strptime(arg, '%H:%M')
-    return conv_time
+def convert_str_to_date(arg) -> datetime | None:
+    if arg != None:
+        conv_date = datetime.strptime(arg, '%Y-%m-%d')
+        return conv_date
+    else:
+        return None
 
-# @app.route('/confirm', methods=['GET', 'POST'])
-# @login_required
+def convert_str_to_time(arg) -> datetime | str:
+    if arg != None:
+        conv_time = datetime.strptime(arg, '%H:%M')
+        return conv_time
+    else:
+        return '%H:%M'
+
+@app.route('/regist', methods=['POST'])
+@login_required
 def append_approval():
     form_content = request.form.get('content')
     form_start_day = convert_str_to_date(request.form.get('start-day'))
-    form_end_day = convert_str_to_date(request.form.get('end-day'))
-    form_start_time = convert_str_to_time(request.form.get('start-time'))
-    form_end_time = convert_str_to_time(request.form.get('end-time'))
+    form_end_day: datetime | None = convert_str_to_date(request.form.get('end-day'))
+    form_start_time: datetime | str = convert_str_to_time(request.form.get('start-time'))
+    form_end_time: datetime | str = convert_str_to_time(request.form.get('end-time'))
     form_remark = request.form.get('remark')
 
     one_notification = NotificationList(

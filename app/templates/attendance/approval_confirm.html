@@ -10,7 +10,7 @@
   終了時刻：<li>{{ one_data[4] }}</li>
   備考：<li>{{ one_data[5] }}</li>
 </ul>
-<form method="post" action="/append_approval">
+<form method="post" action="/regist">
   <input type="text" name="content" value="{{ one_data[0] }}">
   対象日<input type="date" name="start-day" value="{{ one_data[1] }}">〜
   対象終了日<input type="date" name="end-day" value="{{ one_data[2] }}">
