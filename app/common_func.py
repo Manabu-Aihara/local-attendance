@@ -3,6 +3,14 @@
 from app import app, db
 
 #***** DBのリスト作成*******#
+"""
+    申請理由プルダウンリスト
+    @Param
+    Table class
+    Table code
+    Table name
+    sort基準
+    """
 def GetPullDownList(TABLE, colCODE, colNAME, OrderCol):
     
     GetList = []

@@ -19,6 +19,7 @@
           <th>終了日</th>
           <th>終了時間</th>
           <th>備考</th>
+          <th>詳細</th>
         </tr>
     </thead>
     <tbody>
@@ -31,7 +32,10 @@
           <td>{{ nl.START_TIME }}</td>
           <td>{{ nl.END_DAY }}</td>
           <td>{{ nl.END_TIME }}</td>
-          <td>{{ nl.REMARK}}</td>       
+          <td>{{ nl.REMARK}}</td>
+          <td>
+            <button type="submit">確認</button>
+          </td>     
         </tr>
       {% endfor %}
     </tbody>

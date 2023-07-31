@@ -2,14 +2,7 @@
 
 {% block child_content %}
 {{ stf_login.STAFFID }}
-<ul>
-  申請内容：<li>{{ one_data[0] }}</li>
-  対象開始日：<li>{{ one_data[1] }}</li>
-  対象終了日：<li>{{ one_data[2] }}</li>
-  開始時刻：<li>{{ one_data[3] }}</li>
-  終了時刻：<li>{{ one_data[4] }}</li>
-  備考：<li>{{ one_data[5] }}</li>
-</ul>
+
 <form method="post" action="/regist">
   <input type="text" name="content" value="{{ one_data[0] }}">
   対象日<input type="date" name="start-day" value="{{ one_data[1] }}">〜
@@ -20,6 +13,11 @@
   <input type="submit" value="申請依頼">
 </form>
 
-<a href="#">戻る</a>
-
+<input type="button" value="戻る" id="btnBack">
+<script>
+  let btnBack = document.getElementById('btnBack');
+  btnBack.addEventListener('click', function(){
+      history.back();
+  });
+</script>
 {% endblock %}
