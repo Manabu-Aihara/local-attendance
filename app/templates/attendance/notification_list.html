@@ -29,12 +29,22 @@
           <td>{{ nl.N_CODE }}</td>
           <td>{{ nl.STATUS }}</td>
           <td>{{ nl.START_DAY }}</td>
-          <td>{{ nl.START_TIME }}</td>
+          <td>
+            {% if nl.START_TIME == "00:00:00" %}
+            {% else %}
+              {{ nl.START_TIME }}
+            {% endif %}
+          </td>
           <td>{{ nl.END_DAY }}</td>
-          <td>{{ nl.END_TIME }}</td>
+          <td>
+            {% if nl.END_TIME == "00:00:00" %}
+            {% else %}
+              {{ nl.END_TIME }}
+            {% endif %}
+            </td>
           <td>{{ nl.REMARK}}</td>
           <td>
-            <button type="submit">確認</button>
+            <a href="{{ url_for('get_individual_approval',STAFFID=stf_login.STAFFID, id=nl.id) }}">確認</a>
           </td>     
         </tr>
       {% endfor %}
