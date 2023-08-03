@@ -21,7 +21,6 @@ from app.attendance_classes import AttendanceAnalysys
 from app.calender_classes import MakeCalender
 from app.calc_work_classes import DataForTable, CalcTimeClass, PartCalcHolidayTimeClass, get_last_date
 
-
 os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 app.permanent_session_lifetime = timedelta(minutes=360)
 
@@ -611,7 +610,7 @@ def indextime(STAFFID):
                 sh = Shinsei(STAFFID, WORKDAY, HOLIDAY, STARTTIME, ENDTIME, MILEAGE,
                                 ONCALL, ONCALL_COUNT, ENGEL_COUNT, NOTIFICATION, NOTIFICATION2, OVERTIME, REMARK)
                 db.session.add(sh)
-                db.session.commit()             
+                db.session.commit()
 
 
     return render_template('attendance/index.html', title='ホーム', cal=cal, shinseis=shinseis, y=y, m=m, form=form, form_month=form_month,

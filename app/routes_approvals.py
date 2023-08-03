@@ -1,4 +1,5 @@
-from datetime import datetime, time
+from datetime import datetime
+from enum import IntEnum
 
 from flask import render_template, redirect, request
 from flask_login import current_user
@@ -8,9 +9,9 @@ from flask.helpers import url_for
 from app import app, db
 from app.common_func import GetPullDownList
 from app.models import StaffLoggin, Todokede
-from app.models_aprv import NotificationList
+from app.models_aprv import (NotificationList, Approval)
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
-                               toggle_notification_type, replace_uneffective_index_time)
+                               toggle_notification_type, search_uneffective_time_index)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -27,13 +28,15 @@ def get_approval_list(STAFFID):
     # for nlst in notification_list:
     #     nlst.START_TIME.strftime('%H:%M').replace("00:00:00", "")
     #     nlst.END_TIME.strftime('%H:%M').replace("00:00:00", "")
-    # out_index = search_uneffective_time_index(notification_list)
-    # for oi in out_index:
-    #     notification_list[oi].START_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
-    #     notification_list[oi].END_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
-    # type_list_time = replace_uneffective_index_time(notification_list)
+    out_index = search_uneffective_time_index(notification_list)
+    for oi in out_index:
+        notification_list[oi].START_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
+        notification_list[oi].END_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
+    # print_time_list = []
+    # type_list_time: list[NotificationList] = replace_uneffective_index_time(notification_list)
     # for lt in type_list_time:
-    #     return lt
+    #     print_time_list.append(lt)
+    # return print_time_list
     
     # return notification_list[3].START_TIME.strftime('%H:%M:%S')
     return render_template('attendance/notification_list.html', 
@@ -41,21 +44,48 @@ def get_approval_list(STAFFID):
                            stf_login=appare_global_staff()
                            )
 
+@app.route('/approval-list/charge', methods=['GET'])
+@login_required
+def get_middle_approval():
+    notification_middle_list = NotificationList.query.filter(NotificationList.STATUS==0).all()
+
+    return render_template('attendance/notification_list.html',
+                           nlst=notification_middle_list,
+                           stf_login=appare_global_staff())
+
+class StatusEnum(IntEnum):
+    申請中 = 0
+    承認済 = 1
+    未承認 = 2
+
 @app.route('/confirm/<STAFFID>/<id>', methods=['GET'])
 @login_required
 def get_individual_approval(STAFFID, id: int):
     notification_row = NotificationList.query.get(id)
 
-    table_columns = []
-    # https://teratail.com/questions/214028
-    table_columns.append(NotificationList.__table__.c.keys()[2:])
+    # 承認者のための
+    approval_member = Approval.query.filter(Approval.STAFFID==STAFFID).first()
 
-    date_list = []
-    date_list.append(NotificationList.query.filter(notification_row.N_CODE==table_columns[0])).first()
-    
-    # return render_template('attendance/approval_confirm.html',
-    #                        one_data=notification_row,
-    #                        stf_login=appare_global_staff())
+    data_list = []
+    # 内容
+    data_list.append(toggle_notification_type(Todokede, notification_row.N_CODE))
+    # 対象日
+    data_list.append(notification_row.START_DAY)
+    # 対象終了日
+    data_list.append(notification_row.END_DAY)
+    # 開始時刻
+    data_list.append(notification_row.START_TIME)
+    # 終了時刻
+    data_list.append(notification_row.END_TIME)
+    # 備考
+    data_list.append(notification_row.REMARK)
+    # 承認状態
+    data_list.append(StatusEnum(notification_row.STATUS).name)
+
+    return render_template('attendance/approval_confirm.html',
+                           charge_p=approval_member,
+                           one_data=data_list,
+                           stf_login=appare_global_staff())
 
 def get_notification_list():
     todokede_list = GetPullDownList(Todokede, Todokede.CODE, Todokede.NAME,

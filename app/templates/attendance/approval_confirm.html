@@ -3,15 +3,30 @@
 {% block child_content %}
 {{ stf_login.STAFFID }}
 
-<form method="post" action="/regist">
+<form method="post" action="/regist" class="approval">
   申請内容：<input type="text" name="content" value="{{ one_data[0] }}">
   対象日：<input type="date" name="start-day" value="{{ one_data[1] }}">〜
   対象終了日：<input type="date" name="end-day" value="{{ one_data[2] }}">
   開始時刻：<input type="time" name="start-time" value="{{ one_data[3] }}">〜
   終了時刻：<input type="time" name="end-time" value="{{ one_data[4] }}">
   備考：<input type="text" name="remark" value="{{ one_data[5] }}">
-  <input type="submit" value="申請依頼">
+  {% if one_data[6] == "" %}
+    <input type="submit" value="申請依頼">
+  {% else %}
+    <p>{{ one_data[6] }}</p>
+  {% endif %}
 </form>
+
+{% if charge_p.STAFFID != "" %}
+  <form method="post" action="/approval_ok">
+    <button type="submit">承認</button>
+  </form>
+  <form method="post" action="/approval_ng">
+    <button type="submit">拒否</button>
+  </form>
+{% else %}
+  <p>権限がありません</p>
+{% endif %}
 
 <input type="button" value="戻る" id="btnBack">
 <script>
@@ -19,5 +34,8 @@
   btnBack.addEventListener('click', function(){
       history.back();
   });
+  let belowForm = document.getElementByClass('approval').children;
+  console.log(belowForm);
+  belowForm.disabled = true;
 </script>
 {% endblock %}

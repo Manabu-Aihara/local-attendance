@@ -14,6 +14,12 @@
 
   <a class="btn" href="{{ url_for('get_approval_list', STAFFID=u.STAFFID) }}">届出申請</a>
   <br>
+  {% if charge_p.STAFFID != " " %}
+    <a class="btn" href="{{ url_for('get_middle_approval') }}">届出承認</a>
+    <br>
+  {% else %}
+    <p></p>
+  {% endif %}
 
   <form method="POST" action="{{ url_for('reset_token_self') }}">
     <div {{ othr }}>

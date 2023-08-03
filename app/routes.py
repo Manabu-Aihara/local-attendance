@@ -24,6 +24,8 @@ from decimal import Decimal, ROUND_HALF_UP
 import jpholiday
 import os
 
+from app.models_aprv import Approval
+
 
 """***** ログイン後最初のページ *****"""
 
@@ -42,8 +44,13 @@ def select_links():
     team = u.TEAM_CODE  # この職員のチームコード
     jobtype = u.JOBTYPE_CODE # この職員の職種
 
+    """
+    届出承認機能追加 2023/8/3
+    """          
+    approval_member = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
+
     return render_template('select_links.html', title='Select link', STAFFID=STAFFID, shinseis=shinseis, u=u, team=team,
-                           jobtype=jobtype, stf_login=stf_login, typ=typ)
+                           jobtype=jobtype, stf_login=stf_login, typ=typ, charge_p=approval_member)
 
 
 """***** ログイン・ログアウト処理 *****"""
