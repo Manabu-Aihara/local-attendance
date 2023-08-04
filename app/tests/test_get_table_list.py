@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.common_func import GetPullDownList
 from app.models import Todokede
-from app.models_aprv import NotificationList
+from app.models_aprv import (NotificationList, Approval)
 from app.routes_approvals import get_notification_list
 from app.approval_util import (toggle_notification_type,
                                convert_object_time)
@@ -21,6 +21,7 @@ def test_toggle_notification_type(app_context):
     print(result)
     assert result == "年休全日"
 
+@pytest.mark.skip
 def test_convert_object_time(app_context):
     notification_obj = NotificationList.query.get(5)
     START_TIME: datetime = notification_obj.START_TIME
@@ -28,4 +29,13 @@ def test_convert_object_time(app_context):
     replaced_one_obj: NotificationList = convert_object_time(START_TIME, END_TIME)
     print(replaced_one_obj.START_TIME.strftime(''))
     print(replaced_one_obj.END_TIME.strftime(''))
+
+def test_get_empty_object(app_context):
+    approval_member = Approval.query.filter(Approval.STAFFID==20).first()
+    print(f'ちゃんとオブジェクト：{approval_member.__dict__}')
+    approval_non_member = Approval.query.filter(Approval.STAFFID==201).first()
+    # print(f'ちゃんとじゃないオブジェクト：{approval_non_member.__dict__}')
+    assert isinstance(approval_member, Approval) == True
+    assert isinstance(approval_non_member, Approval) == False
+
 

@@ -2,7 +2,7 @@
 
 {% block child_content %}
 <h3>申請一覧</h3>
-
+<p>{{ charge_p.STAFFID }}</p>
 <a href="{{ url_for('get_notification_form') }}">届出申請</a>
 
 {% if nlst is none %}
@@ -44,7 +44,11 @@
             </td>
           <td>{{ nl.REMARK}}</td>
           <td>
-            <a href="{{ url_for('get_individual_approval', STAFFID=stf_login.STAFFID, id=nl.id) }}">確認</a>
+          {% if charge_p %}
+            <a href="{{ url_for('get_charge_individual_approval', id=nl.id) }}">確認</a>
+          {% else %}
+            <a href="{{ url_for('get_individual_approval', id=nl.id, STAFFID=nl.STAFFID) }}">確認</a>
+          {% endif %}
           </td>     
         </tr>
       {% endfor %}

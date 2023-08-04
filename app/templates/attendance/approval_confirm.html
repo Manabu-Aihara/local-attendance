@@ -10,14 +10,14 @@
   開始時刻：<input type="time" name="start-time" value="{{ one_data[3] }}">〜
   終了時刻：<input type="time" name="end-time" value="{{ one_data[4] }}">
   備考：<input type="text" name="remark" value="{{ one_data[5] }}">
-  {% if one_data[6] == "" %}
-    <input type="submit" value="申請依頼">
-  {% else %}
+  {% if one_data[6] %}
     <p>{{ one_data[6] }}</p>
+  {% else %}
+    <input type="submit" value="申請依頼">
   {% endif %}
 </form>
 
-{% if charge_p.STAFFID != "" %}
+{% if f is true %}
   <form method="post" action="/approval_ok">
     <button type="submit">承認</button>
   </form>
@@ -25,7 +25,7 @@
     <button type="submit">拒否</button>
   </form>
 {% else %}
-  <p>権限がありません</p>
+  <p>実はボタンがあったりする</p>
 {% endif %}
 
 <input type="button" value="戻る" id="btnBack">
@@ -34,8 +34,18 @@
   btnBack.addEventListener('click', function(){
       history.back();
   });
-  let belowForm = document.getElementByClass('approval').children;
-  console.log(belowForm);
-  belowForm.disabled = true;
+</script>
+<script>
+  const r = /\d+$/;
+  console.log(r.test(location.pathname));
+  if(r.test(location.pathname)){
+    const currentForm = document.getElementsByClassName('approval')[0];
+    console.log(currentForm);
+    // const childElements = currentForm.children;
+    for(let i = 0; i <= 5; i++){
+      // console.log("何か問題でも" + currentForm[1]);
+      currentForm[i].disabled = true;
+    };
+  }
 </script>
 {% endblock %}
