@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 
 class Approval(db.Model):
@@ -7,7 +8,7 @@ class Approval(db.Model):
     TYPE = db.Column(db.String(10), index=True, nullable=False)
     GROUPNAME = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, STAFFID, TYPE, GROUPNAME):
+    def __init__(self, STAFFID):
         self.STAFFID = STAFFID
         # self.TYPE = TYPE
         # self.GROUPNAME = GROUPNAME
@@ -16,6 +17,7 @@ class NotificationList(db.Model):
     __tablename__ = "D_NOTIFICATION_LIST"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     STAFFID = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.STAFFID'), index=True, nullable=False)
+    NOTICE_DAYTIME = db.Column(db.DateTime(), index=True, default=datetime.now())
     N_CODE = db.Column(db.Integer, db.ForeignKey('M_NOTIFICATION.CODE'), index=True, nullable=False)
     STATUS = db.Column(db.Integer, index=True, nullable=False, default=0)
     START_DAY = db.Column(db.Date)
@@ -26,6 +28,7 @@ class NotificationList(db.Model):
 
     def __init__(self, STAFFID, N_CODE, START_DAY, START_TIME, END_DAY, END_TIME, REMARK):
         self.STAFFID = STAFFID
+        # self.NOTICE_DAYTIME = NOTICE_DAYTIME
         self.N_CODE = N_CODE
         self.START_DAY = START_DAY
         self.START_TIME = START_TIME

@@ -47,6 +47,11 @@ class User(db.Model):
     def __init__(self, STAFFID):
         self.STAFFID = STAFFID
 
+    """
+        2023/8/7
+        リレーション機能追加
+    """
+    Notification = db.relationship('NotificationList', backref='M_STAFFINFO')
 
 class StaffLoggin(UserMixin, db.Model):
     __tablename__ = "M_LOGGININFO"
@@ -89,6 +94,12 @@ class Todokede(db.Model):
     def __init__(self, CODE, NAME):
         self.CODE = CODE
         self.NAME = NAME
+    
+    """
+        2023/8/7
+        リレーション機能追加
+    """
+    Notification = db.relationship('NotificationList', backref='M_NOTIFICATION')
 
 class Busho(db.Model):
     __tablename__ = "M_DEPARTMENT"

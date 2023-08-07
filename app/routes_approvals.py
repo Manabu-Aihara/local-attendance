@@ -1,17 +1,17 @@
 from datetime import datetime
 from enum import IntEnum
+from typing import List
 
 from flask import render_template, redirect, request
 from flask_login import current_user
 from flask_login.utils import login_required
-from flask.helpers import url_for
 
 from app import app, db
 from app.common_func import GetPullDownList
-from app.models import StaffLoggin, Todokede
-from app.models_aprv import (NotificationList, Approval)
+from app.models import (User, StaffLoggin, Todokede)
+from app.models_aprv import NotificationList
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
-                               toggle_notification_type, search_uneffective_time_index)
+                               toggle_notification_type)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -20,44 +20,50 @@ def appare_global_staff() -> StaffLoggin:
     current_staff = StaffLoggin.query.get(current_user.STAFFID)
     return current_staff
 
+def get_current_url_flag() -> bool:
+    current_url = request.path
+    flag = False
+    if '/approval-list/charge' in current_url:
+        flag = True
+    return flag
+    
 @app.route('/approval-list/<STAFFID>', methods=['GET'])
 @login_required
 def get_approval_list(STAFFID):
-    notification_list = NotificationList.query.filter(NotificationList.STAFFID == STAFFID).all()
+    # notification_list = NotificationList.query.filter(NotificationList.STAFFID == STAFFID).all()
 
-    # for nlst in notification_list:
-    #     nlst.START_TIME.strftime('%H:%M').replace("00:00:00", "")
-    #     nlst.END_TIME.strftime('%H:%M').replace("00:00:00", "")
-    # out_index = search_uneffective_time_index(notification_list)
-    # for oi in out_index:
-    #     notification_list[oi].START_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
-    #     notification_list[oi].END_TIME.strftime('%H:%M:%S').replace("00:00:00", "")
-    # print_time_list = []
-    # type_list_time: list[NotificationList] = replace_uneffective_index_time(notification_list)
-    # for lt in type_list_time:
-    #     print_time_list.append(lt)
-    # return print_time_list    
-    # return notification_list[3].START_TIME.strftime('%H:%M:%S')
-
-    approval_member = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
-
+    user_basic_info: User = User.query.with_entities(User.STAFFID, User.LNAME, User.FNAME).filter(User.STAFFID==STAFFID).first()
+    user_notification_list = NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, Todokede.NAME,
+                                               NotificationList.START_DAY, NotificationList.START_TIME,
+                                               NotificationList.END_DAY, NotificationList.END_TIME,
+                                               NotificationList.REMARK,
+                                               NotificationList.id, NotificationList.STAFFID)\
+                                                .filter(NotificationList.STAFFID==STAFFID)\
+                                                    .join(Todokede, Todokede.CODE==NotificationList.N_CODE).all()
+    
     return render_template('attendance/notification_list.html', 
-                           nlst=notification_list,
-                           charge_p=approval_member,
+                           uinfo=user_basic_info,
+                           nlst=user_notification_list,
+                           f=get_current_url_flag(),
                            stf_login=appare_global_staff()
                            )
 
-@app.route('/approval-list/charge/<STAFFID>', methods=['GET'])
+@app.route('/approval-list/charge', methods=['GET'])
 @login_required
-def get_middle_approval(STAFFID):   
-    notification_middle_list = NotificationList.query.filter(NotificationList.STATUS==0).all()
-    
-    # 承認者のための
-    approval_member = Approval.query.filter(Approval.STAFFID==STAFFID).first()
+def get_middle_approval():
+
+    all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
+                                               User.LNAME, User.FNAME, NotificationList.N_CODE,                  
+                                               NotificationList.START_DAY, NotificationList.START_TIME,
+                                               NotificationList.END_DAY, NotificationList.END_TIME)
+                                                .filter(NotificationList.N_CODE==0)
+                                                .join(User, User.STAFFID==NotificationList.STAFFID)
+                                                .all())
 
     return render_template('attendance/notification_list.html',
-                           nlst=notification_middle_list,
-                           charge_p=approval_member,
+                           nlst=all_notification_list,
+                           f=get_current_url_flag(),
+                           path=request.path,
                            stf_login=appare_global_staff())
 
 class StatusEnum(IntEnum):
@@ -86,24 +92,17 @@ def get_individual_approval(id: int, STAFFID=None):
     # 承認状態
     data_list.append(StatusEnum(notification_row.STATUS).name)
 
+    def get_url_past_flag() -> bool:
+        past = request.referrer
+        flag = False
+        if 'charge' in past:
+            flag = True
+        return flag
+    
     return render_template('attendance/approval_confirm.html',
                            one_data=data_list,
+                           f=get_url_past_flag(),
                            stf_login=appare_global_staff())
-
-@app.route('/confirm/charge/<id>', methods=['GET'])
-@login_required
-def get_charge_individual_approval(id: int):
-
-    flag = False
-    # 承認者のための
-    judgement_approval = NotificationList.query.filter(NotificationList.id==id).first()
-    # if isinstance(approval_member, Approval):
-    #     flag = True
-    # else:
-    #     flag = False
-
-    individual_approval = get_individual_approval(id)
-    return individual_approval.data_list
 
 def get_notification_list():
     todokede_list = GetPullDownList(Todokede, Todokede.CODE, Todokede.NAME,
