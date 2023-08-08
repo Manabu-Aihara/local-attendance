@@ -17,15 +17,15 @@
   {% endif %}
 </form>
 
-{% if f is true %}
-  <form method="post" action="/approval_ok">
+{% if f is true and one_data[7] %}
+  <form method="post" action="{{ url_for('change_status_ok', id=one_data[7]) }}">
     <button type="submit">承認</button>
   </form>
-  <form method="post" action="/approval_ng">
+  <form method="post" action="{{ url_for('change_status_ng', id=one_data[7]) }}">
     <button type="submit">拒否</button>
   </form>
 {% else %}
-  <p>実はボタンがあったりする</p>
+  <p></p>
 {% endif %}
 
 <input type="button" value="戻る" id="btnBack">
@@ -36,14 +36,17 @@
   });
 </script>
 <script>
+  /*
+   取得urlによってフォームを入力不可にする
+  */
   const r = /\d+$/;
   console.log(r.test(location.pathname));
   if(r.test(location.pathname)){
     const currentForm = document.getElementsByClassName('approval')[0];
-    console.log(currentForm);
+    // console.log(currentForm);
     // const childElements = currentForm.children;
+    // forEach, mapはダメだった
     for(let i = 0; i <= 5; i++){
-      // console.log("何か問題でも" + currentForm[1]);
       currentForm[i].disabled = true;
     };
   }

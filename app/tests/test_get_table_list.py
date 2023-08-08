@@ -21,14 +21,13 @@ def test_toggle_notification_type(app_context):
     print(result)
     assert result == "年休全日"
 
-@pytest.mark.skip
-def test_convert_object_time(app_context):
-    notification_obj = NotificationList.query.get(5)
-    START_TIME: datetime = notification_obj.START_TIME
-    END_TIME: datetime = notification_obj.END_TIME
-    replaced_one_obj: NotificationList = convert_object_time(START_TIME, END_TIME)
-    print(replaced_one_obj.START_TIME.strftime(''))
-    print(replaced_one_obj.END_TIME.strftime(''))
+# def test_convert_object_time(app_context):
+#     notification_obj = NotificationList.query.get(5)
+#     START_TIME: datetime = notification_obj.START_TIME
+#     END_TIME: datetime = notification_obj.END_TIME
+#     replaced_one_obj: NotificationList = convert_object_time(START_TIME, END_TIME)
+#     print(replaced_one_obj.START_TIME.strftime(''))
+#     print(replaced_one_obj.END_TIME.strftime(''))
 
 def test_get_empty_object(app_context):
     approval_member = Approval.query.filter(Approval.STAFFID==20).first()

@@ -9,8 +9,7 @@
 {% else %}
   <h4>未承認リスト</h4>
   <input type="button" value="戻る" id="btnBack">
-  <p>{{ path }}</p>
-{%  endif %}
+{% endif %}
 
 {% if nlst is none %}
   <p>{{ stf_login.STAFFID }}</p>
@@ -62,11 +61,10 @@
   </table>
 {% endif %}
 
-{% endblock %}
 <script>
   let btnBack = document.getElementById('btnBack');
   btnBack.addEventListener('click', function(){
-      history.back();
+    history.back();
   });
 </script>
-
+{% endblock %}

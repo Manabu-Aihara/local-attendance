@@ -5,6 +5,7 @@ from typing import List
 from flask import render_template, redirect, request
 from flask_login import current_user
 from flask_login.utils import login_required
+from flask.helpers import url_for
 
 from app import app, db
 from app.common_func import GetPullDownList
@@ -20,6 +21,7 @@ def appare_global_staff() -> StaffLoggin:
     current_staff = StaffLoggin.query.get(current_user.STAFFID)
     return current_staff
 
+# フラグ関数、現urlを取得
 def get_current_url_flag() -> bool:
     current_url = request.path
     flag = False
@@ -53,11 +55,13 @@ def get_approval_list(STAFFID):
 def get_middle_approval():
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
-                                               User.LNAME, User.FNAME, NotificationList.N_CODE,                  
+                                               User.LNAME, User.FNAME, Todokede.NAME,                  
                                                NotificationList.START_DAY, NotificationList.START_TIME,
-                                               NotificationList.END_DAY, NotificationList.END_TIME)
-                                                .filter(NotificationList.N_CODE==0)
-                                                .join(User, User.STAFFID==NotificationList.STAFFID)
+                                               NotificationList.END_DAY, NotificationList.END_TIME,
+                                               NotificationList.id)
+                                                .filter(NotificationList.STATUS==0)
+                                                .join(User, User.STAFFID==NotificationList.STAFFID, isouter=True)
+                                                .join(Todokede, Todokede.CODE==NotificationList.N_CODE)
                                                 .all())
 
     return render_template('attendance/notification_list.html',
@@ -91,7 +95,10 @@ def get_individual_approval(id: int, STAFFID=None):
     data_list.append(notification_row.REMARK)
     # 承認状態
     data_list.append(StatusEnum(notification_row.STATUS).name)
+    # そしてNotificationList.id
+    data_list.append(notification_row.id)
 
+    # フラグ関数、直前のurlを取得
     def get_url_past_flag() -> bool:
         past = request.referrer
         flag = False
@@ -121,7 +128,14 @@ def get_notification_form():
     
     # elif request.method == 'POST':
 
-def retrieve_form_data(list_data: list[str]) -> list:
+"""
+    request.form(input name)から値を取り出しlistに追加
+    Param:
+        list_data: List[str]
+    Return:
+        form_data: list
+    """
+def retrieve_form_data(list_data: List[str]) -> list:
     form_data = []
     for ldata in list_data:
         form_data.append(request.form.get(ldata))
@@ -131,10 +145,13 @@ def retrieve_form_data(list_data: list[str]) -> list:
 @app.route('/confirm', methods=['POST'])
 @login_required
 def post_approval():
+    # 取り出したいformの項目
     approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
     form_list_data = retrieve_form_data(approval_list)
+
     # 数値(CODE)を文字列(NAME)に入れ替え
     form_content: str = toggle_notification_type(Todokede, int(request.form.get('content')))
+    # 先頭に挿入
     form_list_data.insert(0, form_content)
 
     return render_template('attendance/approval_confirm.html', 
@@ -163,3 +180,26 @@ def append_approval():
     db.session.commit()
 
     return redirect('/')
+
+def change_status(id: int, judgement: int) -> None:
+    detail_notification: NotificationList = NotificationList.query.get(id)
+    detail_notification.STATUS = judgement
+
+    db.session.merge(detail_notification)
+    db.session.commit()
+
+@app.route('/approval_ok/<id>', methods=['POST'])
+@login_required
+def change_status_ok(id):
+    change_status(id, 1)
+
+    # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
+    return redirect(url_for('get_middle_approval'))
+
+@app.route('/approval_ng/<id>', methods=['POST'])
+@login_required
+def change_status_ng(id):
+    change_status(id, 2)
+
+    # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
+    return redirect(url_for('get_middle_approval'))
