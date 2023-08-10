@@ -4,17 +4,21 @@
 {{ stf_login.STAFFID }}
 
 <form method="post" action="/regist" class="approval">
-  申請内容：<input type="text" name="content" value="{{ one_data[0] }}">
-  対象日：<input type="date" name="start-day" value="{{ one_data[1] }}">〜
-  対象終了日：<input type="date" name="end-day" value="{{ one_data[2] }}">
-  開始時刻：<input type="time" name="start-time" value="{{ one_data[3] }}">〜
-  終了時刻：<input type="time" name="end-time" value="{{ one_data[4] }}">
-  備考：<input type="text" name="remark" value="{{ one_data[5] }}">
-  {% if one_data[6] %}
-    <p>{{ one_data[6] }}</p>
-  {% else %}
-    <input type="submit" value="申請依頼">
-  {% endif %}
+  <div class="w-25">
+    申請内容：<input type="text" name="content" value="{{ one_data[0] }}">
+  </div>
+  <div>対象日：<input type="date" name="start-day" value="{{ one_data[1] }}">〜</div>
+  <div>対象終了日：<input type="date" name="end-day" value="{{ one_data[2] }}"></div>
+  <div>開始時刻：<input type="time" name="start-time" value="{{ one_data[3] }}">〜</div>
+  <div>終了時刻：<input type="time" name="end-time" value="{{ one_data[4] }}"></div>
+  <article>備考：<textarea name="remark" value="{{ one_data[5] }}" class="remark"></textarea></article>
+    {% if f is false and one_data[6] %}
+      <p>{{ one_data[6] }}</p>
+    {% elif f is true and one_data[6] %}
+      <p></p>
+    {% else %}
+      <button type="submit" class="btn btn-ask">申請依頼</button>
+    {% endif %}
 </form>
 
 {% if f is true and one_data[7] %}

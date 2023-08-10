@@ -1,0 +1,33 @@
+@charset 'utf-8';
+
+@mixin flex-col($ratio, $distribute1: 0, $distribute2: 0) {
+  flex: $distribute1 $distribute2 $ratio;
+}
+
+// select_links.html
+.container {
+  a.btn-notice {
+    background-color: darkgrey;
+    color: green;
+  }
+  a.btn-approval {
+    background-color: orange;
+    color: green;
+  }
+}
+
+// approval-form.html
+form.approval {
+  display: flex;
+  flex-wrap: wrap;
+  div {
+    flex-direction: row;
+    @include flex-col(30%);
+  }
+  textarea.remark {
+    width: 60%;
+  }
+  button.btn-ask {
+    width: 30%;
+  }
+}

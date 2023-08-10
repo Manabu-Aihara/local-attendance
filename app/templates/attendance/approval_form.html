@@ -4,7 +4,7 @@
 <h3>スタッフ申請フォーム</h3>
 
 {{ stf_login.STAFFID }}
-<form method="post" action="/confirm">
+<form method="post" action="/confirm" class="approval">
   <div class="w-25">
     <select class="form-control form-control-sm" name="content">
       <option value="">選択してください</option>
@@ -12,11 +12,12 @@
         <option value="{{ n[0] }}">{{ n[1] }}</option>
       {% endfor %}
     </select>
-    対象日<input type="date" name="start-day">〜
-    対象終了日<input type="date" name="end-day">
-    開始時刻<input type="time" name="start-time">〜
-    終了時刻<input type="time" name="end-time">
-    備考：<input type="text" name="remark">
-    <button type="submit">申請依頼</button>
+  </div>
+  <div>対象日<input type="date" name="start-day">〜</div>
+  <div>対象終了日<input type="date" name="end-day"></div>
+  <div>開始時刻<input type="time" name="start-time">〜</div>
+  <div>終了時刻<input type="time" name="end-time"></div>
+  <article>備考：<textarea name="remark" class="remark"></textarea></article>
+  <button type="submit" class="btn btn-ask">確認画面へ</button>
 </form>
 {% endblock %}

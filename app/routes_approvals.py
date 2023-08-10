@@ -13,6 +13,7 @@ from app.models import (User, StaffLoggin, Todokede)
 from app.models_aprv import NotificationList
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
                                toggle_notification_type)
+from app.approval_skype import ask_approval
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -25,8 +26,7 @@ def appare_global_staff() -> StaffLoggin:
 def get_current_url_flag() -> bool:
     current_url = request.path
     flag = False
-    if '/approval-list/charge' in current_url:
-        flag = True
+    flag = True if '/approval-list/charge' in current_url else flag
     return flag
     
 @app.route('/approval-list/<STAFFID>', methods=['GET'])
@@ -102,8 +102,7 @@ def get_individual_approval(id: int, STAFFID=None):
     def get_url_past_flag() -> bool:
         past = request.referrer
         flag = False
-        if 'charge' in past:
-            flag = True
+        flag = True if 'charge' in past else flag
         return flag
     
     return render_template('attendance/approval_confirm.html',
@@ -161,10 +160,10 @@ def post_approval():
 @app.route('/regist', methods=['POST'])
 @login_required
 def append_approval():
-    # out_apprpval_valid = OutputApprovalDataConversion()
 
     # こちらは数値(CODE)に変換
     form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
+    
     form_start_day: datetime = convert_str_to_date(request.form.get('start-day'))
     form_end_day: datetime = convert_str_to_date(request.form.get('end-day'))
     form_start_time: datetime = convert_str_to_time(request.form.get('start-time'))
@@ -179,8 +178,22 @@ def append_approval():
     db.session.add(one_notification)
     db.session.commit()
 
+    asking_user = User.query.get(current_user.STAFFID)
+    asking_message = f'「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
+        {request.url_root}approval-list/charge'
+    
+    ask_approval(asking_message)
+
     return redirect('/')
 
+"""
+    申請依頼に対して、許可か拒否か
+    Param:
+        id: int
+        judgement: int
+    Return:
+        : None
+    """
 def change_status(id: int, judgement: int) -> None:
     detail_notification: NotificationList = NotificationList.query.get(id)
     detail_notification.STATUS = judgement

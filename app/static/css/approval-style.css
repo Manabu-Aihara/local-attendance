@@ -1,0 +1,23 @@
+.container a.btn-notice {
+  background-color: darkgrey;
+  color: green;
+}
+.container a.btn-approval {
+  background-color: orange;
+  color: green;
+}
+
+form.approval {
+  display: flex;
+  flex-wrap: wrap;
+}
+form.approval div {
+  flex-direction: row;
+  flex: 0 0 30%;
+}
+form.approval textarea.remark {
+  width: 60%;
+}
+form.approval button.btn-ask {
+  width: 30%;
+}

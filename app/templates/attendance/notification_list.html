@@ -27,11 +27,6 @@
           <th>開始時間</th>
           <th>終了日</th>
           <th>終了時間</th>
-          {% if f is false %}
-            <th>備考</th>
-          {% else %}
-            <th></th>
-          {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -47,11 +42,6 @@
           <td>{{ nl.START_TIME }}</td>
           <td>{{ nl.END_DAY }}</td>
           <td>{{ nl.END_TIME }}</td>
-          {% if f is false %}
-            <td>{{ nl.REMARK}}</td>
-          {% else %}
-            <td></td>
-          {% endif %}
           <td>
             <a href="{{ url_for('get_individual_approval', id=nl.id, STAFFID=nl.STAFFID) }}">確認</a>
           </td>     
