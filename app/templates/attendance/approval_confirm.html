@@ -1,9 +1,14 @@
 {% extends 'home.html' %}
 
 {% block child_content %}
-{{ stf_login.STAFFID }}
+{% if f is false %}
+  {{ stf_login.STAFFID }}
+{% elif f is true and w_usr %}
+  <h4>社員氏名：{{ w_usr.LNAME }} {{ w_usr.FNAME }}</h4>
+{% endif %}
 
 <form method="post" action="/regist" class="approval">
+  <div style="display: none;"><input type="text" name="stuff-id" value="{{ w_usr.STAFFID }}"></div>
   <div class="w-25">
     申請内容：<input type="text" name="content" value="{{ one_data[0] }}">
   </div>
@@ -11,22 +16,24 @@
   <div>対象終了日：<input type="date" name="end-day" value="{{ one_data[2] }}"></div>
   <div>開始時刻：<input type="time" name="start-time" value="{{ one_data[3] }}">〜</div>
   <div>終了時刻：<input type="time" name="end-time" value="{{ one_data[4] }}"></div>
-  <article>備考：<textarea name="remark" value="{{ one_data[5] }}" class="remark"></textarea></article>
-    {% if f is false and one_data[6] %}
-      <p>{{ one_data[6] }}</p>
-    {% elif f is true and one_data[6] %}
+  <div class="remark">備考：<textarea name="remark" value="{{ one_data[5] }}" class="remark"></textarea></div>
+    <!-- one_data[6]status(申請状態) -->
+    {% if f is true and one_data[6] %}
       <p></p>
-    {% else %}
+    {% elif f is false and one_data[6] %}
+      <p class="status">{{ one_data[6] }}</p>
+    {% elif f is false %}
       <button type="submit" class="btn btn-ask">申請依頼</button>
     {% endif %}
 </form>
 
+<!-- one_data[7]id(NotificationListの)) -->
 {% if f is true and one_data[7] %}
-  <form method="post" action="{{ url_for('change_status_ok', id=one_data[7]) }}">
-    <button type="submit">承認</button>
-  </form>
-  <form method="post" action="{{ url_for('change_status_ng', id=one_data[7]) }}">
-    <button type="submit">拒否</button>
+  <form method="post">
+    <p>申請者へコメント</p>
+    <textarea name="comment" value=""></textarea>
+    <button type="submit" formaction="{{ url_for('change_status_ok', id=one_data[7], STAFFID=w_usr.STAFFID) }}" class="btn">承認</button>
+    <button type="submit" formaction="{{ url_for('change_status_ng', id=one_data[7], STAFFID=w_usr.STAFFID) }}" class="btn">拒否</button>
   </form>
 {% else %}
   <p></p>

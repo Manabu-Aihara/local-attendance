@@ -9,11 +9,11 @@ from flask.helpers import url_for
 
 from app import app, db
 from app.common_func import GetPullDownList
-from app.models import (User, StaffLoggin, Todokede)
+from app.models import (User, StaffLoggin, Todokede, SystemInfo)
 from app.models_aprv import NotificationList
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
                                toggle_notification_type)
-from app.approval_skype import ask_approval
+from app.approval_skype import (ask_approval, set_smtp, send_mail)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -105,9 +105,15 @@ def get_individual_approval(id: int, STAFFID=None):
         flag = True if 'charge' in past else flag
         return flag
     
+    # approval_wait_user = (User.query.with_entries(User.LNAME, User.FNAME, SystemInfo.MAIL)
+    #                       .filter(User.STAFFID==STAFFID)
+    #                       .join(SystemInfo, SystemInfo.STAFFID==User.STAFFID)).first()
+    approval_wait_user = User.query.get(STAFFID)
+
     return render_template('attendance/approval_confirm.html',
                            one_data=data_list,
                            f=get_url_past_flag(),
+                           w_usr=approval_wait_user,
                            stf_login=appare_global_staff())
 
 def get_notification_list():
@@ -168,7 +174,7 @@ def append_approval():
     form_end_day: datetime = convert_str_to_date(request.form.get('end-day'))
     form_start_time: datetime = convert_str_to_time(request.form.get('start-time'))
     form_end_time: datetime = convert_str_to_time(request.form.get('end-time'))
-    form_remark = request.form.get('remark')
+    form_remark: str = request.form.get('remark')
 
     one_notification = NotificationList(
         current_user.STAFFID, form_content, form_start_day, form_start_time,
@@ -201,18 +207,26 @@ def change_status(id: int, judgement: int) -> None:
     db.session.merge(detail_notification)
     db.session.commit()
 
-@app.route('/approval_ok/<id>', methods=['POST'])
+@app.route('/approval_ok/<STAFFID>/<id>', methods=['POST'])
 @login_required
-def change_status_ok(id):
+def change_status_ok(id, STAFFID):
     change_status(id, 1)
+
+    approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+
+    send_mail(set_smtp, approval_wait_sys_user.MAIL, request.form.get('comment'))
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))
 
-@app.route('/approval_ng/<id>', methods=['POST'])
+@app.route('/approval_ng/<STAFFID>/<id>', methods=['POST'])
 @login_required
-def change_status_ng(id):
+def change_status_ng(id, STAFFID):
     change_status(id, 2)
+
+    approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+
+    send_mail(set_smtp, approval_wait_sys_user.MAIL, request.form.get('comment'))
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))
