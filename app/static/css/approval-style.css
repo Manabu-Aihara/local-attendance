@@ -7,17 +7,79 @@
   color: green;
 }
 
+a.to-notice-form {
+  float: right;
+  margin-right: 40%;
+  background-color: yellow;
+  color: blue;
+  font-size: 2rem;
+  width: 15%;
+}
+a.to-notice-form::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+#approval-site {
+  padding-top: 5%;
+}
+#approval-site table.table-notification {
+  width: 90%;
+  margin-right: 0;
+}
+
+h3.notification-title {
+  text-align: center;
+}
+
 form.approval {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  height: 30vw;
+  font-size: 1.7rem;
 }
-form.approval div {
-  flex-direction: row;
-  flex: 0 0 30%;
+form.approval div:not(.remark) {
+  flex: 0 0 25%;
+  padding: 0 1.5%;
 }
-form.approval textarea.remark {
-  width: 60%;
+form.approval div:not(.remark) input {
+  width: 65%;
+}
+form.approval .remark {
+  width: 70%;
+  margin-left: 25%;
+}
+form.approval .remark textarea {
+  width: 90%;
+  height: 65%;
 }
 form.approval button.btn-ask {
-  width: 30%;
+  width: 25%;
+  background-color: lightgray;
+}
+
+form.form-bottom {
+  height: 15vw;
+  margin-left: 20%;
+  font-size: 1.7rem;
+}
+form.form-bottom textarea {
+  width: 90%;
+  height: 30%;
+}
+form.form-bottom .two-button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  height: 20%;
+}
+form.form-bottom .two-button button.judgement {
+  background-color: lightslategray;
+  width: 20%;
+}
+
+#btnBack {
+  width: 15%;
 }

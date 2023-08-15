@@ -1,5 +1,7 @@
 @charset 'utf-8';
 
+$item-center: 0 auto;
+
 @mixin flex-col($ratio, $distribute1: 0, $distribute2: 0) {
   flex: $distribute1 $distribute2 $ratio;
 }
@@ -16,18 +18,79 @@
   }
 }
 
-// approval-form.html
+// notification_list.html
+a.to-notice-form {
+  float: right;
+  margin-right: 40%;
+  background-color: yellow;
+  color: blue;
+  font-size: 2rem;
+  width: 15%;
+  &::after {
+    content: "";
+    clear: both;
+    display: block;
+  }
+}
+#approval-site {
+  padding-top: 5%;
+  table.table-notification {
+    width: 90%;
+    margin-right: 0;
+  }
+}
+
+// approval_form.html & approval_confirm.html
+h3.notification-title {
+  text-align: center;
+}
 form.approval {
   display: flex;
   flex-wrap: wrap;
-  div {
-    flex-direction: row;
-    @include flex-col(30%);
+  justify-content: center;
+  height: 30vw;
+  font-size: 1.7rem;
+  div:not(.remark) {
+    @include flex-col(25%);
+    padding: 0 1.5%;
+    input {
+      width: 65%;
+    }
   }
-  textarea.remark {
-    width: 60%;
+  .remark {
+    width: 70%;
+    margin-left: 25%;
+    textarea {
+      width: 90%;
+      height: 65%;
+    }
   }
   button.btn-ask {
-    width: 30%;
+    width: 25%;
+    background-color: lightgray;
   }
+}
+
+form.form-bottom {
+  height: 15vw;
+  margin-left: 20%;
+  font-size: 1.7rem;
+  textarea {
+    width: 90%;
+    height: 30%;
+  }
+  .two-button { 
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    height: 20%;
+    button.judgement {
+      background-color: lightslategray;
+      width: 20%;
+    }
+  }
+}
+
+#btnBack {
+  width: 15%;
 }

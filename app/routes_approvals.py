@@ -10,28 +10,31 @@ from flask.helpers import url_for
 from app import app, db
 from app.common_func import GetPullDownList
 from app.models import (User, StaffLoggin, Todokede, SystemInfo)
-from app.models_aprv import NotificationList
+from app.models_aprv import (NotificationList, Approval)
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
                                toggle_notification_type)
-from app.approval_skype import (ask_approval, set_smtp, send_mail)
+from app.approval_contact import (ask_approval, send_mail)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
     """
-def appare_global_staff() -> StaffLoggin:
-    current_staff = StaffLoggin.query.get(current_user.STAFFID)
-    return current_staff
+# この関数注意！
+# def appare_global_staff() -> StaffLoggin:
+#     current_staff = StaffLoggin.query.get(current_user.STAFFID)
+#     return current_staff
 
 # フラグ関数、現urlを取得
+# 2度使用するためこちら
 def get_current_url_flag() -> bool:
     current_url = request.path
     flag = False
     flag = True if '/approval-list/charge' in current_url else flag
     return flag
-    
-@app.route('/approval-list/<STAFFID>', methods=['GET'])
+
+# 申請リストページ    
+@app.route('/notification-list/<STAFFID>', methods=['GET'])
 @login_required
-def get_approval_list(STAFFID):
+def get_notification_list(STAFFID):
     # notification_list = NotificationList.query.filter(NotificationList.STAFFID == STAFFID).all()
 
     user_basic_info: User = User.query.with_entities(User.STAFFID, User.LNAME, User.FNAME).filter(User.STAFFID==STAFFID).first()
@@ -47,9 +50,10 @@ def get_approval_list(STAFFID):
                            uinfo=user_basic_info,
                            nlst=user_notification_list,
                            f=get_current_url_flag(),
-                           stf_login=appare_global_staff()
+                           stf_login=current_user
                            )
 
+# 承認待ちリストページ
 @app.route('/approval-list/charge', methods=['GET'])
 @login_required
 def get_middle_approval():
@@ -68,13 +72,14 @@ def get_middle_approval():
                            nlst=all_notification_list,
                            f=get_current_url_flag(),
                            path=request.path,
-                           stf_login=appare_global_staff())
+                           stf_login=current_user)
 
 class StatusEnum(IntEnum):
     申請中 = 0
     承認済 = 1
     未承認 = 2
 
+# 承認詳細ページ
 @app.route('/confirm/<STAFFID>/<id>', methods=['GET'])
 @login_required
 def get_individual_approval(id: int, STAFFID=None):
@@ -105,30 +110,33 @@ def get_individual_approval(id: int, STAFFID=None):
         flag = True if 'charge' in past else flag
         return flag
     
-    # approval_wait_user = (User.query.with_entries(User.LNAME, User.FNAME, SystemInfo.MAIL)
-    #                       .filter(User.STAFFID==STAFFID)
-    #                       .join(SystemInfo, SystemInfo.STAFFID==User.STAFFID)).first()
+    # 申請待ちユーザー
     approval_wait_user = User.query.get(STAFFID)
 
     return render_template('attendance/approval_confirm.html',
                            one_data=data_list,
                            f=get_url_past_flag(),
                            w_usr=approval_wait_user,
-                           stf_login=appare_global_staff())
+                           stf_login=current_user)
 
+# 届出内容対照を返す関数
 def get_notification_list():
     todokede_list = GetPullDownList(Todokede, Todokede.CODE, Todokede.NAME,
                                   Todokede.CODE)
     return todokede_list
 
+# 申請入力フォームページ
 @app.route('/approval-form', methods=['GET', 'POST'])
 @login_required
 def get_notification_form():
     # if request.method == 'GET':
         notification_all = get_notification_list()
+
+        user_detail = User.query.get(current_user.STAFFID)
+
         return render_template('attendance/approval_form.html', 
-                            stf_login=appare_global_staff(),
-                            n_all=notification_all
+                            n_all=notification_all,
+                            stf_login=user_detail
                             )
     
     # elif request.method == 'POST':
@@ -136,17 +144,18 @@ def get_notification_form():
 """
     request.form(input name)から値を取り出しlistに追加
     Param:
-        list_data: List[str]
+        form_data: List[str]
     Return:
-        form_data: list
+        list_data: list
     """
-def retrieve_form_data(list_data: List[str]) -> list:
-    form_data = []
-    for ldata in list_data:
-        form_data.append(request.form.get(ldata))
+def retrieve_form_data(form_data: List[str]) -> list:
+    list_data = []
+    for fdata in form_data:
+        list_data.append(request.form.get(fdata))
     
-    return form_data
+    return list_data
 
+# 申請確認ページ
 @app.route('/confirm', methods=['POST'])
 @login_required
 def post_approval():
@@ -161,8 +170,9 @@ def post_approval():
 
     return render_template('attendance/approval_confirm.html', 
                         one_data=form_list_data,
-                        stf_login=appare_global_staff())
+                        stf_login=current_user)
 
+# DBinsert & skype送信ページ
 @app.route('/regist', methods=['POST'])
 @login_required
 def append_approval():
@@ -184,6 +194,7 @@ def append_approval():
     db.session.add(one_notification)
     db.session.commit()
 
+    # skypeにて、申請の通知
     asking_user = User.query.get(current_user.STAFFID)
     asking_message = f'「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
         {request.url_root}approval-list/charge'
@@ -193,7 +204,7 @@ def append_approval():
     return redirect('/')
 
 """
-    申請依頼に対して、許可か拒否か
+    申請依頼に対して、許可か拒否か、DBupdate
     Param:
         id: int
         judgement: int
@@ -207,26 +218,39 @@ def change_status(id: int, judgement: int) -> None:
     db.session.merge(detail_notification)
     db.session.commit()
 
+# 申請に対して、承認
 @app.route('/approval_ok/<STAFFID>/<id>', methods=['POST'])
 @login_required
 def change_status_ok(id, STAFFID):
     change_status(id, 1)
 
     approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+    # approval_reply_user_mail = (Approval.query.with_entities(SystemInfo.MAIL)
+    #                        .filter(Approval.STAFFID==current_user.STAFFID)
+    #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
+    #                        .first())
+    
+    approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
 
-    send_mail(set_smtp, approval_wait_sys_user.MAIL, request.form.get('comment'))
+    # 承認者よりコメントをメールで
+    send_mail(approval_reply_user.MAIL, approval_wait_sys_user.MAIL, request.form.get('comment'))
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))
 
+# 申請に対して、拒否
 @app.route('/approval_ng/<STAFFID>/<id>', methods=['POST'])
 @login_required
 def change_status_ng(id, STAFFID):
     change_status(id, 2)
 
     approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+    approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
+                           .filter(Approval.STAFFID==current_user.STAFFID)
+                           .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
+                           .first())
 
-    send_mail(set_smtp, approval_wait_sys_user.MAIL, request.form.get('comment'))
+    send_mail(approval_reply_user_mail, approval_wait_sys_user.MAIL, request.form.get('comment'))
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))

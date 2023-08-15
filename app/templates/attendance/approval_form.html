@@ -1,9 +1,9 @@
 {% extends 'home.html' %}
 
 {% block child_content %}
-<h3>スタッフ申請フォーム</h3>
+<h3 class="notification-title">届出申請</h3>
 
-{{ stf_login.STAFFID }}
+<h4>社員番号{{ stf_login.STAFFID }}：　{{ stf_login.LNAME }}{{ stf_login.FNAME }}</h4>
 <form method="post" action="/confirm" class="approval">
   <div class="w-25">
     <select class="form-control form-control-sm" name="content">
@@ -13,11 +13,15 @@
       {% endfor %}
     </select>
   </div>
-  <div>対象日<input type="date" name="start-day">〜</div>
-  <div>対象終了日<input type="date" name="end-day"></div>
-  <div>開始時刻<input type="time" name="start-time">〜</div>
-  <div>終了時刻<input type="time" name="end-time"></div>
-  <article>備考：<textarea name="remark" class="remark"></textarea></article>
-  <button type="submit" class="btn btn-ask">確認画面へ</button>
+  <div><p>対象日</p><input type="date" name="start-day">〜</div>
+  <div><p>対象終了日</p><input type="date" name="end-day"></div>
+  <div class="w-25"></div>
+  <div><p>開始時刻</p><input type="time" name="start-time">〜</div>
+  <div><p>終了時刻</p><input type="time" name="end-time"></div>
+  <div class="remark">
+    <p>備考(欠勤や遅刻なら理由等)</p>
+    <textarea name="remark"></textarea>
+  </div>
+  <button type="submit" class="btn btn-ask">確認画面</button>
 </form>
 {% endblock %}
