@@ -17,8 +17,11 @@ def system_error(error):    # error.descriptionでエラー時の文字列取得
 
 
 @app.errorhandler(403)
-def not_admin(error):
+# def not_admin(error):
+#     return render_template('error/403.html', title='inhibition', message='アクセス権限がありません。'), 403
+def not_admin():
     return render_template('error/403.html', title='inhibition', message='アクセス権限がありません。'), 403
+
 
 
 """

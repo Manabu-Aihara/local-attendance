@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def make_skype_object():
+    # ここも暫定的、os.getenv(...)可変
     skype_obj = Skype(os.getenv("SKYPE_USER"), os.getenv("SKYPE_PASSWORD"))
     return skype_obj
 
@@ -40,20 +41,20 @@ def createMIMEText(mail_from: str, mail_to: str, message: str):
 
     return msg
 
-def set_smtp(mail_text_func: MIMEText):
-    host = os.getenv("OUTLOOK_HOST")
+def set_smtp(account: str, password: str, mail_text_func: MIMEText):
+    host = os.getenv("OUTLOOK_HOST") # SAKURA_HOST本命
     # Literal[587]型なので注意
     port = 587
 
     server = SMTP(host, 587)
     # server.connect()
     server.starttls()
-    server.login(os.getenv("SKYPE_USER"), os.getenv("SKYPE_PASSWORD"))
+    server.login(account, password)
 
     server.send_message(mail_text_func)
 
     server.quit()
 
-def send_mail(source: str, destination: str, message: str, smtp_config_func: None = set_smtp):
+def send_mail(source: str, destination: str, password: str, message: str, smtp_config_func: None = set_smtp):
     mime_message = createMIMEText(source, destination, message)
-    smtp_config_func(mime_message)
+    smtp_config_func(source, password, mime_message)

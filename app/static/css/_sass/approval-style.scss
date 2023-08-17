@@ -65,6 +65,11 @@ form.approval {
       height: 65%;
     }
   }
+  div {
+    input, textarea {
+      background-color: gainsboro;
+    }
+  }
   button.btn-ask {
     width: 25%;
     background-color: lightgray;

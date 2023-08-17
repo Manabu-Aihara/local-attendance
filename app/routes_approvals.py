@@ -11,6 +11,7 @@ from app import app, db
 from app.common_func import GetPullDownList
 from app.models import (User, StaffLoggin, Todokede, SystemInfo)
 from app.models_aprv import (NotificationList, Approval)
+from app.errors import not_admin
 from app.approval_util import (convert_str_to_date, convert_str_to_time,
                                toggle_notification_type)
 from app.approval_contact import (ask_approval, send_mail)
@@ -53,10 +54,23 @@ def get_notification_list(STAFFID):
                            stf_login=current_user
                            )
 
+def auth_approval_user(func):
+    def wrapper(*args, **kwargs):
+        if current_user:
+            approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
+            if approval_certificate_user is None:
+                return not_admin()
+        else:
+            return redirect('/login')
+            # return approval_certificate_user
+        return func(approval_certificate_user)
+    return wrapper
+
 # 承認待ちリストページ
 @app.route('/approval-list/charge', methods=['GET'])
 @login_required
-def get_middle_approval():
+@auth_approval_user
+def get_middle_approval(approval_user):
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME,                  
@@ -71,7 +85,6 @@ def get_middle_approval():
     return render_template('attendance/notification_list.html',
                            nlst=all_notification_list,
                            f=get_current_url_flag(),
-                           path=request.path,
                            stf_login=current_user)
 
 class StatusEnum(IntEnum):
@@ -196,8 +209,8 @@ def append_approval():
 
     # skypeにて、申請の通知
     asking_user = User.query.get(current_user.STAFFID)
-    asking_message = f'「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
-        {request.url_root}approval-list/charge'
+    asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
+        {request.url_root}approval-list/charge"
     
     ask_approval(asking_message)
 
@@ -224,16 +237,21 @@ def change_status(id: int, judgement: int) -> None:
 def change_status_ok(id, STAFFID):
     change_status(id, 1)
 
-    approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
-    # approval_reply_user_mail = (Approval.query.with_entities(SystemInfo.MAIL)
-    #                        .filter(Approval.STAFFID==current_user.STAFFID)
-    #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
-    #                        .first())
+    approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
     
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
 
+    target_notification = NotificationList.query.get(id)
+
+    approval_reply_message = \
+        f"{target_notification.START_DAY}:\
+            {toggle_notification_type(Todokede, target_notification.N_CODE)}\
+                \n{target_notification.REMARK}\
+                \n\n{request.form.get('comment')}"
+
     # 承認者よりコメントをメールで
-    send_mail(approval_reply_user.MAIL, approval_wait_sys_user.MAIL, request.form.get('comment'))
+    send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
+              approval_reply_user.MAIL_PASS, approval_reply_message)
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))
@@ -244,13 +262,15 @@ def change_status_ok(id, STAFFID):
 def change_status_ng(id, STAFFID):
     change_status(id, 2)
 
-    approval_wait_sys_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
-    approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
-                           .filter(Approval.STAFFID==current_user.STAFFID)
-                           .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
-                           .first())
-
-    send_mail(approval_reply_user_mail, approval_wait_sys_user.MAIL, request.form.get('comment'))
+    approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+    # approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
+    #                        .filter(Approval.STAFFID==current_user.STAFFID)
+    #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
+    #                        .first())
+    approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
+    
+    send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
+              approval_reply_user.MAIL_PASS, request.form.get('comment'))
 
     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
     return redirect(url_for('get_middle_approval'))

@@ -55,14 +55,15 @@
   /*
    取得urlによってフォームを入力不可にする
   */
-  const r = /\d+$/;
-  console.log(r.test(location.pathname));
-  if(r.test(location.pathname)){
+  const tail_d = /\d+$/;
+  const tail_confirm = /confirm$/;
+  console.log(tail_d.test(location.pathname) || tail_confirm.test(location.pathname));
+  if(tail_d.test(location.pathname) || tail_confirm.test(location.pathname)){
     const currentForm = document.getElementsByClassName('approval')[0];
     console.log(currentForm);
     // forEach, mapはダメだった
-    for(let i = 0; i <= 6; i++){
-      currentForm[i].disabled = true;
+    for(let i = 0; i <= 5; i++){
+      currentForm[i].readOnly = true;
     };
   }
 </script>

@@ -55,6 +55,9 @@ form.approval .remark textarea {
   width: 90%;
   height: 65%;
 }
+form.approval div input, form.approval div textarea {
+  background-color: gainsboro;
+}
 form.approval button.btn-ask {
   width: 25%;
   background-color: lightgray;
