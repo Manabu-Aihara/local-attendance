@@ -54,30 +54,37 @@ def get_notification_list(STAFFID):
                            stf_login=current_user
                            )
 
+class StatusEnum(IntEnum):
+    申請中 = 0
+    承認済 = 1
+    未承認 = 2
+
 def auth_approval_user(func):
     def wrapper(*args, **kwargs):
         if current_user:
             approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
             if approval_certificate_user is None:
                 return not_admin()
-        else:
-            return redirect('/login')
-            # return approval_certificate_user
-        return func(approval_certificate_user)
+        # else:
+        #     return redirect('/login')
+            return func(approval_certificate_user)
+        # return func(approval_certificate_user)
+        return redirect(url_for('login'))
     return wrapper
 
 # 承認待ちリストページ
 @app.route('/approval-list/charge', methods=['GET'])
 @login_required
-@auth_approval_user
-def get_middle_approval(approval_user):
+# @auth_approval_user
+# def get_middle_approval(approval_user):
+def get_middle_approval():
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
-                                               User.LNAME, User.FNAME, Todokede.NAME,                  
+                                               User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,
                                                NotificationList.START_DAY, NotificationList.START_TIME,
                                                NotificationList.END_DAY, NotificationList.END_TIME,
                                                NotificationList.id)
-                                                .filter(NotificationList.STATUS==0)
+                                                # .filter(NotificationList.STATUS==0)
                                                 .join(User, User.STAFFID==NotificationList.STAFFID, isouter=True)
                                                 .join(Todokede, Todokede.CODE==NotificationList.N_CODE)
                                                 .all())
@@ -85,12 +92,8 @@ def get_middle_approval(approval_user):
     return render_template('attendance/notification_list.html',
                            nlst=all_notification_list,
                            f=get_current_url_flag(),
+                           s_enum=StatusEnum,
                            stf_login=current_user)
-
-class StatusEnum(IntEnum):
-    申請中 = 0
-    承認済 = 1
-    未承認 = 2
 
 # 承認詳細ページ
 @app.route('/confirm/<STAFFID>/<id>', methods=['GET'])

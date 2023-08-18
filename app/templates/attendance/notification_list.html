@@ -2,6 +2,7 @@
 
 {% block child_content %}
 
+{# 通常申請者の申請リスト #}
 {% if uinfo %}
   <h3>申請リスト</h3>
   <h4>社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
@@ -13,7 +14,14 @@
   </div>
   <a href="{{ url_for('get_notification_form') }}" class="btn to-notice-form">届出申請</a>
 {% else %}
-  <h4>未承認リスト</h4>
+{# 承認者のみの申請リスト #}
+  <h4 id="h4-status"></h4>
+  <select id="status">
+    {% for s in s_enum %}
+      <option value="{{ s.value }}">{{ s.name }}</option>
+    {% endfor %}
+  </select>
+  <input type="button" value="クリック" id="extract">
   <input type="button" value="戻る" id="btnBack">
 {% endif %}
 
@@ -32,6 +40,7 @@
             <th>社員名</th>
           {% endif %}
           <th>申請種類</th>
+          <th>申請状態</th>
           <th>開始日</th>
           <th>開始時間</th>
           <th>終了日</th>
@@ -41,13 +50,14 @@
       </thead>
       <tbody>
         {% for nl in nlst %}
-          <tr>
+          <tr title="{{ nl.STATUS }}" class="body-tr">
             <td>{{ nl.NOTICE_DAYTIME }}</td>
             {% if f is true %}
               <td>{{ nl.STAFFID }}</td>
               <td>{{ nl.LNAME }}{{ nl.FNAME }}</td>
             {% endif %}
             <td>{{ nl.NAME }}</td>
+            <td></td>
             <td>{{ nl.START_DAY }}</td>
             <td>{{ nl.START_TIME }}</td>
             <td>{{ nl.END_DAY }}</td>
@@ -68,4 +78,5 @@
     history.back();
   });
 </script>
+<script src="/static/js/StatusRequest.js"></script>
 {% endblock %}
