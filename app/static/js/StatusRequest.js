@@ -1,11 +1,16 @@
-const selectRow = () => {
+const selectRows = (statusNum) => {
   const trRows = document.getElementsByClassName('body-tr');
-  // for(let i=0; i <= trRows.length; i++){
-  //   if(trRows[i].title == 0){
-  //     console.log(trRows[i]);
-  //   }
-  // }
-  console.info(trRows[0].title);
+  /**
+  * https://qiita.com/uruha/items/fc9564f5a8564f075391
+  * NodeListに対してfilterを使いたい場合、{NodeList} => {Array} にしてやる必要がある
+  */
+  const convertedTypeArrayRows = [].map.call(trRows, (element) => {
+    return element;
+  });
+  const selectTrs = convertedTypeArrayRows.filter((selectTr) => {
+    return selectTr.title == statusNum;
+  })
+  console.info(selectTrs);
 }
 
 const extractStatus = () => {
@@ -14,16 +19,16 @@ const extractStatus = () => {
     case "0":
       document.getElementById('h4-status').textContent = "申請中リスト";
       // console.log(statusSelect);
-      selectRow(statusSelect);
+      selectRows(statusSelect);
       break;
     case "1":
       document.getElementById('h4-status').textContent = "承認済みリスト";
       // console.log(document.getElementById('status'));
-      selectRow(statusSelect);
+      selectRows(statusSelect);
       break;
     case "2":
       document.getElementById('h4-status').textContent = "未承認リスト";
-      selectRow(statusSelect);
+      selectRows(statusSelect);
       break;
     default:
       document.getElementById('h4-status').textContent = "でふぉると";
@@ -31,4 +36,4 @@ const extractStatus = () => {
 }
 
 const extractButton = document.getElementById('extract');
-extractButton.addEventListener('click', selectRow);
+extractButton.addEventListener('click', extractStatus);

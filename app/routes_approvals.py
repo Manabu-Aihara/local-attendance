@@ -67,17 +67,17 @@ def auth_approval_user(func):
                 return not_admin()
         # else:
         #     return redirect('/login')
-            return func(approval_certificate_user)
-        # return func(approval_certificate_user)
-        return redirect(url_for('login'))
+            # return func(approval_certificate_user)
+        return func(approval_certificate_user)
+        # return redirect(url_for('login'))
     return wrapper
 
 # 承認待ちリストページ
 @app.route('/approval-list/charge', methods=['GET'])
 @login_required
-# @auth_approval_user
-# def get_middle_approval(approval_user):
-def get_middle_approval():
+@auth_approval_user
+def get_middle_approval(approval_user):
+# def get_middle_approval():
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,

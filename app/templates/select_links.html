@@ -15,8 +15,9 @@
   <a class="btn btn-notice" href="{{ url_for('get_notification_list', STAFFID=u.STAFFID) }}">届出申請</a>
   <br>
   {% if charge_p %}
-    <a class="btn btn-approval" href="{{ url_for('get_middle_approval') }}">届出承認</a>
-    <br>
+    <form method="get" action="/approval-list/charge">
+      <input type="submit" value="仮）届出承認" class="btn btn-approval">
+    </form>
   {% else %}
     <p></p>
   {% endif %}
