@@ -1,0 +1,35 @@
+const fs = require('fs');
+
+let today = new Date(); 
+let year = today.getFullYear();
+let month = today.getMonth();
+
+//ファイル読み込み関数
+function readFile(path) {
+  fs.readFile(path, 'utf8', function (err, data) {
+
+    //エラーの場合はエラーを投げてくれる
+    if (err) {
+        throw err;
+    }
+    
+    //ここに処理
+    console.log(data);
+  });
+}
+
+readFile("select-date.txt");
+
+//ファイルの追記関数
+function appendFile(path, data) {
+  fs.appendFile(path, data, function (err) {
+    if (err) {
+        throw err;
+    }
+  });
+}
+
+appendFile("select-date.txt", year + month);
+
+const extractDateButton = document.getElementById('extract-date');
+extractDateButton.addEventListener('click', appendFile);

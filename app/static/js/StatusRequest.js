@@ -1,39 +1,48 @@
-const selectRows = (statusNum) => {
+const extractRows = (statusNum) => {
   const trRows = document.getElementsByClassName('body-tr');
   /**
   * https://qiita.com/uruha/items/fc9564f5a8564f075391
   * NodeListに対してfilterを使いたい場合、{NodeList} => {Array} にしてやる必要がある
   */
-  const convertedTypeArrayRows = [].map.call(trRows, (element) => {
-    return element;
-  });
-  const selectTrs = convertedTypeArrayRows.filter((selectTr) => {
-    return selectTr.title == statusNum;
-  })
-  console.info(selectTrs);
+  // const convertedTypeArrayRows = [].map.call(trRows, (element) => {
+  //   return element;
+  // });
+  // const selectTrs = convertedTypeArrayRows.filter((selectTr) => {
+  //   return selectTr.title == statusNum;
+  // })
+  /**
+   * Uncaught TypeError: Cannot set properties of undefined
+   */
+  // for(let trRow in trRows)
+  for(let i = 0; i < trRows.length; i++){
+    if (trRows[i].dataset.status != statusNum) {
+      console.log(trRows[i]);
+      trRows[i].style.display = "none";
+    } else {
+      trRows[i].style.display = "table-row";
+    }
+  }
 }
 
-const extractStatus = () => {
+const showRowsByStatus = () => {
   let statusSelect = document.getElementById('status').value;
   switch(statusSelect){
     case "0":
       document.getElementById('h4-status').textContent = "申請中リスト";
-      // console.log(statusSelect);
-      selectRows(statusSelect);
+      extractRows(statusSelect);
       break;
     case "1":
       document.getElementById('h4-status').textContent = "承認済みリスト";
-      // console.log(document.getElementById('status'));
-      selectRows(statusSelect);
+      extractRows(statusSelect);
       break;
     case "2":
       document.getElementById('h4-status').textContent = "未承認リスト";
-      selectRows(statusSelect);
+      extractRows(statusSelect);
       break;
     default:
       document.getElementById('h4-status').textContent = "でふぉると";
   }
 }
 
-const extractButton = document.getElementById('extract');
-extractButton.addEventListener('click', extractStatus);
+const extractStatusButton = document.getElementById('extract-status');
+extractStatusButton.addEventListener('click', showRowsByStatus);

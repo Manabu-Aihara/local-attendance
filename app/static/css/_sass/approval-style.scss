@@ -37,7 +37,13 @@ a.to-notice-form {
   table.table-notification {
     width: 90%;
     margin-right: 0;
+    // tbody .body-tr {
+    //   display: none;
+    // }
   }
+}
+.show {
+  display: block;
 }
 
 // approval_form.html & approval_confirm.html

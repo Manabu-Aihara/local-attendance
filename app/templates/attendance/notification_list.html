@@ -8,9 +8,9 @@
   <h4>社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
   <div>
     <select class="date-search">
-      <option></option>
+      <option>2023/6</option>
     </select>
-    <input type="button" value="クリック">
+    <input type="button" value="クリック" id="extract-date">
   </div>
   <a href="{{ url_for('get_notification_form') }}" class="btn to-notice-form">届出申請</a>
 {% else %}
@@ -21,8 +21,8 @@
       <option value="{{ s.value }}">{{ s.name }}</option>
     {% endfor %}
   </select>
-  <input type="button" value="クリック" id="extract">
-  <input type="button" value="戻る" id="btnBack">
+  <input type="button" value="クリック" id="extract-status">
+  <div><input type="button" value="戻る" id="btnBack"></div>
 {% endif %}
 
 <p>{{ stf_login.STAFFID }}</p>
@@ -50,7 +50,7 @@
       </thead>
       <tbody>
         {% for nl in nlst %}
-          <tr title="{{ nl.STATUS }}" class="body-tr">
+          <tr data-status="{{ nl.STATUS }}" class="body-tr">
             <td>{{ nl.NOTICE_DAYTIME }}</td>
             {% if f is true %}
               <td>{{ nl.STAFFID }}</td>
@@ -79,4 +79,5 @@
   });
 </script>
 <script src="/static/js/StatusRequest.js"></script>
+<script src="/static/js/DateSelectAdd.js"></script>
 {% endblock %}

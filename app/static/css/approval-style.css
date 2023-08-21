@@ -29,6 +29,10 @@ a.to-notice-form::after {
   margin-right: 0;
 }
 
+.show {
+  display: block;
+}
+
 h3.notification-title {
   text-align: center;
 }
