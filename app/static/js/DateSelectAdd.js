@@ -3,20 +3,14 @@ let year = today.getFullYear();
 let month = today.getMonth();
 
 function addDateOption(){
-  // console.log(opt1.text);
-  let dateSelectBox = document.getElementsByClassName('date-search');
-  console.log(dateSelectBox);
+  let dateSelectBox = document.getElementsByClassName('search-date')[0];
+  // console.log(dateSelectBox.options[0].text);
 
-  for(let i = 0; i < dateSelectBox.length; i++){
-    let opt1 = document.createElement("option");
-
-    opt1.value = "1";
-    opt1.text = `${year}/${month}`;
-
-    dateSelectBox[i].add(opt1);
+  if("2024/01" > dateSelectBox.options[0].text){
+    console.log(true)
+  } else {
+    console.log(false)
   }
-
-  // if((`${year}/${month}`) > dateSelectBox.options[0].innerText.split('/')){
   //   let optInsert = document.createElement("option");
   //   optInsert.value = dateSelectBox.options[0].value + 1;
   //   optInsert.text = `${year}/${month}`;
@@ -24,6 +18,6 @@ function addDateOption(){
   // }
 }
 
-const extractDateButton = document.getElementById('extract-date');
-extractDateButton.addEventListener('click', addDateOption);
+const showDateButton = document.getElementById('show-date');
+showDateButton.addEventListener('click', addDateOption);
 
