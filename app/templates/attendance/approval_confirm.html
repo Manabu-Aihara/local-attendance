@@ -36,8 +36,8 @@
     <p>申請者へコメント</p>
     <textarea name="comment"></textarea>
     <div class="two-button">
-      <button type="submit" formaction="{{ url_for('change_status_ok', id=one_data[7], STAFFID=w_usr.STAFFID) }}" class="btn judgement">承認</button>
-      <button type="submit" formaction="{{ url_for('change_status_ng', id=one_data[7], STAFFID=w_usr.STAFFID) }}" class="btn judgement">拒否</button>
+      <button type="submit" formaction="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=1) }}" class="btn judgement">承認</button>
+      <button type="submit" formaction="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=2) }}" class="btn judgement">拒否</button>
     </div>
   </form>
 {% else %}

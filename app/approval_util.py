@@ -5,14 +5,14 @@ from datetime import datetime
 """
     0000-00-00を空に置き換える
     Param:
-        arg: datetime
+        arg: str
     Return:
         : datetime
     """    
-def convert_str_to_date(arg: datetime) -> datetime:
-    if arg != '':
-        return arg
-    else:
+def convert_str_to_date(arg: str) -> datetime:
+    # if arg != '':
+    #     return arg
+    # else:
         conv_date_empty = arg.replace('%Y-%m-%d', '')
         return conv_date_empty
     
@@ -20,10 +20,10 @@ def convert_str_to_date(arg: datetime) -> datetime:
     00:00を空に置き換える
     上と同じ
     """
-def convert_str_to_time(arg: datetime) -> datetime:
-    if arg != '':
-        return arg
-    else:
+def convert_str_to_time(arg: str) -> datetime:
+    # if arg != '':
+    #     return arg
+    # else:
         conv_time_empty = arg.replace('%H:%M', '')
         return conv_time_empty
     

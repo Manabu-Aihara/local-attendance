@@ -47,10 +47,12 @@ def get_notification_list(STAFFID):
                                                 .filter(NotificationList.STAFFID==STAFFID)\
                                                     .join(Todokede, Todokede.CODE==NotificationList.N_CODE).all()
     
+    date_now_month = datetime.now().strftime('%Y-%m')
     return render_template('attendance/notification_list.html', 
                            uinfo=user_basic_info,
                            nlst=user_notification_list,
                            f=get_current_url_flag(),
+                           d_month=date_now_month,
                            stf_login=current_user
                            )
 
@@ -174,7 +176,7 @@ def retrieve_form_data(form_data: List[str]) -> list:
 # 申請確認ページ
 @app.route('/confirm', methods=['POST'])
 @login_required
-def post_approval():
+def post_notification():
     # 取り出したいformの項目
     approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
     form_list_data = retrieve_form_data(approval_list)
@@ -210,12 +212,13 @@ def append_approval():
     db.session.add(one_notification)
     db.session.commit()
 
+    skype_account = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
     # skypeにて、申請の通知
     asking_user = User.query.get(current_user.STAFFID)
     asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
         {request.url_root}approval-list/charge"
     
-    ask_approval(asking_message)
+    ask_approval(skype_account.MAIL, skype_account.MAIL_PASS, asking_message)
 
     return redirect('/')
 
@@ -227,7 +230,7 @@ def append_approval():
     Return:
         : None
     """
-def change_status(id: int, judgement: int) -> None:
+def update_status(id: int, judgement: int) -> None:
     detail_notification: NotificationList = NotificationList.query.get(id)
     detail_notification.STATUS = judgement
 
@@ -235,10 +238,10 @@ def change_status(id: int, judgement: int) -> None:
     db.session.commit()
 
 # 申請に対して、承認
-@app.route('/approval_ok/<STAFFID>/<id>', methods=['POST'])
+@app.route('/approval_judge/<STAFFID>/<id>/<status>', methods=['POST'])
 @login_required
-def change_status_ok(id, STAFFID):
-    change_status(id, 1)
+def change_status_judge(id, STAFFID, status: int):
+    update_status(id, status)
 
     approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
     
@@ -255,25 +258,25 @@ def change_status_ok(id, STAFFID):
     # 承認者よりコメントをメールで
     send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
               approval_reply_user.MAIL_PASS, approval_reply_message)
-
-    # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
-    return redirect(url_for('get_middle_approval'))
+    
+    # return redirect(url_for('get_middle_approval', approval_user=approval_certificate_user))
+    return redirect('/approval-list/charge?')
 
 # 申請に対して、拒否
-@app.route('/approval_ng/<STAFFID>/<id>', methods=['POST'])
-@login_required
-def change_status_ng(id, STAFFID):
-    change_status(id, 2)
+# @app.route('/approval_ng/<STAFFID>/<id>', methods=['POST'])
+# @login_required
+# def change_status_ng(id, STAFFID):
+#     change_status(id, 2)
 
-    approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
-    # approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
-    #                        .filter(Approval.STAFFID==current_user.STAFFID)
-    #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
-    #                        .first())
-    approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
+#     approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+#     # approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
+#     #                        .filter(Approval.STAFFID==current_user.STAFFID)
+#     #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
+#     #                        .first())
+#     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
     
-    send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
-              approval_reply_user.MAIL_PASS, request.form.get('comment'))
+#     send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
+#               approval_reply_user.MAIL_PASS, request.form.get('comment'))
 
-    # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
-    return redirect(url_for('get_middle_approval'))
+#     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
+#     return redirect(url_for('get_middle_approval'))

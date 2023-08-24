@@ -40,7 +40,8 @@ const showRowsByStatus = () => {
       extractRows(statusSelect);
       break;
     default:
-      document.getElementById('h4-status').textContent = "でふぉると";
+      document.getElementById('h4-status').textContent = "申請中リスト";
+      extractRows(statusSelect);
   }
 }
 

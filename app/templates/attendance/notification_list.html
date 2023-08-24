@@ -6,11 +6,12 @@
 {% if uinfo %}
   <h3>申請リスト</h3>
   <h4>社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
+  <input type="month" value="" class="month-calender">
   <div>
-    <select class="search-date">
+    <!-- <select class="search-date">
       <option>2023/6</option>
     </select>
-    <input type="button" value="クリック" id="show-date">
+    <input type="button" value="クリック" id="show-date"> -->
   </div>
   <a href="{{ url_for('get_notification_form') }}" class="btn to-notice-form">届出申請</a>
 {% else %}
@@ -39,7 +40,7 @@
             <th>社員番号</th>
             <th>社員名</th>
           {% endif %}
-          <th>申請種類</th>
+          <!-- <th>申請種類</th> -->
           <th>申請状態</th>
           <th>開始日</th>
           <th>開始時間</th>
@@ -51,13 +52,13 @@
       <tbody>
         {% for nl in nlst %}
           <tr data-status="{{ nl.STATUS }}" class="body-tr">
-            <td>{{ nl.NOTICE_DAYTIME }}</td>
+            <td class="notice-date">{{ nl.NOTICE_DAYTIME }}</td>
             {% if f is true %}
               <td>{{ nl.STAFFID }}</td>
               <td>{{ nl.LNAME }}{{ nl.FNAME }}</td>
             {% endif %}
             <td>{{ nl.NAME }}</td>
-            <td>{{ nl.STATUS }}</td>
+            <!-- <td>{{ nl.STATUS }}</td> -->
             <td>{{ nl.START_DAY }}</td>
             <td>{{ nl.START_TIME }}</td>
             <td>{{ nl.END_DAY }}</td>
@@ -79,7 +80,8 @@
   });
 </script>
 <script src="/static/js/StatusRequest.js"></script>
-<script src="/static/js/DateSelectAdd.js"></script>
+<script src="/static/js/NoticeDateSelect.js"></script>
+<!-- <script src="/static/js/DateSelectAdd.js"></script> -->
 <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/fs-@1.0.0/fs.min.js"></script>
 <script src="/static/js/SelectBoxFileInput.js"></script> -->
