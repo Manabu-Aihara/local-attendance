@@ -1,11 +1,7 @@
 {% extends 'home.html' %}
 
 {% block child_content %}
-{% if f is false %}
-  {{ stf_login.STAFFID }}
-{% elif f is true and w_usr %}
-  <h4>社員氏名：{{ w_usr.LNAME }} {{ w_usr.FNAME }}</h4>
-{% endif %}
+<h4>社員氏名：{{ w_usr.LNAME }} {{ w_usr.FNAME }}</h4>
 
 <form method="post" action="/regist" class="approval">
   <div class="w-25">
@@ -44,7 +40,7 @@
   <p></p>
 {% endif %}
 
-<input type="button" value="戻る" id="btnBack">
+<div class="confirm-back"><input type="button" value="戻る" id="btnBack"></div>
 <script>
   let btnBack = document.getElementById('btnBack');
   btnBack.addEventListener('click', function(){

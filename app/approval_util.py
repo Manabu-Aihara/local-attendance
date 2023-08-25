@@ -1,31 +1,37 @@
 from datetime import datetime
+from dataclasses import dataclass
+from typing import TypeVar, List
 
-# class OutputApprovalDataConversion():
+from sqlalchemy import and_
 
-"""
-    0000-00-00を空に置き換える
-    Param:
-        arg: str
-    Return:
-        : datetime
-    """    
-def convert_str_to_date(arg: str) -> datetime:
-    # if arg != '':
-    #     return arg
-    # else:
-        conv_date_empty = arg.replace('%Y-%m-%d', '')
-        return conv_date_empty
+T = TypeVar('T')
+table: T
+
+@dataclass
+class TableMatch():    
+    datetime_value_list: List[datetime]
+
+    @classmethod
+    def select_zero_date_tables(cls, table: T):
+        filters = []
+        for date_value in cls.datetime_value_list:
+                filters.append(date_value==0)
+        
+        datetime_query = table.query.filter(and_(*filters)).all()
+        return datetime_query
+         
+def select_zero_date(table: T, *args: datetime) -> List[T]:
+    filters = []
+    for arg in args:
+        #   if arg==0:
+            filters.append(arg==0)
     
-"""
-    00:00を空に置き換える
-    上と同じ
-    """
-def convert_str_to_time(arg: str) -> datetime:
-    # if arg != '':
-    #     return arg
-    # else:
-        conv_time_empty = arg.replace('%H:%M', '')
-        return conv_time_empty
+    datetime_query = table.query.filter(and_(*filters)).all()
+    return datetime_query
+
+# def convert_zero_to_none(select_func: List[T] = select_zero_date):
+#       zero_contain_query = select_func
+#       select_zero_date.__getattribute__
     
 def toggle_notification_type(table, arg: str | int) -> int | str:
     # 数値を内容名に置き換える
@@ -37,4 +43,4 @@ def toggle_notification_type(table, arg: str | int) -> int | str:
         content_value = table.query.filter(table.NAME==arg).first()
         return content_value.CODE
     else:
-        TypeError("intかstrのどちらかです")
+        raise TypeError("intかstrのどちらかです")

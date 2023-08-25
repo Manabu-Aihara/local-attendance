@@ -6,7 +6,8 @@ from app.models import Todokede
 from app.models_aprv import (NotificationList, Approval)
 from app.routes_approvals import get_notification_list
 from app.approval_util import (toggle_notification_type,
-                               convert_object_time)
+                               select_zero_date,
+                               TableMatch)
 
 @pytest.mark.skip
 def test_get_notificatin_list(app_context):
@@ -29,6 +30,7 @@ def test_toggle_notification_type(app_context):
 #     print(replaced_one_obj.START_TIME.strftime(''))
 #     print(replaced_one_obj.END_TIME.strftime(''))
 
+@pytest.mark.skip
 def test_get_empty_object(app_context):
     approval_member = Approval.query.filter(Approval.STAFFID==20).first()
     print(f'ちゃんとオブジェクト：{approval_member.__dict__}')
@@ -37,4 +39,12 @@ def test_get_empty_object(app_context):
     assert isinstance(approval_member, Approval) == True
     assert isinstance(approval_non_member, Approval) == False
 
+@pytest.mark.skip
+def test_convert_zero_to_none(app_context):
+    result_query = select_zero_date(NotificationList,
+                                        NotificationList.START_TIME, NotificationList.END_TIME)
+    print(result_query)
 
+def test_select_zero_date_table(app_context):
+    result_query = TableMatch(NotificationList.START_TIME, NotificationList.END_DAY).select_zero_date_tables(NotificationList)
+    print(result_query)

@@ -9,11 +9,10 @@ from flask.helpers import url_for
 
 from app import app, db
 from app.common_func import GetPullDownList
-from app.models import (User, StaffLoggin, Todokede, SystemInfo)
+from app.models import (User, Todokede, SystemInfo)
 from app.models_aprv import (NotificationList, Approval)
 from app.errors import not_admin
-from app.approval_util import (convert_str_to_date, convert_str_to_time,
-                               toggle_notification_type)
+from app.approval_util import toggle_notification_type
 from app.approval_contact import (ask_approval, send_mail)
 
 """
@@ -61,6 +60,7 @@ class StatusEnum(IntEnum):
     承認済 = 1
     未承認 = 2
 
+# 権限のないユーザーがurl直書きにより、閲覧を防ぐデコレーター
 def auth_approval_user(func):
     def wrapper(*args, **kwargs):
         if current_user:
@@ -80,6 +80,18 @@ def auth_approval_user(func):
 @auth_approval_user
 def get_middle_approval(approval_user):
 # def get_middle_approval():
+
+    # result_query = NotificationList.query\
+    #     .filter(NotificationList.START_TIME==0, NotificationList.END_TIME==0).all()
+    
+    # for zero_contain in result_query:
+    #     zero_contain.START_TIME = None
+    #     db.session.merge(zero_contain)
+    #     db.session.commit()
+    # for zero_contain in result_query:
+    #     zero_contain.END_TIME = None
+    #     db.session.merge(zero_contain)
+    #     db.session.commit()
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,
@@ -198,10 +210,10 @@ def append_approval():
     # こちらは数値(CODE)に変換
     form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
     
-    form_start_day: datetime = convert_str_to_date(request.form.get('start-day'))
-    form_end_day: datetime = convert_str_to_date(request.form.get('end-day'))
-    form_start_time: datetime = convert_str_to_time(request.form.get('start-time'))
-    form_end_time: datetime = convert_str_to_time(request.form.get('end-time'))
+    form_start_day: str = request.form.get('start-day')
+    form_end_day: str = request.form.get('end-day')
+    form_start_time: str = request.form.get('start-time')
+    form_end_time: str = request.form.get('end-time')
     form_remark: str = request.form.get('remark')
 
     one_notification = NotificationList(
@@ -253,6 +265,7 @@ def change_status_judge(id, STAFFID, status: int):
         f"{target_notification.START_DAY}:\
             {toggle_notification_type(Todokede, target_notification.N_CODE)}\
                 \n{target_notification.REMARK}\
+                \n{StatusEnum(status).name}\
                 \n\n{request.form.get('comment')}"
 
     # 承認者よりコメントをメールで
@@ -261,22 +274,3 @@ def change_status_judge(id, STAFFID, status: int):
     
     # return redirect(url_for('get_middle_approval', approval_user=approval_certificate_user))
     return redirect('/approval-list/charge?')
-
-# 申請に対して、拒否
-# @app.route('/approval_ng/<STAFFID>/<id>', methods=['POST'])
-# @login_required
-# def change_status_ng(id, STAFFID):
-#     change_status(id, 2)
-
-#     approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
-#     # approval_reply_user_mail: str = (Approval.query.with_entities(SystemInfo.MAIL)
-#     #                        .filter(Approval.STAFFID==current_user.STAFFID)
-#     #                        .join(SystemInfo, SystemInfo.STAFFID==Approval.STAFFID, isouter=True)
-#     #                        .first())
-#     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
-    
-#     send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
-#               approval_reply_user.MAIL_PASS, request.form.get('comment'))
-
-#     # return redirect(url_for('get_individual_approval', id=id, STAFFID=current_user.STAFFID))
-#     return redirect(url_for('get_middle_approval'))

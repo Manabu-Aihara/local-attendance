@@ -4,8 +4,8 @@
 
 {# 通常申請者の申請リスト #}
 {% if uinfo %}
-  <h3>申請リスト</h3>
-  <h4>社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
+  <h3 class="h3-list">申請リスト</h3>
+  <h4 class="h4-info">社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
   <input type="month" value="" class="month-calender">
   <div>
     <!-- <select class="search-date">
@@ -13,20 +13,20 @@
     </select>
     <input type="button" value="クリック" id="show-date"> -->
   </div>
-  <a href="{{ url_for('get_notification_form') }}" class="btn to-notice-form">届出申請</a>
+  <div class="to-notice-form"><a href="{{ url_for('get_notification_form') }}" class="btn to-notice-button">届出申請</a></div>
 {% else %}
 {# 承認者のみの申請リスト #}
-  <h4 id="h4-status"></h4>
-  <select id="status">
-    {% for s in s_enum %}
-      <option value="{{ s.value }}">{{ s.name }}</option>
-    {% endfor %}
-  </select>
-  <input type="button" value="クリック" id="extract-status">
-  <div><input type="button" value="戻る" id="btnBack"></div>
+  <div class="status-ctl">
+    <h4 id="h4-status"></h4>
+    <select id="status">
+      {% for s in s_enum %}
+        <option value="{{ s.value }}">{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="button" value="クリック" id="extract-status" class="btn">
+  </div>
+  <div class="charge-back"><input type="button" value="戻る" id="btnBack"></div>
 {% endif %}
-
-<p>{{ stf_login.STAFFID }}</p>
 
 {% if nlst is none %}
   <p>{{ stf_login.STAFFID }}</p>
