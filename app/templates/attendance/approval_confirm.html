@@ -1,7 +1,11 @@
 {% extends 'home.html' %}
 
 {% block child_content %}
-<h4>社員氏名：{{ w_usr.LNAME }} {{ w_usr.FNAME }}</h4>
+{% if f is true %}
+  <h4>社員氏名：{{ w_usr.LNAME }} {{ w_usr.FNAME }}</h4>
+{% else %}
+  <p>社員番号：　{{stf_login.STAFFID}}</p>
+{% endif %}
 
 <form method="post" action="/regist" class="approval">
   <div class="w-25">

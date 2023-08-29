@@ -12,7 +12,7 @@ from app.common_func import GetPullDownList
 from app.models import (User, Todokede, SystemInfo)
 from app.models_aprv import (NotificationList, Approval)
 from app.errors import not_admin
-from app.approval_util import toggle_notification_type
+from app.approval_util import (toggle_notification_type, NoZeroTable)
 from app.approval_contact import (ask_approval, send_mail)
 
 """
@@ -31,6 +31,14 @@ def get_current_url_flag() -> bool:
     flag = True if '/approval-list/charge' in current_url else flag
     return flag
 
+# フラグ関数、直前のurlを取得
+# 2度使用するためこちら
+def get_url_past_flag() -> bool:
+    past = request.referrer
+    flag = False
+    flag = True if 'charge' in past else flag
+    return flag
+    
 # 申請リストページ    
 @app.route('/notification-list/<STAFFID>', methods=['GET'])
 @login_required
@@ -67,11 +75,9 @@ def auth_approval_user(func):
             approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
             if approval_certificate_user is None:
                 return not_admin()
-        # else:
-        #     return redirect('/login')
-            # return func(approval_certificate_user)
+            # else:
+            #     return func(approval_certificate_user)
         return func(approval_certificate_user)
-        # return redirect(url_for('login'))
     return wrapper
 
 # 承認待ちリストページ
@@ -80,18 +86,6 @@ def auth_approval_user(func):
 @auth_approval_user
 def get_middle_approval(approval_user):
 # def get_middle_approval():
-
-    # result_query = NotificationList.query\
-    #     .filter(NotificationList.START_TIME==0, NotificationList.END_TIME==0).all()
-    
-    # for zero_contain in result_query:
-    #     zero_contain.START_TIME = None
-    #     db.session.merge(zero_contain)
-    #     db.session.commit()
-    # for zero_contain in result_query:
-    #     zero_contain.END_TIME = None
-    #     db.session.merge(zero_contain)
-    #     db.session.commit()
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,
@@ -133,13 +127,6 @@ def get_individual_approval(id: int, STAFFID=None):
     # そしてNotificationList.id
     data_list.append(notification_row.id)
 
-    # フラグ関数、直前のurlを取得
-    def get_url_past_flag() -> bool:
-        past = request.referrer
-        flag = False
-        flag = True if 'charge' in past else flag
-        return flag
-    
     # 申請待ちユーザー
     approval_wait_user = User.query.get(STAFFID)
 
@@ -200,6 +187,7 @@ def post_notification():
 
     return render_template('attendance/approval_confirm.html', 
                         one_data=form_list_data,
+                        f=get_url_past_flag(),
                         stf_login=current_user)
 
 # DBinsert & skype送信ページ
@@ -253,6 +241,8 @@ def update_status(id: int, judgement: int) -> None:
 @app.route('/approval_judge/<STAFFID>/<id>/<status>', methods=['POST'])
 @login_required
 def change_status_judge(id, STAFFID, status: int):
+    # approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
+
     update_status(id, status)
 
     approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
@@ -265,7 +255,7 @@ def change_status_judge(id, STAFFID, status: int):
         f"{target_notification.START_DAY}:\
             {toggle_notification_type(Todokede, target_notification.N_CODE)}\
                 \n{target_notification.REMARK}\
-                \n{StatusEnum(status).name}\
+                \n{StatusEnum(int(status)).name}\
                 \n\n{request.form.get('comment')}"
 
     # 承認者よりコメントをメールで
