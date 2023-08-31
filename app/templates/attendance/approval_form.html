@@ -4,7 +4,7 @@
 <h3 class="notification-title">届出申請</h3>
 
 <h4>社員番号{{ stf_login.STAFFID }}：　{{ stf_login.LNAME }}{{ stf_login.FNAME }}</h4>
-<form method="post" action="/confirm" class="approval">
+<form method="post" action="/confirm" name="notice-form" class="approval">
   <div class="w-25">
     <select class="form-control form-control-sm" name="content">
       <option value="">選択してください</option>
@@ -16,12 +16,14 @@
   <div><p>対象日</p><input type="date" name="start-day">〜</div>
   <div><p>対象終了日</p><input type="date" name="end-day"></div>
   <div class="w-25"></div>
-  <div><p>開始時刻</p><input type="time" name="start-time">〜</div>
-  <div><p>終了時刻</p><input type="time" name="end-time"></div>
+  <div><p>開始時刻</p><input type="time" name="start-time" class="restrict-form">〜</div>
+  <div><p>終了時刻</p><input type="time" name="end-time" class="restrict-form"></div>
   <div class="remark">
     <p>備考(欠勤や遅刻なら理由等)</p>
     <textarea name="remark"></textarea>
   </div>
   <button type="submit" class="btn btn-ask">確認画面</button>
 </form>
+
+<script src="/static/js/FormRestriction.js"></script>
 {% endblock %}
