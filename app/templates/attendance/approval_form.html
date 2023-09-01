@@ -6,15 +6,15 @@
 <h4>社員番号{{ stf_login.STAFFID }}：　{{ stf_login.LNAME }}{{ stf_login.FNAME }}</h4>
 <form method="post" action="/confirm" name="notice-form" class="approval">
   <div class="w-25">
-    <select class="form-control form-control-sm" name="content">
+    <select class="form-control form-control-sm" name="content" required>
       <option value="">選択してください</option>
       {% for n in n_all %}
         <option value="{{ n[0] }}">{{ n[1] }}</option>
       {% endfor %}
     </select>
   </div>
-  <div><p>対象日</p><input type="date" name="start-day">〜</div>
-  <div><p>対象終了日</p><input type="date" name="end-day"></div>
+  <div><p class="p-day">対象日</p><input type="date" name="start-day" required>〜</div>
+  <div><p class="p-day">対象終了日（同日なら入力の必要はありません）</p><input type="date" name="end-day"></div>
   <div class="w-25"></div>
   <div><p>開始時刻</p><input type="time" name="start-time" class="restrict-form">〜</div>
   <div><p>終了時刻</p><input type="time" name="end-time" class="restrict-form"></div>

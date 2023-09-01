@@ -16,7 +16,7 @@ const extractRows = (statusNum) => {
   // for(let trRow in trRows)
   for(let i = 0; i < trRows.length; i++){
     if (trRows[i].dataset.status != statusNum) {
-      console.log(trRows[i]);
+      // console.log(trRows[i]);
       trRows[i].style.display = "none";
     } else {
       trRows[i].style.display = "table-row";
@@ -40,10 +40,15 @@ const showRowsByStatus = () => {
       extractRows(statusSelect);
       break;
     default:
-      document.getElementById('h4-status').textContent = "申請中リスト";
-      extractRows(statusSelect);
+      // document.getElementById('h4-status').textContent = "申請中リスト";
+      // extractRows(statusSelect);
   }
 }
+
+window.addEventListener('load', () => {
+  document.getElementById('h4-status').textContent = "申請中リスト";
+  extractRows("0");
+});
 
 const extractStatusButton = document.getElementById('extract-status');
 extractStatusButton.addEventListener('click', showRowsByStatus);

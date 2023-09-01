@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import TypeVar, List
+from typing import TypeVar, List, Callable
 
 from sqlalchemy import and_
 
@@ -12,25 +12,41 @@ T = TypeVar('T')
 @dataclass
 class NoZeroTable(): 
     table: T
-    args: list[datetime] = field(default_factory=list)
+    # args: list[datetime] = field(default_factory=list)
 
-    def __select_zero_date_tables(self) -> List[T]:
+    def select_zero_date_tables(self, *args: datetime) -> List[T]:
         filters = []
-        for arg in self.args:
+        for arg in args:
             filters.append(getattr(self.table, arg)==0)
         
         datetime_query = self.table.query.filter(and_(*filters)).all()
         return datetime_query
     
-    def convert_zero_to_none(self) -> None:
-        pickup_objects = self.__select_zero_date_tables()
+    def select_same_date_tables(self, *args: datetime) -> List[T]:
+        filter = getattr(self.table, args[0])==getattr(self.table, args[1])
+    
+        datetime_query = self.table.query.filter(and_(filter)).all()
+        return datetime_query
 
-        for zero_contain_obj in pickup_objects:
-            for arg in self.args:
-                setattr(zero_contain_obj, arg, None)
-                # print(f'Noneを期待：　{getattr(zero_contain_obj, arg)}')
-                db.session.merge(zero_contain_obj)
-                db.session.commit()
+    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], argument: list[datetime] | datetime) -> None:
+        pickup_objects = func
+
+        print(type(argument))
+        for pickup_obj in pickup_objects:
+            if type(argument) is list:
+                for arg in argument:
+                    setattr(pickup_obj, arg, None)
+                    print(f'Noneを期待：　{getattr(pickup_obj, arg)}')
+                    # db.session.merge(pickup_obj)
+                    # db.session.commit()
+            # ここは'str'指定じゃないとダメ
+            elif type(argument) is str:
+                setattr(pickup_obj, argument, None)
+                print(f'Noneを期待：　{getattr(pickup_obj, argument)}')
+                # db.session.merge(pickup_obj)
+                # db.session.commit()
+            else:
+                print('type is not both')
 
 """
     00:00:00の値を持つ属性を有するオブジェクトのリストを返す

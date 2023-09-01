@@ -18,7 +18,7 @@ from app.approval_contact import (ask_approval, send_mail)
 """
     戻り値に代入される変数名は、必ずstf_login！！
     """
-# この関数注意！
+# この関数注意！current_userそのまま返らず
 # def appare_global_staff() -> StaffLoggin:
 #     current_staff = StaffLoggin.query.get(current_user.STAFFID)
 #     return current_staff
@@ -39,11 +39,13 @@ def get_url_past_flag() -> bool:
     flag = True if 'charge' in past else flag
     return flag
     
-# 申請リストページ    
+# 個別申請リストページ    
 @app.route('/notification-list/<STAFFID>', methods=['GET'])
 @login_required
 def get_notification_list(STAFFID):
-    # notification_list = NotificationList.query.filter(NotificationList.STAFFID == STAFFID).all()
+    # 00：00：00処理
+    table_objects = NoZeroTable(NotificationList)
+    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
 
     user_basic_info: User = User.query.with_entities(User.STAFFID, User.LNAME, User.FNAME).filter(User.STAFFID==STAFFID).first()
     user_notification_list = NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, Todokede.NAME,
@@ -54,12 +56,11 @@ def get_notification_list(STAFFID):
                                                 .filter(NotificationList.STAFFID==STAFFID)\
                                                     .join(Todokede, Todokede.CODE==NotificationList.N_CODE).all()
     
-    date_now_month = datetime.now().strftime('%Y-%m')
+    # date_now_month = datetime.now().strftime('%Y-%m')
     return render_template('attendance/notification_list.html', 
                            uinfo=user_basic_info,
                            nlst=user_notification_list,
                            f=get_current_url_flag(),
-                           d_month=date_now_month,
                            stf_login=current_user
                            )
 
@@ -198,15 +199,17 @@ def append_approval():
     # こちらは数値(CODE)に変換
     form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
     
-    form_start_day: str = request.form.get('start-day')
-    form_end_day: str = request.form.get('end-day')
-    form_start_time: str = request.form.get('start-time')
-    form_end_time: str = request.form.get('end-time')
-    form_remark: str = request.form.get('remark')
+    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
+    form_list_data = retrieve_form_data(approval_list)
 
+    # end-day空白の際
+    if form_list_data[1] == '':
+        form_list_data[1] = None
+
+    # 注意: start-day, start-time, end_day...の順
     one_notification = NotificationList(
-        current_user.STAFFID, form_content, form_start_day, form_start_time,
-        form_end_day, form_end_time, form_remark
+        current_user.STAFFID, form_content, form_list_data[0], form_list_data[2],
+        form_list_data[1], form_list_data[3], form_list_data[4]
     )
 
     db.session.add(one_notification)
@@ -244,11 +247,11 @@ def change_status_judge(id, STAFFID, status: int):
     # approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
 
     update_status(id, status)
-
+    # 承認待ちユーザー
     approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
-    
+    # 承認するユーザー
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
-
+    # 承認判断対象
     target_notification = NotificationList.query.get(id)
 
     approval_reply_message = \

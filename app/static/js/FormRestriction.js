@@ -1,8 +1,11 @@
+// 大本のセレクトボックス
 const selectForm = document.getElementsByClassName('form-control')[0];
 const selectChildren = selectForm.options;
-console.log(selectChildren);
+// console.log(selectChildren);
 
+// 開始時刻・終了時刻
 const timeForms = document.getElementsByClassName('restrict-form');
+// 入力制限処理トグル関数
 const toggleRestrictState = (flag) => {
   if (flag == true) {
     for (let i = 0; i < timeForms.length; i++) {
@@ -20,6 +23,27 @@ const toggleRestrictState = (flag) => {
 const startTimeForm = timeForms[0];
 const endTimeForm = timeForms[1];
 
+// Param: diffNum 何時間後
+const reflectTimeForm = (diffNum) => {
+  /**
+   * input type=date:値の変更の感知にはinput
+   */
+  startTimeForm.addEventListener('input', () => {
+    let [h, m] = startTimeForm.value.split(':');
+    // console.log(0 + h);
+    if (h < 10){
+      const oneDigit = Number(h) + diffNum
+      /**
+       * 数字を指定した桁数まで0埋めする
+          https://gray-code.com/javascript/fill-numbers-with-zeros/
+       */
+      endTimeForm.value = `${oneDigit.toString().padStart(2, '0')}:${m}`;
+    } else {
+      endTimeForm.value = `${Number(h) + diffNum}:${m}`;
+    }
+  });
+}
+
 const restrictCollection = () => {
   console.log("Called!")
   console.log(selectChildren.selectedIndex - 1);
@@ -32,22 +56,16 @@ const restrictCollection = () => {
       toggleRestrictState(true);
     } else if ((selectChildren.selectedIndex - 1) === 10 || (selectChildren.selectedIndex - 1) === 13) {
       toggleRestrictState(false);
-      startTimeForm.addEventListener('input', () => {
-        let [h, m] = startTimeForm.value.split(':');
-        // console.log(0 + h);
-        if (h < 10){
-          const beforeTen = Number(h) + 1
-          // console.log(h.toString().padStart(2, '0'))
-          /**
-           * 数字を指定した桁数まで0埋めする
-              https://gray-code.com/javascript/fill-numbers-with-zeros/
-           */
-          endTimeForm.value = `${beforeTen.toString().padStart(2, '0')}:${m}`;
-        } else {
-          endTimeForm.value = `${Number(h) + 1}:${m}`;
-        }
-      });
-    } 
+      reflectTimeForm(1);
+    } else if ((selectChildren.selectedIndex - 1) === 11 || (selectChildren.selectedIndex - 1) === 14) {
+      toggleRestrictState(false);
+      reflectTimeForm(2);
+    } else if ((selectChildren.selectedIndex - 1) === 12 || (selectChildren.selectedIndex - 1) === 15) {
+      toggleRestrictState(false);
+      reflectTimeForm(3);
+    } else {
+      toggleRestrictState(false);
+    }
   }
 }
 

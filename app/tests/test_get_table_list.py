@@ -45,6 +45,12 @@ def test_select_zero_date(app_context):
     print(f'00：00：00オブジェクト：　{result_query}')
 
 # @pytest.mark.skip
+def test_select_same_date_tables(app_context):
+    target_table = NoZeroTable(NotificationList)
+    retrieve_table_objects = target_table.select_same_date_tables('START_DAY', 'END_DAY')
+    print(retrieve_table_objects)
+
 def test_convert_zero_to_none(app_context):
-    table_object = NoZeroTable(NotificationList, ['START_TIME', 'END_TIME'])
-    table_object.convert_zero_to_none()
+    target_table = NoZeroTable(NotificationList)
+    target_table.convert_value_to_none(target_table.select_same_date_tables('START_DAY', 'END_DAY'), 'END_DAY')
+
