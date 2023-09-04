@@ -22,6 +22,8 @@ from app.calender_classes import MakeCalender
 from app.calc_work_classes import DataForTable, CalcTimeClass, PartCalcHolidayTimeClass, get_last_date
 
 os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+
+# 一定時間セッションにアクセスがなければ、セッションに格納されている情報は自動的に破棄される
 app.permanent_session_lifetime = timedelta(minutes=360)
 
 
@@ -46,8 +48,10 @@ def indextime(STAFFID):
     form_month = SelectMonthForm()
     form = SaveForm()
 
+    # 表カラム
     tbl_clm = ["日付", "曜日", "oncall", "oncall対応件数", "angel対応件数",
                "開始時間", "終了時間", "走行距離", "届出（午前）", "残業申請", "備考", "届出（午後）"]
+    
     wk = ["日", "土", "月", "火", "水", "木", "金"]
     ptn = ["^[0-9０-９]+$", "^[0-9.０-９．]+$"]
     specification = ["readonly", "checked", "selected", "hidden", "disabled"]
@@ -96,6 +100,9 @@ def indextime(STAFFID):
         bk = ""
         
     ##### M_NOTIFICATIONとindexの紐づけ #####
+    """
+        23/9/4 ここは必要なくなるか
+        """
     td1 = Todokede.query.get(1)
     td2 = Todokede.query.get(2)
     td3 = Todokede.query.get(3)  # 年休（全日）はNotification2にはない
@@ -120,11 +127,13 @@ def indextime(STAFFID):
     ##### 月選択の有無 #####
     dsp_page = ""
     
+    # sessionに"y"属性がある？
     if "y" in session:
         workday_data = session["workday_data"]
         y = session["y"]
         m = session["m"]
 
+        # 結果全部dsp_page = ""だからいらない？
         if datetime.today().month > 2:
             if datetime.today().year > int(session["y"]) or (datetime.today().year == int(session["y"]) and 
                                                              datetime.today().month > int(session["m"]) + 1):
@@ -150,6 +159,7 @@ def indextime(STAFFID):
     cal = []
     hld = []
     
+    # 超手作りカレンダー
     mkc = MakeCalender(cal, hld, y, m)
     mkc.mkcal()
 
@@ -173,15 +183,30 @@ def indextime(STAFFID):
             fkana = usr.FKANA
             contract_code = usr.CONTRACT_CODE
 
+            """
+               要関数化
+                """
             if inday is not None:
                 ########## 本日計算ベース #########
                 ##### 基準月に変換 #####
+                # """
+                #     入社日が4月〜9月
+                #     10月1日入社日として、10月1日に年休付与
+                #     """
                 if inday.month >= 4 and inday.month < 10:
                     change_day = inday.replace(month=10, day=1)  # 基準月
                     giveday = change_day  # 初回付与日
+                # """
+                #     入社日が10月〜12月
+                #     4月1日入社日として、翌年4月1日に年休付与
+                # """
                 elif inday.month >= 10 and inday.month <= 12:
                     change_day = inday.replace(month=4, day=1)  # 基準月
                     giveday = change_day + relativedelta(months=12)  # 初回付与日
+                # """
+                #     入社日が1月〜3月
+                #     4月1日入社日として、4月1日に年休付与
+                # """
                 elif inday.month < 4:
                     change_day = inday.replace(month=4, day=1)  # 基準月
                     giveday = change_day  # 初回付与日

@@ -224,12 +224,15 @@ class Shinsei(db.Model):
 class RecordPaidHoliday(db.Model): # 年休関連
     __tablename__ = "M_RECORD_PAIDHOLIDAY"
     STAFFID = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.STAFFID'), primary_key=True, index=True, nullable=False)
-    DEPARTMENT_CODE = db.Column(db.Integer, index=True, nullable=True)
-    LNAME = db.Column(db.String(50), index=True, nullable=True)
-    FNAME = db.Column(db.String(50), index=True, nullable=True)
-    LKANA = db.Column(db.String(50), index=True, nullable=True)
-    FKANA = db.Column(db.String(50), index=True, nullable=True)
-    INDAY = db.Column(db.DateTime(), index=True, nullable=True)
+    # リレーションが好ましいと思う
+    DEPARTMENT_CODE = db.Column(db.Integer, index=True, nullable=True) # Busho
+    LNAME = db.Column(db.String(50), index=True, nullable=True) # User
+    FNAME = db.Column(db.String(50), index=True, nullable=True) # User
+    LKANA = db.Column(db.String(50), index=True, nullable=True) # User
+    FKANA = db.Column(db.String(50), index=True, nullable=True) # User
+    # 入社日
+    INDAY = db.Column(db.DateTime(), index=True, nullable=True) # User
+
     LAST_DATEGRANT = db.Column(db.DateTime(), index=True, nullable=True) # 今回付与年月日
     NEXT_DATEGRANT = db.Column(db.DateTime(), index=True, nullable=True) # 次回付与年月日
     USED_PAIDHOLIDAY = db.Column(db.Float, index=True, nullable=True) # 使用日数
