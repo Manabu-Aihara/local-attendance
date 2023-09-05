@@ -22,7 +22,7 @@
   </div>
   <!-- one_data[6]status(申請状態) -->
   {% if f is true and one_data[6] %}
-    <p></p>
+    <p class="opacity-status">{{ one_data[6] }}</p>
   {% elif f is false and one_data[6] %}
     <p class="status">{{ one_data[6] }}</p>
   {% else %}
@@ -40,7 +40,8 @@
       <button type="submit" formaction="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=2) }}" class="btn judgement">拒否</button>
     </div>
   </form>
-{% else %}
+{# 下記は使えず #}
+{% elif f is true and (one_data[6] == "承認済" or one_data[6] == "未承認") %}
   <p></p>
 {% endif %}
 
@@ -60,13 +61,20 @@
   console.log(tail_d.test(location.pathname) || tail_confirm.test(location.pathname));
   if(tail_d.test(location.pathname) || tail_confirm.test(location.pathname)){
     const currentForm = document.getElementsByClassName('approval')[0];
-    console.log(currentForm);
+    // console.log(currentForm);
     // forEach, mapはダメだった
     for(let i = 0; i <= 5; i++){
-      console.log(currentForm[i]);
+      // console.log(currentForm[i]);
       currentForm[i].readOnly = true;
       currentForm[i].style.backgroundColor = "gainsboro";
     };
+  }
+</script>
+<script>
+  const status = document.getElementsByClassName('opacity-status');
+  const bottomForm = document.getElementsByClassName('form-bottom')[0];
+  if(status[0].textContent == "承認済" || status[0].textContent == "未承認"){
+    bottomForm.style.display = "none";
   }
 </script>
 {% endblock %}

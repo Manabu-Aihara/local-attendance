@@ -43,7 +43,7 @@ def get_url_past_flag() -> bool:
 @app.route('/notification-list/<STAFFID>', methods=['GET'])
 @login_required
 def get_notification_list(STAFFID):
-    # 00：00：00処理
+    # 00：00：00処理ユーティリティクラス
     table_objects = NoZeroTable(NotificationList)
     table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
 
@@ -78,15 +78,18 @@ def auth_approval_user(func):
                 return not_admin()
             # else:
             #     return func(approval_certificate_user)
-        return func(approval_certificate_user)
+        return func(*args, **kwargs)
     return wrapper
 
 # 承認待ちリストページ
 @app.route('/approval-list/charge', methods=['GET'])
 @login_required
 @auth_approval_user
-def get_middle_approval(approval_user):
-# def get_middle_approval():
+# def get_middle_approval(approval_user):
+def get_middle_approval():
+    # 00：00：00処理ユーティリティクラス
+    table_objects = NoZeroTable(NotificationList)
+    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,
@@ -265,5 +268,6 @@ def change_status_judge(id, STAFFID, status: int):
     send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
               approval_reply_user.MAIL_PASS, approval_reply_message)
     
-    # return redirect(url_for('get_middle_approval', approval_user=approval_certificate_user))
+    # やはりこちらはダメ、url_forわからん
+    # return redirect(url_for('get_middle_approval'))
     return redirect('/approval-list/charge?')
