@@ -111,7 +111,7 @@ class Busho(db.Model):
 
 class KinmuTaisei(db.Model):
     __tablename__ = "M_CONTRACT"
-    CONTACT_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
+    CONTRACT_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
     NAME = db.Column(db.String(50), index=True, nullable=True)
 
     def __init__(self, CONTACT_CODE):

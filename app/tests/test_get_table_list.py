@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 
 from app.common_func import GetPullDownList
-from app.models import Todokede
+from app.models import (Todokede, Busho)
 from app.models_aprv import (NotificationList, Approval)
 from app.routes_approvals import get_notification_list
 from app.approval_util import (toggle_notification_type,
@@ -14,6 +14,10 @@ def test_get_notificatin_list(app_context):
     todokede_list = get_notification_list()
     assert todokede_list[0] == ["", ""]
     assert todokede_list[1] == [1, "遅刻"]
+
+def test_get_depart_list(app_context):
+    result = GetPullDownList(Busho, Busho.CODE, Busho.NAME, Busho.CODE)
+    print(result)
 
 @pytest.mark.skip
 def test_toggle_notification_type(app_context):

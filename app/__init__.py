@@ -43,9 +43,10 @@ log_handler = logging.FileHandler(LOGFILE_NAME)
 log_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(log_handler)
 
-
 from app import routes, models, errors, routes_approvals
-
+# from app import app, db
+# with app.app_context():
+#     db.create_all()
 
 if not app.debug:
     if not os.path.exists('logs'):

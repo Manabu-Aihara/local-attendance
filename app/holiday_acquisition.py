@@ -34,17 +34,17 @@ class HolidayAcquire:
 			change_day = self.in_day.replace(month=4, day=1)
 			return change_day
 	
-	def calcurate_days(self, base_day: datetime):
+	def calcurate_days(self, base_day: datetime) -> datetime:
 		# 12ヶ月ごとに付与される？→self.base_dayはリストじゃないか？
-		self.base_days: List[datetime]
+		# self.base_days: List[datetime]
 		while base_day < datetime.today():
 			self.base_day = base_day + relativedelta(months=12)
 			# 無限ループ
-			print(self.calcurate_days(self.base_day))
-			if self.calcurate_days(self.base_day) == None:
+			if datetime.today() < self.base_day:
 				break
+			return self.calcurate_days(self.base_day)
 			# return self.calcurate_days(self.base_days[-1])
-
+		print(self.base_day)
 		# last_given_day = self.base_day - relativedelta(months=12)  # 今回付与
 		# next_given_day = self.base_day  # 次回付与
 

@@ -10,6 +10,16 @@ T = TypeVar('T')
 # table: T
 
 @dataclass
+class PullDownList():
+    table: T
+    code: int
+    name: str
+
+    def get_pulldown(self):
+        list_option = []
+        pulldown_query = self.table.query.with_entities(self.code, self.name).order_by(self.code).all()
+
+@dataclass
 class NoZeroTable(): 
     table: T
     # args: list[datetime] = field(default_factory=list)
