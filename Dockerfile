@@ -14,4 +14,4 @@ WORKDIR /workdir
 # 公開ポート指定
 EXPOSE 5000
 
-CMD ["gunicorn", "--reload", "--bind", "0.0.0.0:5000", "main:app"]
+# CMD ["gunicorn", "--reload", "--bind", "192.168.64.12:5000", "main:app"]
