@@ -5,8 +5,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.fields import DateField
 from wtforms.validators import DataRequired, EqualTo, Optional
 
-from app.common_func import GetPullDownList
-from app.models import (Busho, Team, KinmuTaisei, Jobtype, Post)
+from app.pulldown_util import get_pulldown_list
 
 class LoginForm(FlaskForm):
     STAFFID = StringField('社員番号', validators=[DataRequired()])
@@ -64,29 +63,19 @@ class SelectMonthForm(FlaskForm):
 class SelectYearForm2(FlaskForm):
     slct2 = SubmitField('月選択')
 
-from app import app, db
-def app_context():
-    with app.app_context():
-        db.create_all()
-
-# def get_depart_list():
-#     with app.app_context():
-#         db.create_all()
-#         result = GetPullDownList(Busho, Busho.CODE, Busho.NAME, Busho.CODE)
-#         return result
-
 class AddDataUserForm(FlaskForm):
-    # department_opt = get_depart_list()
-    department = SelectField('部門コード', choices=[('0',''),('1','本社'),('2','宇介'),('3','下介'),('4','鹿介'),('5','KO介'),('6','宇福'),('7','KO福'),('8','鹿福'),('9','筑波介')], coerce=int, validators=[Optional()])
-    team = SelectField('所属コード', choices=[('0',''),('1','本社'),('2','WADEWADE訪問看護ステーション宇都宮'),('3','WADEWADE訪問看護ステーション下野'),('4','WADEWADE訪問看護ステーション鹿沼'),('5','KODOMOTOナースステーションうつのみや'),('6','わでわで在宅支援センターうつのみや'),('7','わでわで子どもそうだんしえん'),('8','WADEWADE訪問看護ステーションつくば')], coerce=int, validators=[Optional()])
-    contract = SelectField('契約形態コード', choices=[('0',''),('1','8H常勤'),('2','パートタイマー'),('3','6H常勤'),('4','7H常勤'),('5','32H常勤')], coerce=int, validators=[Optional()])
-    jobtype = SelectField('職種コード', choices=[('0',''),('1','看護師'),('2','事務'),('3','作業療法士'),('4','言語聴覚士'),('5','理学療法士'),('6','相談支援専門員'),('7','相談支援補助員'),('8','保育所等訪問支援員'),('9','准看護師'),('10','システム開発'),('11','広報'),('12','清掃')], coerce=int, validators=[Optional()])
-    post_code = SelectField('役職コード', choices=[('0',''),('1','所長'),('2','副所長'),('3','主任'),('4','スタッフリーダー')], coerce=int, validators=[Optional()])
-    # department = SelectField('部門コード', choices=department_opt, coerce=int, validators=[Optional()])
-    # team = SelectField('所属コード', choices=team_opt, coerce=int, validators=[Optional()])
-    # contract = SelectField('契約形態コード', choices=contract_opt, coerce=int, validators=[Optional()])
-    # jobtype = SelectField('職種コード', choices=jobtype_opt, coerce=int, validators=[Optional()])
-    # post_code = SelectField('役職コード', choices=post_code_opt, coerce=int, validators=[Optional()])
+    pulldown_tables = get_pulldown_list()
+
+    # department = SelectField('部門コード', choices=[('0',''),('1','本社'),('2','宇介'),('3','下介'),('4','鹿介'),('5','KO介'),('6','宇福'),('7','KO福'),('8','鹿福'),('9','筑波介')], coerce=int, validators=[Optional()])
+    # team = SelectField('所属コード', choices=[('0',''),('1','本社'),('2','WADEWADE訪問看護ステーション宇都宮'),('3','WADEWADE訪問看護ステーション下野'),('4','WADEWADE訪問看護ステーション鹿沼'),('5','KODOMOTOナースステーションうつのみや'),('6','わでわで在宅支援センターうつのみや'),('7','わでわで子どもそうだんしえん'),('8','WADEWADE訪問看護ステーションつくば')], coerce=int, validators=[Optional()])
+    # contract = SelectField('契約形態コード', choices=[('0',''),('1','8H常勤'),('2','パートタイマー'),('3','6H常勤'),('4','7H常勤'),('5','32H常勤')], coerce=int, validators=[Optional()])
+    # jobtype = SelectField('職種コード', choices=[('0',''),('1','看護師'),('2','事務'),('3','作業療法士'),('4','言語聴覚士'),('5','理学療法士'),('6','相談支援専門員'),('7','相談支援補助員'),('8','保育所等訪問支援員'),('9','准看護師'),('10','システム開発'),('11','広報'),('12','清掃')], coerce=int, validators=[Optional()])
+    # post_code = SelectField('役職コード', choices=[('0',''),('1','所長'),('2','副所長'),('3','主任'),('4','スタッフリーダー')], coerce=int, validators=[Optional()])
+    department = SelectField('部門コード', choices=pulldown_tables[0], coerce=int, validators=[Optional()])
+    team = SelectField('所属コード', choices=pulldown_tables[1], coerce=int, validators=[Optional()])
+    contract = SelectField('契約形態コード', choices=pulldown_tables[2], coerce=int, validators=[Optional()])
+    jobtype = SelectField('職種コード', choices=pulldown_tables[3], coerce=int, validators=[Optional()])
+    post_code = SelectField('役職コード', choices=pulldown_tables[4], coerce=int, validators=[Optional()])
     lname = StringField('苗字', validators=[Optional()])
     fname = StringField('名前', validators=[Optional()])
     lkana = StringField('苗字（カナ）', validators=[Optional()])

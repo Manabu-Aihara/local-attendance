@@ -15,13 +15,13 @@ def GetPullDownList(TABLE, colCODE, colNAME, OrderCol):
     
     GetList = []
     dblist = db.session.query(TABLE, colCODE.label("CODE"), colNAME.label("NAME") ).order_by(OrderCol)
-    # dblist = TABLE.query.with_entities(colCODE, colNAME).order_by(OrderCol).all()
+    # GetList.append(["", ""])
     GetList.append(("", ""))
     for row in dblist:
+        # GetList.append([row.CODE, row.NAME])
         GetList.append((row.CODE, row.NAME))
 
     return GetList
-    # return dblist
 
 #DB登録用　int型が空白だったらNoneを代入
 def intCheck(intValue):

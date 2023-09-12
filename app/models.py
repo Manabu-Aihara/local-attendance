@@ -3,8 +3,9 @@ from app import login
 from app import db, app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-# from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+
+from app.models_aprv import NotificationList
 
 class User(db.Model):
     __tablename__ = "M_STAFFINFO"
@@ -41,8 +42,7 @@ class User(db.Model):
     D_COUNT_ATTENDANCEs = db.relationship('CountAttendance', backref='M_STAFFINFO', lazy='dynamic')
     D_TIME_ATTENDANCEs = db.relationship('TimeAttendance', backref='M_STAFFINFO', lazy='dynamic')
     D_COUNTER_FOR_TABLEs = db.relationship('CounterForTable', backref='M_STAFFINFO', lazy='dynamic')
-    M_SYSTEMINFOs = db.relationship('SystemInfo', backref='M_STAFFINFO', lazy='dynamic')
-    
+    M_SYSTEMINFOs = db.relationship('SystemInfo', backref='M_STAFFINFO', lazy='dynamic')    
     
     def __init__(self, STAFFID):
         self.STAFFID = STAFFID
