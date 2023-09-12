@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import TypeVar, List, Callable
+from typing import TypeVar, List, Callable, Union
 
 from sqlalchemy import and_
 
@@ -40,7 +40,7 @@ class NoZeroTable():
         datetime_query = self.table.query.filter(and_(filter)).all()
         return datetime_query
 
-    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: list[datetime] | datetime) -> None:
+    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: Union[list[datetime], datetime]) -> None:
         pickup_objects = func
 
         # print(type(target))
@@ -78,7 +78,7 @@ def select_zero_date(table: T, *args: datetime) -> List[T]:
     datetime_query = table.query.filter(and_(*filters)).all()
     return datetime_query
 
-def toggle_notification_type(table, arg: str | int) -> int | str:
+def toggle_notification_type(table, arg: Union[str, int]) -> Union[int, str]:
     # 数値を内容名に置き換える
     if type(arg) is int:
         content_value = table.query.get(arg)

@@ -3,8 +3,8 @@ from app import login
 from app import db, app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-
+# from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 
 class User(db.Model):
     __tablename__ = "M_STAFFINFO"

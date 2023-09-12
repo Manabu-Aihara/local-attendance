@@ -43,7 +43,7 @@ def createMIMEText(mail_from: str, mail_to: str, message: str):
     return msg
 
 def set_smtp(account: str, password: str, mail_text_func: MIMEText):
-    host = os.getenv("OUTLOOK_HOST")
+    host = os.getenv("SAKURA_HOST")
     # Literal[587]型なので注意
     # port = 587
 
