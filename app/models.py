@@ -43,15 +43,14 @@ class User(db.Model):
     D_TIME_ATTENDANCEs = db.relationship('TimeAttendance', backref='M_STAFFINFO', lazy='dynamic')
     D_COUNTER_FOR_TABLEs = db.relationship('CounterForTable', backref='M_STAFFINFO', lazy='dynamic')
     M_SYSTEMINFOs = db.relationship('SystemInfo', backref='M_STAFFINFO', lazy='dynamic')    
+    # """
+    #     2023/8/7
+    #     リレーション機能追加
+    # """
+    D_NOTIFICATION_LISTs = db.relationship('NotificationList', backref='M_STAFFINFO')
     
     def __init__(self, STAFFID):
         self.STAFFID = STAFFID
-
-    """
-        2023/8/7
-        リレーション機能追加
-    """
-    Notification = db.relationship('NotificationList', backref='M_STAFFINFO')
 
 class StaffLoggin(UserMixin, db.Model):
     __tablename__ = "M_LOGGININFO"
@@ -90,17 +89,16 @@ class Todokede(db.Model):
     __tablename__ = "M_NOTIFICATION"
     CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
     NAME = db.Column(db.String(32), index=True, nullable=False)
+    # """
+    #     2023/8/7
+    #     リレーション機能追加
+    # """
+    D_NOTIFICATION_LISTs = db.relationship('NotificationList', backref='M_NOTIFICATION')
 
     def __init__(self, CODE, NAME):
         self.CODE = CODE
         self.NAME = NAME
     
-    """
-        2023/8/7
-        リレーション機能追加
-    """
-    Notification = db.relationship('NotificationList', backref='M_NOTIFICATION')
-
 class Busho(db.Model):
     __tablename__ = "M_DEPARTMENT"
     CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
