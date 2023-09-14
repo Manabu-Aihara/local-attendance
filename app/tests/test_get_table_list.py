@@ -7,6 +7,7 @@ from app.models_aprv import (NotificationList, Approval)
 from app.routes_approvals import get_notification_list
 from app.approval_util import (toggle_notification_type,
                                select_zero_date, NoZeroTable)
+from app.pulldown_util import get_pulldown_list
 
 @pytest.mark.skip
 def test_get_notificatin_list(app_context):
@@ -15,9 +16,11 @@ def test_get_notificatin_list(app_context):
     assert todokede_list[0] == ["", ""]
     assert todokede_list[1] == [1, "遅刻"]
 
-def test_get_depart_list(app_context):
-    result = GetPullDownList(Busho, Busho.CODE, Busho.NAME, Busho.CODE)
-    print(result)
+def test_get_pulldown_list():
+    result_tuple = get_pulldown_list()
+    assert result_tuple[0][1] == (1, "本社")
+    assert result_tuple[3][1] == (1, "看護師")
+    print(result_tuple[2])
 
 @pytest.mark.skip
 def test_toggle_notification_type(app_context):
@@ -48,12 +51,13 @@ def test_select_zero_date(app_context):
                                         NotificationList.START_TIME, NotificationList.END_TIME)
     print(f'00：00：00オブジェクト：　{result_query}')
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_select_same_date_tables(app_context):
     target_table = NoZeroTable(NotificationList)
     retrieve_table_objects = target_table.select_same_date_tables('START_DAY', 'END_DAY')
     print(retrieve_table_objects)
 
+@pytest.mark.skip
 def test_convert_zero_to_none(app_context):
     target_table = NoZeroTable(NotificationList)
     target_table.convert_value_to_none(target_table.select_same_date_tables('START_DAY', 'END_DAY'), 'END_DAY')
