@@ -1,5 +1,6 @@
-from app import app, db
+from typing import List
 
+from app import app, db
 from app.common_func import GetPullDownList
 from app.models import (Busho, Team, KinmuTaisei, Jobtype, Post)
 

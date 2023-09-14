@@ -84,7 +84,7 @@ def user_create_admin():
             mes = "この社員番号は既に存在します。"
             flash('この社員番号は既に存在します。', 'warning')
 
-            return render_template('admin/user-create-admin.html', form=form, mes=mes)        
+            return render_template('admin/user-create-admin.html', form=form, mes=mes, stf_login=current_user)        
         stl = StaffLoggin(STAFFID, PASSWORD, ADMIN)
         usr = User(STAFFID)
         rp_holiday = RecordPaidHoliday(STAFFID=STAFFID)
