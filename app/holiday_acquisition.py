@@ -9,12 +9,13 @@ from app.models import User
 @dataclass
 class HolidayAcquire:
 	id: int
+	# aquisition_days: int
 
 	def __post_init__(self):
 		target_user = User.query.filter(User.STAFFID==self.id).first()
-		self.in_day = target_user.INDAY
+		self.in_day: date = target_user.INDAY
 
-	def convert_base_day(self) -> datetime:
+	def convert_base_day(self) -> date:
 		##### 基準月に変換 #####
 		#     入社日が4月〜9月
 		#     10月1日に年休付与
@@ -34,33 +35,45 @@ class HolidayAcquire:
 			change_day = self.in_day.replace(month=4, day=1)
 			return change_day
 	
-	def calcurate_days(self, base_day: datetime) -> datetime:
-		# 12ヶ月ごとに付与される？→self.base_dayはリストじゃないか？
-		# self.base_days: List[datetime]
+	# おそらく次回付与日を求める
+	def calcurate_days(self, base_day: date) -> date:
+		# 12ヶ月ごとに付与される？→self.base_dayはリストじゃないか？に対応したのが今コメントアウト部
+		self.holidays_get_list: List[datetime]
 		while base_day < datetime.today():
 			self.base_day = base_day + relativedelta(months=12)
+			self.holidays_get_list.append(self.base_day)
 			# 無限ループ
 			if datetime.today() < self.base_day:
 				break
 			return self.calcurate_days(self.base_day)
-			# return self.calcurate_days(self.base_days[-1])
-		print(self.base_day)
-		# last_given_day = self.base_day - relativedelta(months=12)  # 今回付与
-		# next_given_day = self.base_day  # 次回付与
 
-		# return (last_given_day, next_given_day)
+		# return self.base_day.date()
+		return self.holidays_get_list[-1].date()
+
+	# おそらくこれも次回付与日を求める
+	def get_next_holiday(self):
+		base_day = self.convert_base_day()
+
+		next_acquire_day = date(date.today().year, base_day.month, 1)
+		return next_acquire_day
 										
-	def acquire_holiday(self):
+	def acquire_start_holidays(self):
 		self.given_holidays = []
 
 		base_day = self.convert_base_day()
-		if date.today() < base_day and monthmod(date.today(), base_day)[0].months < 6:
-			self.given_holidays.append(self.inday)  # 今回付与
-			self.given_holidays(base_day)  # 次回付与
-		elif date.today() > base_day and monthmod(base_day, date.today())[0].months < 6:
-			given_days = self.calcurate_days(base_day)
-			return given_days
-		else:
-			given_days = self.calcurate_days(base_day)
-			return given_days
+		if date.today() < base_day: #and monthmod(date.today(), base_day)[0].months < 6:
+			if monthmod(self.in_day, base_day)[0].months <= 1:
+				self.aquisition_days = 2
+			elif monthmod(self.in_day, base_day)[0].months <= 3:
+				self.aquisition_days = 1
+			elif monthmod(self.in_day, base_day)[0].months > 3:
+				self.aquisition_days = 0
+
+		# diff_month_today = monthmod(self.in_day, datetime.today())[0].months
+		diff_month_lastday = monthmod(self.in_day, self.calcurate_days(base_day))[0].months
+	def plus_holiday(self) -> int:
+		base_day = self.convert_base_day()
+
+		if base_day == date.today():
+			self.aquisition_days += 10
 			

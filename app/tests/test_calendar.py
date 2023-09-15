@@ -1,5 +1,5 @@
 import pytest
-
+from datetime import date
 from app.holiday_acquisition import HolidayAcquire
 from app.new_calendar_class import print_monthrange
 
@@ -14,10 +14,7 @@ def test_convert_base_day(get_official_user):
   assert conv_date.month == 10
 
 def test_calcurate_days(get_official_user):
-  conv_date = get_official_user.convert_base_day()
-  get_official_user.calcurate_days(conv_date)
-  # print(test_date)
-
-def test_print_monthrange():
-  print_monthrange()
-  # assert days == 30
+  conv_date: date = get_official_user.convert_base_day()
+  test_date1: date = get_official_user.calcurate_days(conv_date)
+  test_date2: date = get_official_user.get_next_holiday()
+  assert test_date1 == test_date2

@@ -259,7 +259,9 @@ def users_nenkyu():
 
                             ##### 今回付与日数 #####
                             inday = rp_holiday.INDAY
+                            # 今日 - 入社日
                             ddm = monthmod(inday, datetime.today())[0].months
+                            # last_givedayは前回付与日？
                             dm = monthmod(inday, last_giveday)[0].months
                             
                             """ 常勤 """
