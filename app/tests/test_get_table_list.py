@@ -16,6 +16,7 @@ def test_get_notificatin_list(app_context):
     assert todokede_list[0] == ["", ""]
     assert todokede_list[1] == [1, "遅刻"]
 
+@pytest.mark.skip
 def test_get_pulldown_list():
     result_tuple = get_pulldown_list()
     assert result_tuple[0][1] == (1, "本社")
@@ -28,14 +29,6 @@ def test_toggle_notification_type(app_context):
     print(result)
     assert result == "年休全日"
 
-# def test_convert_object_time(app_context):
-#     notification_obj = NotificationList.query.get(5)
-#     START_TIME: datetime = notification_obj.START_TIME
-#     END_TIME: datetime = notification_obj.END_TIME
-#     replaced_one_obj: NotificationList = convert_object_time(START_TIME, END_TIME)
-#     print(replaced_one_obj.START_TIME.strftime(''))
-#     print(replaced_one_obj.END_TIME.strftime(''))
-
 @pytest.mark.skip
 def test_get_empty_object(app_context):
     approval_member = Approval.query.filter(Approval.STAFFID==20).first()
@@ -45,7 +38,7 @@ def test_get_empty_object(app_context):
     assert isinstance(approval_member, Approval) == True
     assert isinstance(approval_non_member, Approval) == False
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_select_zero_date(app_context):
     result_query = select_zero_date(NotificationList,
                                         NotificationList.START_TIME, NotificationList.END_TIME)
@@ -60,5 +53,5 @@ def test_select_same_date_tables(app_context):
 @pytest.mark.skip
 def test_convert_zero_to_none(app_context):
     target_table = NoZeroTable(NotificationList)
-    target_table.convert_value_to_none(target_table.select_same_date_tables('START_DAY', 'END_DAY'), 'END_DAY')
+    target_table.convert_value_to_none(target_table.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
 

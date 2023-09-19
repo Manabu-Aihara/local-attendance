@@ -43,11 +43,12 @@ class User(db.Model):
     D_TIME_ATTENDANCEs = db.relationship('TimeAttendance', backref='M_STAFFINFO', lazy='dynamic')
     D_COUNTER_FOR_TABLEs = db.relationship('CounterForTable', backref='M_STAFFINFO', lazy='dynamic')
     M_SYSTEMINFOs = db.relationship('SystemInfo', backref='M_STAFFINFO', lazy='dynamic')    
-    # """
     #     2023/8/7
     #     リレーション機能追加
-    # """
     D_NOTIFICATION_LISTs = db.relationship('NotificationList', backref='M_STAFFINFO')
+    #     2023/9/19
+    #     リレーション機能追加
+    M_TEAMs = db.relationship('Team', backref='M_STAFFINFO')
     
     def __init__(self, STAFFID):
         self.STAFFID = STAFFID
@@ -165,7 +166,7 @@ class Post(db.Model):
 
 class Team(db.Model):
     __tablename__ = "M_TEAM"
-    CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
+    CODE = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.TEAM_CODE'), primary_key=True, index=True, nullable=False)
     NAME = db.Column(db.String(50), index=True, nullable=False)
     SHORTNAME = db.Column(db.String(50), index=True, nullable=False)
 

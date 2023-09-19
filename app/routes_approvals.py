@@ -13,7 +13,8 @@ from app.models import (User, Todokede, SystemInfo)
 from app.models_aprv import (NotificationList, Approval)
 from app.errors import not_admin
 from app.approval_util import (toggle_notification_type, NoZeroTable)
-from app.approval_contact import (ask_approval, send_mail)
+from app.approval_contact import (make_skype_object, make_system_skype_object,
+                                  send_mail)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -218,13 +219,28 @@ def append_approval():
     db.session.add(one_notification)
     db.session.commit()
 
-    skype_account = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
     # skypeにて、申請の通知
-    asking_user = User.query.get(current_user.STAFFID)
-    asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が来ています。\n\
-        {request.url_root}approval-list/charge"
+    # 所属コード
+    # assert (2,) == 2
+    team_code = User.query.with_entities(User.TEAM_CODE)\
+        .filter(User.STAFFID==current_user.STAFFID).first()
     
-    ask_approval(skype_account.MAIL, skype_account.MAIL_PASS, asking_message)
+    approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
+    # 承認者Skypeログイン情報
+    skype_account = SystemInfo.query.with_entities(SystemInfo.MAIL, SystemInfo.MAIL_PASS)\
+        .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+    
+    # 送信メッセージ
+    asking_user = User.query.get(current_user.STAFFID)
+    asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
+        {request.url_root}approval-list/charge"
+
+    skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MAIL_PASS)
+    skype_system_obj = make_system_skype_object()
+
+    # Skypeシステム（仲介）から送信
+    channel = skype_system_obj.contacts[skype_approval_obj.conn.userId].chat
+    channel.sendMsg(asking_message)
 
     return redirect('/')
 
@@ -261,13 +277,18 @@ def change_status_judge(id, STAFFID, status: int):
         f"{target_notification.START_DAY}:\
             {toggle_notification_type(Todokede, target_notification.N_CODE)}\
                 \n{target_notification.REMARK}\
-                \n{StatusEnum(int(status)).name}\
+                \n{StatusEnum(int(status)).name}です。\
                 \n\n{request.form.get('comment')}"
 
     # 承認者よりコメントをメールで
-    send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
-              approval_reply_user.MAIL_PASS, approval_reply_message)
+    # send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
+    #           approval_reply_user.MAIL_PASS, approval_reply_message)
+    skype_system_obj = make_system_skype_object()
+    skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MAIL_PASS)
+
+    channel = skype_system_obj.contacts[skype_user_obj.conn.userId].chat
+    channel.sendMsg(approval_reply_message)
     
-    # やはりこちらはダメ、url_forわからん
+    # やはりこちらはダメ、url_forクセがすごい
     # return redirect(url_for('get_middle_approval'))
     return redirect('/approval-list/charge?')

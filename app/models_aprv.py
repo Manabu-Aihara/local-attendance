@@ -5,6 +5,7 @@ class Approval(db.Model):
     __tablename__ = "M_APPROVAL"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     STAFFID = db.Column(db.Integer, db.ForeignKey('M_STAFFINFO.STAFFID'), index=True, nullable=False)
+    TEAM_CODE = db.Column(db.Integer, db.ForeignKey('M_TEAM.CODE'), index=True, nullable=False)
     TYPE = db.Column(db.String(10), index=True, nullable=False)
     GROUPNAME = db.Column(db.String(50), nullable=False)
 

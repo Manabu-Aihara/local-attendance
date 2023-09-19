@@ -2,7 +2,7 @@ from datetime import datetime
 from dataclasses import dataclass, field
 from typing import TypeVar, List, Callable, Union
 
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 
 from app import db
 
@@ -30,21 +30,21 @@ class NoZeroTable():
         datetime_query = self.table.query.filter(and_(filter)).all()
         return datetime_query
 
-    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: Union[list[datetime], datetime]) -> None:
+    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: list[str]) -> None:
         pickup_objects = func
 
         # print(type(target))
-        # print(len(pickup_objects))
         for pickup_obj in pickup_objects:
             if type(target) is list:
-                for arg in target:
-                    setattr(pickup_obj, arg, None)
-                    # print(f'Noneを期待：　{getattr(pickup_obj, arg)}')
+                for one_val in target:
+                    setattr(pickup_obj, one_val, None)
+                    # print(type(one_val))
+                    # print(f'Noneを期待：　{getattr(pickup_obj, one_val)}')
                     # db.session.merge(pickup_obj)
                     # db.session.commit()
             # ここは'str'指定じゃないとダメ
-            elif type(target) is str:
-                setattr(pickup_obj, target, None)
+            # elif type(target) is str:
+            #     setattr(pickup_obj, target, None)
                 # print(f'Noneを期待：　{getattr(pickup_obj, target)}')
                 # db.session.merge(pickup_obj)
                 # db.session.commit()
@@ -65,7 +65,7 @@ def select_zero_date(table: T, *args: datetime) -> List[T]:
         #   if arg==0:
             filters.append(arg==0)
     
-    datetime_query = table.query.filter(and_(*filters)).all()
+    datetime_query = table.query.filter(or_(*filters)).all()
     return datetime_query
 
 def toggle_notification_type(table, arg: Union[str, int]) -> Union[int, str]:
