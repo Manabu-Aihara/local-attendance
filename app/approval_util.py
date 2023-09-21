@@ -19,8 +19,8 @@ class NoZeroTable():
         filters = []
         for arg in args:
             filters.append(getattr(self.table, arg)==0)
-        
-        datetime_query = self.table.query.filter(and_(*filters)).all()
+
+        datetime_query = self.table.query.filter(or_(*filters)).all()
         return datetime_query
     
     # 同日付が存在するオブジェクトを抽出
@@ -30,35 +30,23 @@ class NoZeroTable():
         datetime_query = self.table.query.filter(and_(filter)).all()
         return datetime_query
 
-    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: list[str]) -> None:
+    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], *target: datetime) -> None:
         pickup_objects = func
 
-        # print(type(target))
         for pickup_obj in pickup_objects:
-            if type(target) is list:
-                for one_val in target:
+            for one_val in target:
+                if getattr(pickup_obj, one_val).strftime('%H:%M:%S') == "00:00:00":
                     setattr(pickup_obj, one_val, None)
-                    # print(type(one_val))
                     # print(f'Noneを期待：　{getattr(pickup_obj, one_val)}')
-                    # db.session.merge(pickup_obj)
-                    # db.session.commit()
-            # ここは'str'指定じゃないとダメ
-            # elif type(target) is str:
-            #     setattr(pickup_obj, target, None)
-                # print(f'Noneを期待：　{getattr(pickup_obj, target)}')
                 # db.session.merge(pickup_obj)
                 # db.session.commit()
-            else:
-                print('type is not both')
 
-"""
-    00:00:00の値を持つ属性を有するオブジェクトのリストを返す
-    Param:
-        table: T (クラステーブル)
-        *args: datetime (00：00：00を持つであろう属性名)
-    Return:
-        datetime_query: List[T]
-    """         
+    # 00:00:00の値を持つ属性を有するオブジェクトのリストを返す
+    # Param:
+    #     table: T (クラステーブル)
+    #     *args: datetime (00：00：00を持つであろう属性名)
+    # Return:
+    #     datetime_query: List[T]
 def select_zero_date(table: T, *args: datetime) -> List[T]:
     filters = []
     for arg in args:

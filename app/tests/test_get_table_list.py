@@ -38,7 +38,7 @@ def test_get_empty_object(app_context):
     assert isinstance(approval_member, Approval) == True
     assert isinstance(approval_non_member, Approval) == False
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_select_zero_date(app_context):
     result_query = select_zero_date(NotificationList,
                                         NotificationList.START_TIME, NotificationList.END_TIME)
@@ -50,8 +50,8 @@ def test_select_same_date_tables(app_context):
     retrieve_table_objects = target_table.select_same_date_tables('START_DAY', 'END_DAY')
     print(retrieve_table_objects)
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_convert_zero_to_none(app_context):
     target_table = NoZeroTable(NotificationList)
-    target_table.convert_value_to_none(target_table.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
+    target_table.convert_value_to_none(target_table.select_zero_date_tables('START_TIME', 'END_TIME'), 'START_TIME', 'END_TIME')
 

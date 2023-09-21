@@ -4,7 +4,7 @@
 2022/04版
 **********
 """
-# from app import routes_admin_nenkyu, routes_admin_display_table
+from app import routes_admin_nenkyu, routes_admin_display_table
 from flask import render_template, flash, redirect, request, session
 from werkzeug.urls import url_parse
 from flask.helpers import url_for

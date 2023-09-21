@@ -15,6 +15,8 @@ class HolidayAcquire:
 		target_user = User.query.filter(User.STAFFID==self.id).first()
 		self.in_day: date = target_user.INDAY
 
+	# acquire: 日数
+	# get: 日付
 	def convert_base_day(self) -> date:
 		##### 基準月に変換 #####
 		#     入社日が4月〜9月
@@ -36,19 +38,20 @@ class HolidayAcquire:
 			return change_day
 	
 	# おそらく次回付与日を求める
-	def calcurate_days(self, base_day: date) -> date:
+	def calcurate_days(self, base_day: date) -> List[datetime]:
 		# 12ヶ月ごとに付与される？→self.base_dayはリストじゃないか？に対応したのが今コメントアウト部
-		self.holidays_get_list: List[datetime]
+		self.holidays_get_list = []
 		while base_day < datetime.today():
 			self.base_day = base_day + relativedelta(months=12)
+			print(self.base_day)
 			self.holidays_get_list.append(self.base_day)
 			# 無限ループ
 			if datetime.today() < self.base_day:
 				break
 			return self.calcurate_days(self.base_day)
 
-		# return self.base_day.date()
-		return self.holidays_get_list[-1].date()
+		return self.holidays_get_list
+		# return self.holidays_get_list[-1].date()
 
 	# おそらくこれも次回付与日を求める
 	def get_next_holiday(self):
@@ -62,7 +65,7 @@ class HolidayAcquire:
 
 		base_day = self.convert_base_day()
 		if date.today() < base_day: #and monthmod(date.today(), base_day)[0].months < 6:
-			if monthmod(self.in_day, base_day)[0].months <= 1:
+			if monthmod(self.in_day, base_day)[0].months <= 2:
 				self.aquisition_days = 2
 			elif monthmod(self.in_day, base_day)[0].months <= 3:
 				self.aquisition_days = 1
