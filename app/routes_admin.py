@@ -4,14 +4,13 @@
 2022/04版
 **********
 """
-# from app import routes_admin_nenkyu, routes_admin_display_table
+from app import routes_admin_nenkyu, routes_admin_display_table
 from flask import render_template, flash, redirect, request, session
 from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from flask_login.utils import login_required
 from app import app, db
 from app.forms import LoginForm, AdminUserCreateForm, ResetPasswordForm, DelForm, UpdateForm, SaveForm, EditForm, AddDataUserForm, SelectMonthForm
-# from app.user_add_forms import LoginForm, AdminUserCreateForm, ResetPasswordForm, DelForm, UpdateForm, SaveForm, EditForm, AddDataUserForm, SelectMonthForm
 from flask_login import current_user, login_user
 from app.models import User, Shinsei, StaffLoggin, Todokede, RecordPaidHoliday, CountAttendance, TimeAttendance, SystemInfo, CounterForTable
 from flask_login import logout_user
