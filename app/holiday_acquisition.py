@@ -43,7 +43,6 @@ class HolidayAcquire:
 		self.holidays_get_list = []
 		while base_day < datetime.today():
 			self.base_day = base_day + relativedelta(months=12)
-			print(self.base_day)
 			self.holidays_get_list.append(self.base_day)
 			# 無限ループ
 			if datetime.today() < self.base_day:
