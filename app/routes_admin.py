@@ -561,8 +561,8 @@ def users_detail(STAFFID):
     cal = []
     hld = []
     
-    mkc = MakeCalender(cal, hld, y, m)
-    mkc.mkcal()
+    # mkc = MakeCalender(cal, hld, y, m)
+    # mkc.mkcal()
     
     ##### 年休登録 #####
     if shinseis is None:

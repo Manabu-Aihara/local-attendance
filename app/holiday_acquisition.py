@@ -37,9 +37,8 @@ class HolidayAcquire:
 			change_day = self.in_day.replace(month=4, day=1)
 			return change_day
 	
-	# おそらく次回付与日を求める
+	# 付与日のリストを返す（一日足りないか？）
 	def calcurate_days(self, base_day: date) -> List[datetime]:
-		# 12ヶ月ごとに付与される？→self.base_dayはリストじゃないか？に対応したのが今コメントアウト部
 		self.holidays_get_list = []
 		while base_day < datetime.today():
 			self.base_day = base_day + relativedelta(months=12)
@@ -47,7 +46,7 @@ class HolidayAcquire:
 			# 無限ループ
 			if datetime.today() < self.base_day:
 				break
-			return self.calcurate_days(self.base_day)
+			return self.holidays_get_list + self.calcurate_days(self.base_day)
 
 		return self.holidays_get_list
 		# return self.holidays_get_list[-1].date()
