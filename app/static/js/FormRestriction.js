@@ -47,7 +47,6 @@ const reflectTimeForm = (diffNum) => {
 const restrictCollection = () => {
   console.log("Called!")
   console.log(selectChildren.selectedIndex - 1);
-  // console.log((selectChildren.selectedIndex - 1) === (((((((((3 )|| 5 )|| 7 )|| 8 )|| 9 )|| 17 )|| 18 )|| 19 )|| 20) ? true : false);
 
   // for(let option in selectChildren){
   //   console.log(option.selectedIndex);

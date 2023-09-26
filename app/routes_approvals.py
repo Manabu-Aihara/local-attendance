@@ -178,72 +178,83 @@ def retrieve_form_data(form_data: List[str]) -> list:
     return list_data
 
 # 申請確認ページ
-@app.route('/confirm', methods=['POST'])
-@login_required
-def post_notification():
-    # 取り出したいformの項目
-    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
-    form_list_data = retrieve_form_data(approval_list)
+# @app.route('/confirm', methods=['POST'])
+# @login_required
+# def post_notification():
+#     # 取り出したいformの項目
+#     approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
+#     form_list_data = retrieve_form_data(approval_list)
 
-    # 数値(CODE)を文字列(NAME)に入れ替え
-    form_content: str = toggle_notification_type(Todokede, int(request.form.get('content')))
-    # 先頭に挿入
-    form_list_data.insert(0, form_content)
+#     # 数値(CODE)を文字列(NAME)に入れ替え
+#     form_content: str = toggle_notification_type(Todokede, int(request.form.get('content')))
+#     # 先頭に挿入
+#     form_list_data.insert(0, form_content)
 
-    return render_template('attendance/approval_confirm.html', 
-                        one_data=form_list_data,
-                        f=get_url_past_flag(),
-                        stf_login=current_user)
+#     return render_template('attendance/approval_confirm.html', 
+#                         one_data=form_list_data,
+#                         f=get_url_past_flag(),
+#                         stf_login=current_user)
 
 # DBinsert & skype送信ページ
 @app.route('/regist', methods=['POST'])
 @login_required
 def append_approval():
 
+    import tkinter as tk
+    from tkinter import messagebox
+
+    root = tk.Tk() # ウインドウを作る
+    # get two frames, one is emty対策
+    root.withdraw()
+    confirm_dialog = messagebox.askokcancel("確認", "申請します。この内容で宜しいですか？")
+    
+    if confirm_dialog == True:
     # こちらは数値(CODE)に変換
-    form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
+    # form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
     
-    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
-    form_list_data = retrieve_form_data(approval_list)
+        approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark', 'content']
+        form_list_data = retrieve_form_data(approval_list)
 
-    # end-day空白の際
-    if form_list_data[1] == '':
-        form_list_data[1] = None
+        # end-day空白の際
+        if form_list_data[1] == '':
+            form_list_data[1] = None
 
-    # 注意: start-day, start-time, end_day...の順
-    one_notification = NotificationList(
-        current_user.STAFFID, form_content, form_list_data[0], form_list_data[2],
-        form_list_data[1], form_list_data[3], form_list_data[4]
-    )
+        # 注意: start-day, start-time, end_day...の順
+        one_notification = NotificationList(
+            current_user.STAFFID, form_list_data[5], form_list_data[0], form_list_data[2],
+            form_list_data[1], form_list_data[3], form_list_data[4]
+        )
 
-    db.session.add(one_notification)
-    db.session.commit()
+        db.session.add(one_notification)
+        db.session.commit()
 
-    # skypeにて、申請の通知
-    # 所属コード
-    # assert (2,) == 2
-    team_code = User.query.with_entities(User.TEAM_CODE)\
-        .filter(User.STAFFID==current_user.STAFFID).first()
+        # skypeにて、申請の通知
+        # 所属コード
+        # assert (2,) == 2
+        team_code = User.query.with_entities(User.TEAM_CODE)\
+            .filter(User.STAFFID==current_user.STAFFID).first()
+        
+        approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
+        # 承認者Skypeログイン情報
+        skype_account = SystemInfo.query.with_entities(SystemInfo.MAIL, SystemInfo.MICRO_PASS)\
+            .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+        
+        # 送信メッセージ
+        asking_user = User.query.get(current_user.STAFFID)
+        asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
+            {request.url_root}approval-list/charge"
+
+        skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
+        skype_system_obj = make_system_skype_object()
+
+        # Skypeシステム（仲介）から送信
+        channel = skype_system_obj.contacts[skype_approval_obj.conn.userId].chat
+        channel.sendMsg(asking_message)
+
+        return redirect('/')
+    else:
+        return redirect(url_for('get_notification_form'))
     
-    approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
-    # 承認者Skypeログイン情報
-    skype_account = SystemInfo.query.with_entities(SystemInfo.MAIL, SystemInfo.MAIL_PASS)\
-        .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
-    
-    # 送信メッセージ
-    asking_user = User.query.get(current_user.STAFFID)
-    asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
-        {request.url_root}approval-list/charge"
-
-    skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MAIL_PASS)
-    skype_system_obj = make_system_skype_object()
-
-    # Skypeシステム（仲介）から送信
-    channel = skype_system_obj.contacts[skype_approval_obj.conn.userId].chat
-    channel.sendMsg(asking_message)
-
-    return redirect('/')
-
 """
     申請依頼に対して、許可か拒否か、DBupdate
     Param:
@@ -284,7 +295,7 @@ def change_status_judge(id, STAFFID, status: int):
     # send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
     #           approval_reply_user.MAIL_PASS, approval_reply_message)
     skype_system_obj = make_system_skype_object()
-    skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MAIL_PASS)
+    skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MICRO_PASS)
 
     channel = skype_system_obj.contacts[skype_user_obj.conn.userId].chat
     channel.sendMsg(approval_reply_message)

@@ -4,7 +4,7 @@
 <h3 class="notification-title">届出申請</h3>
 
 <h4>社員番号{{ stf_login.STAFFID }}：　{{ stf_login.LNAME }}{{ stf_login.FNAME }}</h4>
-<form method="post" action="/confirm" name="notice-form" class="approval">
+<form method="post" action="/regist" name="notice-form" class="approval">
   <div class="w-25">
     <select class="form-control form-control-sm" name="content" required>
       <option value="">選択してください</option>
@@ -13,8 +13,8 @@
       {% endfor %}
     </select>
   </div>
-  <div><p class="p-day">対象日</p><input type="date" name="start-day" required>〜</div>
-  <div><p class="p-day">対象終了日（同日なら入力の必要はありません）</p><input type="date" name="end-day"></div>
+  <div><p class="p-day">対象日</p><input type="date" name="start-day" class="notice-day" required>〜</div>
+  <div><p class="p-day">対象終了日（同日なら入力の必要はありません）</p><input type="date" class="notice-day" name="end-day"></div>
   <div class="w-25"></div>
   <div><p>開始時刻</p><input type="time" name="start-time" class="restrict-form">〜</div>
   <div><p>終了時刻</p><input type="time" name="end-time" class="restrict-form"></div>
@@ -22,8 +22,19 @@
     <p>備考(欠勤や遅刻なら理由等)</p>
     <textarea name="remark"></textarea>
   </div>
-  <button type="submit" class="btn btn-ask">確認画面</button>
+  <button type="submit" class="btn btn-ask">申請</button>
 </form>
 
+<script>
+  // const askButton = document.getElementsByClassName('btn-ask')[0];
+  
+  // askButton.addEventListener('click', () => {
+  //   if(window.confirm("申請します。この内容で宜しいですか？")){
+  //     return true;
+  //   }else{
+  //     return false;
+  //   }
+  // });  
+</script>
 <script src="/static/js/FormRestriction.js"></script>
 {% endblock %}
