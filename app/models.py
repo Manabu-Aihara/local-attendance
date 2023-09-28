@@ -347,6 +347,7 @@ class SystemInfo(db.Model):
     MAIL = db.Column(db.String(50), index=True, nullable=True)
     MAIL_PASS = db.Column(db.String(50), index=True, nullable=True)            
     MICRO_PASS = db.Column(db.String(50), index=True, nullable=True)
+    SKYPE_ID = db.Column(db.String(100), index=False, nullable=True)
     PAY_PASS = db.Column(db.String(50), index=True, nullable=True)
     KANAMIC_PASS = db.Column(db.String(50), index=True, nullable=True)
     ZOOM_PASS = db.Column(db.String(50), index=True, nullable=True)

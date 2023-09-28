@@ -46,7 +46,7 @@ def get_url_past_flag() -> bool:
 def get_notification_list(STAFFID):
     # 00：00：00処理ユーティリティクラス
     table_objects = NoZeroTable(NotificationList)
-    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
+    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), 'START_TIME', 'END_TIME')
 
     user_basic_info: User = User.query.with_entities(User.STAFFID, User.LNAME, User.FNAME).filter(User.STAFFID==STAFFID).first()
     user_notification_list = NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, Todokede.NAME,
@@ -90,7 +90,7 @@ def auth_approval_user(func):
 def get_middle_approval():
     # 00：00：00処理ユーティリティクラス
     table_objects = NoZeroTable(NotificationList)
-    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), ['START_TIME', 'END_TIME'])
+    table_objects.convert_value_to_none(table_objects.select_zero_date_tables('START_TIME', 'END_TIME'), 'START_TIME', 'END_TIME')
 
     all_notification_list = (NotificationList.query.with_entities(NotificationList.NOTICE_DAYTIME, NotificationList.STAFFID,
                                                User.LNAME, User.FNAME, Todokede.NAME, NotificationList.STATUS,
@@ -200,6 +200,8 @@ def retrieve_form_data(form_data: List[str]) -> list:
 @login_required
 def append_approval():
 
+    # sudo yum install python3-tkinter
+    # さくらサーバー環境ではコレ必要（おまけに3.6）
     import tkinter as tk
     from tkinter import messagebox
 

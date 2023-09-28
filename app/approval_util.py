@@ -24,32 +24,22 @@ class NoZeroTable():
         return datetime_query
     
     # 同日付が存在するオブジェクトを抽出
-    def select_same_date_tables(self, *args: datetime) -> List[T]:
-        filter = getattr(self.table, args[0])==getattr(self.table, args[1])
+    # def select_same_date_tables(self, *args: datetime) -> List[T]:
+    #     filter = getattr(self.table, args[0])==getattr(self.table, args[1])
     
-        datetime_query = self.table.query.filter(and_(filter)).all()
-        return datetime_query
+    #     datetime_query = self.table.query.filter(and_(filter)).all()
+    #     return datetime_query
 
-    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], target: list[str]) -> None:
+    def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], *target: datetime) -> None:
         pickup_objects = func
 
-        # print(type(target))
         for pickup_obj in pickup_objects:
-            if type(target) is list:
-                for one_val in target:
+            for one_val in target:
+                if getattr(pickup_obj, one_val).strftime('%H:%M:%S') == "00:00:00":
                     setattr(pickup_obj, one_val, None)
-                    # print(type(one_val))
                     # print(f'Noneを期待：　{getattr(pickup_obj, one_val)}')
-                    # db.session.merge(pickup_obj)
-                    # db.session.commit()
-            # ここは'str'指定じゃないとダメ
-            # elif type(target) is str:
-            #     setattr(pickup_obj, target, None)
-                # print(f'Noneを期待：　{getattr(pickup_obj, target)}')
                 # db.session.merge(pickup_obj)
                 # db.session.commit()
-            else:
-                print('type is not both')
 
 """
     00:00:00の値を持つ属性を有するオブジェクトのリストを返す

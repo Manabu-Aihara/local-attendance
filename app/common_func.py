@@ -11,15 +11,15 @@ from app import app, db
     Table name
     sort基準
     """
-def GetPullDownList(TABLE, colCODE, colNAME, OrderCol) -> list[tuple]:
+def GetPullDownList(TABLE, colCODE, colNAME, OrderCol) -> list:
     
     GetList = []
     dblist = db.session.query(TABLE, colCODE.label("CODE"), colNAME.label("NAME") ).order_by(OrderCol)
-    # GetList.append(["", ""])
-    GetList.append(("0", ""))
+    GetList.append(["", ""])
+    # GetList.append(("0", ""))
     for row in dblist:
-        # GetList.append([row.CODE, row.NAME])
-        GetList.append((row.CODE, row.NAME))
+        GetList.append([row.CODE, row.NAME])
+        # GetList.append((row.CODE, row.NAME))
 
     return GetList
 
