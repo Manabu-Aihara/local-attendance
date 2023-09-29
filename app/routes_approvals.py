@@ -238,7 +238,7 @@ def append_approval():
         
         approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
         # 承認者Skypeログイン情報
-        skype_account = SystemInfo.query.with_entities(SystemInfo.MAIL, SystemInfo.MICRO_PASS)\
+        skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
             .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
         
         # 送信メッセージ
@@ -246,11 +246,11 @@ def append_approval():
         asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
             {request.url_root}approval-list/charge"
 
-        skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
+        # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
         skype_system_obj = make_system_skype_object()
 
         # Skypeシステム（仲介）から送信
-        channel = skype_system_obj.contacts[skype_approval_obj.conn.userId].chat
+        channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
         channel.sendMsg(asking_message)
 
         return redirect('/')
@@ -280,7 +280,8 @@ def change_status_judge(id, STAFFID, status: int):
 
     update_status(id, status)
     # 承認待ちユーザー
-    approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+        .filter(SystemInfo.STAFFID==STAFFID).first()
     # 承認するユーザー
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
     # 承認判断対象
@@ -297,9 +298,9 @@ def change_status_judge(id, STAFFID, status: int):
     # send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
     #           approval_reply_user.MAIL_PASS, approval_reply_message)
     skype_system_obj = make_system_skype_object()
-    skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MICRO_PASS)
+    # skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MICRO_PASS)
 
-    channel = skype_system_obj.contacts[skype_user_obj.conn.userId].chat
+    channel = skype_system_obj.contacts[approval_wait_user.SKYPE_ID].chat
     channel.sendMsg(approval_reply_message)
     
     # やはりこちらはダメ、url_forクセがすごい

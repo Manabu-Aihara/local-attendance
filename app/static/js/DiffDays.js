@@ -15,11 +15,12 @@ const compareDays1 = () => {
 }
 
 const compareDays2 = () => {
-  const now = new Date();
-  const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  // 本日の日付
+  // https://www.ey-office.com/blog_archive/2023/04/18/short-code-to-get-todays-date-in-yyyy-mm-dd-format-in-javascript/
+  const today = new Date().toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit", day: "2-digit"}).replaceAll('/', '-');
   try {
-    console.log(formDays[0].value);
-    if (today > formDays[0].value) {
+    console.log(today);
+    if (today >= formDays[0].value) {
       // throw new Error("前日の申請はできません。");
       alert("前日の申請はできません。");
       formDays[0].value = "";
@@ -31,5 +32,5 @@ const compareDays2 = () => {
   }
 }
 
-// formDays[0].addEventListener('change', compareDays2);
+formDays[0].addEventListener('change', compareDays2);
 formDays[1].addEventListener('change', compareDays1);
