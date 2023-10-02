@@ -200,62 +200,58 @@ def retrieve_form_data(form_data: List[str]) -> list:
 @login_required
 def append_approval():
 
-    # sudo yum install python3-tkinter
-    # さくらサーバー環境ではコレ必要（おまけに3.6）
-    import tkinter as tk
-    from tkinter import messagebox
+    # import tkinter as tk
+    # from tkinter import messagebox
 
-    root = tk.Tk() # ウインドウを作る
-    # get two frames, one is emty対策
-    root.withdraw()
-    confirm_dialog = messagebox.askokcancel("確認", "申請します。この内容で宜しいですか？")
+    # root = tk.Tk() # ウインドウを作る
+    # # get two frames, one is emty対策
+    # root.withdraw()
+    # confirm_dialog = messagebox.askokcancel("確認", "申請します。この内容で宜しいですか？")
     
-    if confirm_dialog == True:
+    # if confirm_dialog == True:
     # こちらは数値(CODE)に変換
     # form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
     
-        approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark', 'content']
-        form_list_data = retrieve_form_data(approval_list)
+    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark', 'content']
+    form_list_data = retrieve_form_data(approval_list)
 
-        # end-day空白の際
-        if form_list_data[1] == '':
-            form_list_data[1] = None
+    # end-day空白の際
+    if form_list_data[1] == '':
+        form_list_data[1] = None
 
-        # 注意: start-day, start-time, end_day...の順
-        one_notification = NotificationList(
-            current_user.STAFFID, form_list_data[5], form_list_data[0], form_list_data[2],
-            form_list_data[1], form_list_data[3], form_list_data[4]
-        )
+    # 注意: start-day, start-time, end_day...の順
+    one_notification = NotificationList(
+        current_user.STAFFID, form_list_data[5], form_list_data[0], form_list_data[2],
+        form_list_data[1], form_list_data[3], form_list_data[4]
+    )
 
-        db.session.add(one_notification)
-        db.session.commit()
+    db.session.add(one_notification)
+    db.session.commit()
 
-        # skypeにて、申請の通知
-        # 所属コード
-        # assert (2,) == 2
-        team_code = User.query.with_entities(User.TEAM_CODE)\
-            .filter(User.STAFFID==current_user.STAFFID).first()
-        
-        approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
-        # 承認者Skypeログイン情報
-        skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
-            .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
-        
-        # 送信メッセージ
-        asking_user = User.query.get(current_user.STAFFID)
-        asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
-            {request.url_root}approval-list/charge"
+    # skypeにて、申請の通知
+    # 所属コード
+    # assert (2,) == 2
+    team_code = User.query.with_entities(User.TEAM_CODE)\
+        .filter(User.STAFFID==current_user.STAFFID).first()
+    
+    approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
+    # 承認者Skypeログイン情報
+    skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+        .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+    
+    # 送信メッセージ
+    asking_user = User.query.get(current_user.STAFFID)
+    asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
+        {request.url_root}approval-list/charge"
 
-        # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
-        skype_system_obj = make_system_skype_object()
+    # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
+    skype_system_obj = make_system_skype_object()
 
-        # Skypeシステム（仲介）から送信
-        channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
-        channel.sendMsg(asking_message)
+    # Skypeシステム（仲介）から送信
+    channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
+    # channel.sendMsg(asking_message)
 
-        return redirect('/')
-    else:
-        return redirect(url_for('get_notification_form'))
+    return redirect('/')
     
 """
     申請依頼に対して、許可か拒否か、DBupdate
