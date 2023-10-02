@@ -249,7 +249,7 @@ def append_approval():
 
     # Skypeシステム（仲介）から送信
     channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
-    # channel.sendMsg(asking_message)
+    channel.sendMsg(asking_message)
 
     return redirect('/')
     
