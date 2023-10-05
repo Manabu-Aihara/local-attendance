@@ -80,12 +80,13 @@ input.month-calender {
 h3.notification-title {
   text-align: center;
 }
-form.approval {
+form#approval {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   height: 35vw;
   font-size: 1.7rem;
+  position: relative;
   div:not(.remark) {
     @include flex-col(25%);
     padding: 0 1.5%;
@@ -104,11 +105,32 @@ form.approval {
       height: 65%;
     }
   }
-  button.btn-ask {
+  input.btn-ask {
     width: 25%;
     background-color: lightgray;
     box-shadow: 3px 3px 6px 0 rgba(0, 0, 0, .3);
     margin-top: 2%;
+  }
+  #confirm-modal {
+    visibility: hidden;
+    background-color: darkturquoise;
+    width: 45%;
+    transition: visiblity 2s ease 2s;
+    box-shadow: 3px 3px 6px 0 rgba(0, 0, 0, .3);
+    padding: 4%;
+    position : absolute;
+    bottom : 100%;
+    right : 0%;
+    p {
+      text-align: center;
+    }
+    .submit-area {
+      text-align: center;
+      span input {
+        width: 30%;
+        margin: 3%;
+      }
+    }
   }
 }
 // 承認詳細(approval_confirm.html)

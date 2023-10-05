@@ -24,11 +24,11 @@ class NoZeroTable():
         return datetime_query
     
     # 同日付が存在するオブジェクトを抽出
-    def select_same_date_tables(self, *args: datetime) -> List[T]:
-        filter = getattr(self.table, args[0])==getattr(self.table, args[1])
+    # def select_same_date_tables(self, *args: datetime) -> List[T]:
+    #     filter = getattr(self.table, args[0])==getattr(self.table, args[1])
     
-        datetime_query = self.table.query.filter(and_(filter)).all()
-        return datetime_query
+    #     datetime_query = self.table.query.filter(and_(filter)).all()
+    #     return datetime_query
 
     def convert_value_to_none(self, func: Callable[[datetime, datetime], List[T]], *target: datetime) -> None:
         pickup_objects = func

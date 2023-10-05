@@ -43,6 +43,6 @@ tomli
 typing_extensions
 urllib3 # 1.26.6
 visitor
-Werkzeug
+Werkzeug # 2.3.6
 WTForms
 wtforms-html5

@@ -178,32 +178,41 @@ def retrieve_form_data(form_data: List[str]) -> list:
     return list_data
 
 # 申請確認ページ
-@app.route('/confirm', methods=['POST'])
-@login_required
-def post_notification():
-    # 取り出したいformの項目
-    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
-    form_list_data = retrieve_form_data(approval_list)
+# @app.route('/confirm', methods=['POST'])
+# @login_required
+# def post_notification():
+#     # 取り出したいformの項目
+#     approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
+#     form_list_data = retrieve_form_data(approval_list)
 
-    # 数値(CODE)を文字列(NAME)に入れ替え
-    form_content: str = toggle_notification_type(Todokede, int(request.form.get('content')))
-    # 先頭に挿入
-    form_list_data.insert(0, form_content)
+#     # 数値(CODE)を文字列(NAME)に入れ替え
+#     form_content: str = toggle_notification_type(Todokede, int(request.form.get('content')))
+#     # 先頭に挿入
+#     form_list_data.insert(0, form_content)
 
-    return render_template('attendance/approval_confirm.html', 
-                        one_data=form_list_data,
-                        f=get_url_past_flag(),
-                        stf_login=current_user)
+#     return render_template('attendance/approval_confirm.html', 
+#                         one_data=form_list_data,
+#                         f=get_url_past_flag(),
+#                         stf_login=current_user)
 
 # DBinsert & skype送信ページ
 @app.route('/regist', methods=['POST'])
 @login_required
 def append_approval():
 
-    # こちらは数値(CODE)に変換
-    form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
+    # import tkinter as tk
+    # from tkinter import messagebox
+
+    # root = tk.Tk() # ウインドウを作る
+    # # get two frames, one is emty対策
+    # root.withdraw()
+    # confirm_dialog = messagebox.askokcancel("確認", "申請します。この内容で宜しいですか？")
     
-    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark']
+    # if confirm_dialog == True:
+    # こちらは数値(CODE)に変換
+    # form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
+    
+    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark', 'content']
     form_list_data = retrieve_form_data(approval_list)
 
     # end-day空白の際
@@ -212,7 +221,7 @@ def append_approval():
 
     # 注意: start-day, start-time, end_day...の順
     one_notification = NotificationList(
-        current_user.STAFFID, form_content, form_list_data[0], form_list_data[2],
+        current_user.STAFFID, form_list_data[5], form_list_data[0], form_list_data[2],
         form_list_data[1], form_list_data[3], form_list_data[4]
     )
 
@@ -227,7 +236,7 @@ def append_approval():
     
     approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
     # 承認者Skypeログイン情報
-    skype_account = SystemInfo.query.with_entities(SystemInfo.MAIL, SystemInfo.MAIL_PASS)\
+    skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
         .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
     
     # 送信メッセージ
@@ -235,15 +244,15 @@ def append_approval():
     asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
         {request.url_root}approval-list/charge"
 
-    skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MAIL_PASS)
+    # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
     skype_system_obj = make_system_skype_object()
 
     # Skypeシステム（仲介）から送信
-    channel = skype_system_obj.contacts[skype_approval_obj.conn.userId].chat
+    channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
     channel.sendMsg(asking_message)
 
     return redirect('/')
-
+    
 """
     申請依頼に対して、許可か拒否か、DBupdate
     Param:
@@ -267,7 +276,8 @@ def change_status_judge(id, STAFFID, status: int):
 
     update_status(id, status)
     # 承認待ちユーザー
-    approval_wait_user = SystemInfo.query.filter(SystemInfo.STAFFID==STAFFID).first()
+    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+        .filter(SystemInfo.STAFFID==STAFFID).first()
     # 承認するユーザー
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
     # 承認判断対象
@@ -284,9 +294,9 @@ def change_status_judge(id, STAFFID, status: int):
     # send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
     #           approval_reply_user.MAIL_PASS, approval_reply_message)
     skype_system_obj = make_system_skype_object()
-    skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MAIL_PASS)
+    # skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MICRO_PASS)
 
-    channel = skype_system_obj.contacts[skype_user_obj.conn.userId].chat
+    channel = skype_system_obj.contacts[approval_wait_user.SKYPE_ID].chat
     channel.sendMsg(approval_reply_message)
     
     # やはりこちらはダメ、url_forクセがすごい
