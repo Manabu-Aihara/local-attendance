@@ -19,8 +19,8 @@ class NoZeroTable():
         filters = []
         for arg in args:
             filters.append(getattr(self.table, arg)==0)
-        
-        datetime_query = self.table.query.filter(and_(*filters)).all()
+
+        datetime_query = self.table.query.filter(or_(*filters)).all()
         return datetime_query
     
     # 同日付が存在するオブジェクトを抽出
@@ -41,14 +41,12 @@ class NoZeroTable():
                 # db.session.merge(pickup_obj)
                 # db.session.commit()
 
-"""
-    00:00:00の値を持つ属性を有するオブジェクトのリストを返す
-    Param:
-        table: T (クラステーブル)
-        *args: datetime (00：00：00を持つであろう属性名)
-    Return:
-        datetime_query: List[T]
-    """         
+    # 00:00:00の値を持つ属性を有するオブジェクトのリストを返す
+    # Param:
+    #     table: T (クラステーブル)
+    #     *args: datetime (00：00：00を持つであろう属性名)
+    # Return:
+    #     datetime_query: List[T]
 def select_zero_date(table: T, *args: datetime) -> List[T]:
     filters = []
     for arg in args:
