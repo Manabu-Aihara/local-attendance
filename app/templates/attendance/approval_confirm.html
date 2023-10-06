@@ -60,7 +60,7 @@
   const tail_confirm = /confirm$/;
   console.log(tail_d.test(location.pathname) || tail_confirm.test(location.pathname));
   if(tail_d.test(location.pathname) || tail_confirm.test(location.pathname)){
-    const currentForm = document.getElementsByClassName('approval')[0];
+    const currentForm = document.getElementById('approval');
     // console.log(currentForm);
     // forEach, mapはダメだった
     for(let i = 0; i <= 5; i++){

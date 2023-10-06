@@ -237,16 +237,10 @@ def append_approval():
     
     approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
     
-    try:
-        # 承認者Skypeログイン情報
-        skype_approval_account: str = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
-            .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
-    
-        exsit_account(skype_approval_account, "Skype送信先")
-    except ValueError as exception:
-        return render_template('error/exception01.html',
-                               title="Exection Message", message=exception)
-    
+    # 承認者Skypeログイン情報
+    skype_approval_account: str = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+        .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+        
     # 送信メッセージ
     asking_user = User.query.get(current_user.STAFFID)
     asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
@@ -255,11 +249,16 @@ def append_approval():
     # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
     skype_system_obj = make_system_skype_object()
 
-    # Skypeシステム（仲介）から送信
-    channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
-    channel.sendMsg(asking_message)
+    try:
+        # Skypeシステム（仲介）から送信
+        channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
+    except AttributeError:
+        return render_template('error/exception01.html',
+                               title="Exection Message", message="Skype送信者IDが存在しません。")
+    else:
+        channel.sendMsg(asking_message)
 
-    return redirect('/')
+        return redirect('/')
     
 """
     申請依頼に対して、許可か拒否か、DBupdate
