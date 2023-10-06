@@ -27,8 +27,12 @@ def make_skype_object(skype_user: str, skype_password: str):
 #             chat.sendMsg(message)
 #             break
 def make_system_skype_object():
-    skype_destination = make_skype_object(os.getenv("SKYPE_ACCOUNT"), os.getenv("SYSTEM_PASS"))
-    return skype_destination
+    skype_provider = make_skype_object(os.getenv("SKYPE_ACCOUNT"), os.getenv("SYSTEM_PASS"))
+    return skype_provider
+
+def exsit_account(some_object: str, what: str):
+    if some_object == None:
+        raise ValueError(f"{what}アカウントが存在しません。")
 
 ### 以下メール機能 ###
 # 以下https://zenn.dev/shimakaze_soft/articles/9601818a95309c を参考

@@ -14,7 +14,7 @@ from app.models_aprv import (NotificationList, Approval)
 from app.errors import not_admin
 from app.approval_util import (toggle_notification_type, NoZeroTable)
 from app.approval_contact import (make_skype_object, make_system_skype_object,
-                                  send_mail)
+                                  exsit_account, send_mail)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -200,6 +200,7 @@ def retrieve_form_data(form_data: List[str]) -> list:
 @login_required
 def append_approval():
 
+    # tkinterさくらサーバーでは、動かないんです！！
     # import tkinter as tk
     # from tkinter import messagebox
 
@@ -235,9 +236,16 @@ def append_approval():
         .filter(User.STAFFID==current_user.STAFFID).first()
     
     approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
-    # 承認者Skypeログイン情報
-    skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
-        .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+    
+    try:
+        # 承認者Skypeログイン情報
+        skype_approval_account: str = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+            .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
+    
+        exsit_account(skype_approval_account, "Skype送信先")
+    except ValueError as exception:
+        return render_template('error/exception01.html',
+                               title="Exection Message", message=exception)
     
     # 送信メッセージ
     asking_user = User.query.get(current_user.STAFFID)

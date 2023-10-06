@@ -32,6 +32,13 @@
   </div>
 </form>
 
+<div class="confirm-back"><input type="button" value="戻る" id="btnBack"></div>
+<script>
+  let btnBack = document.getElementById('btnBack');
+  btnBack.addEventListener('click', function(){
+    history.back();
+  });
+</script>
 <script>
   const askButton = document.getElementsByClassName('btn-ask')[0];
   const noticeForm = document.getElementById('approval');
