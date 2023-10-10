@@ -254,7 +254,7 @@ def append_approval():
         channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
     except AttributeError:
         return render_template('error/exception01.html',
-                               title="Exection Message", message="Skype送信者IDが存在しません。")
+                               title="Exection Message", message="Skype宛先IDが存在しません。")
     else:
         channel.sendMsg(asking_message)
 

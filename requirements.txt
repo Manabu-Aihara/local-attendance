@@ -1,5 +1,6 @@
 alembic
 bcrypt
+beautifulsoup4
 blinker
 certifi
 cffi
