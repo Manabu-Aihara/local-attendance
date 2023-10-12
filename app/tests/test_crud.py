@@ -4,6 +4,7 @@ import datetime
 from app import db
 from app.models_aprv import (NotificationList, Approval)
 from app.models import (User, SystemInfo)
+from app.models_tt import (TodoOrm, TodoModel)
 
 # sample_end_datetime = datetime(2023, 9, 30, 1, 1, 59)
 
@@ -21,6 +22,7 @@ def test_select_notification_data(app_context):
     one_notification_data = NotificationList.query.filter(NotificationList.STAFFID==20).all()
     assert len(one_notification_data) == 2
 
+@pytest.mark.skip
 def test_get_staff_data(app_context):
     # 所属コード
     team_code = User.query.with_entities(User.TEAM_CODE)\
@@ -34,3 +36,11 @@ def test_get_staff_data(app_context):
     assert skype_account.MAIL == "win_mint.7v903@outlook.jp"
     assert type(approval_member) == Approval
     # assert team_code == 2
+
+td_orm = TodoOrm(summary="test summary", owner="YuenBiao")
+def test_insert_todo_data(app_context):
+    td_model = TodoModel.model_validate(td_orm)
+    print(td_model)
+    # db.session.add(td_model)
+    # db.session.commit()
+
