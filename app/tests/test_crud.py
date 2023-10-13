@@ -1,7 +1,8 @@
 import pytest
 import datetime
+import json
+from bson.json_util import dumps
 
-from app import db
 from app.models_aprv import (NotificationList, Approval)
 from app.models import (User, SystemInfo)
 from app.models_tt import (TodoOrm, TodoModel)
@@ -38,9 +39,10 @@ def test_get_staff_data(app_context):
     # assert team_code == 2
 
 td_orm = TodoOrm(summary="test summary", owner="YuenBiao")
-def test_insert_todo_data(app_context):
-    td_model = TodoModel.model_validate(td_orm)
-    print(td_model)
+def test_print_todo_data(app_context):
+    # td_model = TodoModel.model_validate(td_orm)
+    todos = TodoOrm.query.all()
+    print(json.loads(dumps([str(todo) for todo in todos])))
     # db.session.add(td_model)
     # db.session.commit()
 

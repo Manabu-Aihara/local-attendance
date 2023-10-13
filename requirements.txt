@@ -1,16 +1,20 @@
 alembic
+annotated-types
 bcrypt
 beautifulsoup4
+blinker
 certifi
 cffi
 charset-normalizer
 click
 cryptography
+dnspython
 dominate
 exceptiongroup
 Flask
 Flask-Bcrypt
 Flask-Bootstrap
+Flask-Cors
 Flask-Login
 Flask-Migrate
 Flask-Moment
@@ -19,6 +23,7 @@ Flask-WTF
 greenlet
 gunicorn
 idna
+importlib-metadata
 iniconfig
 itsdangerous
 Jinja2
@@ -30,6 +35,9 @@ numpy
 packaging
 pluggy
 pycparser
+pydantic
+pydantic_core
+pymongo
 PyMySQL
 pytest
 python-dateutil
@@ -41,8 +49,9 @@ soupsieve
 SQLAlchemy
 tomli
 typing_extensions
-urllib3 # 1.26.6
+urllib3
 visitor
-Werkzeug # 2.3.6
+Werkzeug
 WTForms
 wtforms-html5
+zipp

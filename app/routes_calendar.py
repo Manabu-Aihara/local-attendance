@@ -1,25 +1,26 @@
 import calendar
 import json
+from bson.json_util import dumps
 
-from flask import render_template, redirect, request
+from flask import Flask, render_template, request, jsonify
 from flask_login import current_user
 from flask_login.utils import login_required
+from flask_cors import CORS
 
 from app import app, db
-
 from app.models_tt import TodoOrm
 
-@app.after_request
-def after_request(response):
-    allowed_origins = ['http://localhost:5173']
-    origin = request.headers.get('Origin')
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Headers', 'Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-    return response
+# @app.after_request
+# def after_request(response):
+#     allowed_origins = ['http://localhost:5173']
+#     origin = request.headers.get('Origin')
+#     if origin in allowed_origins:
+#         response.headers.add('Access-Control-Allow-Origin', origin)
+#         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+#         response.headers.add('Access-Control-Allow-Headers', 'Authorization')
+#         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+#         response.headers.add('Access-Control-Allow-Credentials', 'true')
+#     return response
 
 cssclasses = ["sun red", "mon", "tue", "wed", "thu", "fri", "sat blue"]
 
@@ -32,6 +33,8 @@ class CustomHTMLCal(calendar.HTMLCalendar):
     cssclass_year = "text-italic lead"
     def __init__(self, firstweekday: int = 0) -> None:
         super().__init__(firstweekday = 6)
+
+# app = Flask(__name__)
     
 @app.route('/month', methods=['GET'])
 @login_required
@@ -43,6 +46,8 @@ def diplay_calendar():
                         html_cal=fm_month,
                         stf_login=current_user)
 
+CORS(app)
+
 @app.route('/todo/add', methods=['POST'])
 @login_required
 def append_todo(summary: str, owner: str):
@@ -53,5 +58,9 @@ def append_todo(summary: str, owner: str):
 @app.route('/todo/all', methods=['GET'])
 @login_required
 def print_all():
-     data = TodoOrm.query.all()
-     return json.dump(data)
+     todos = TodoOrm.query.all()
+     return jsonify([todo for todo in todos])
+    #  cities = [
+    #     {"name": "Central City", "country": "USA"},
+    #     {"name": "Ottawa", "country": "Canada"},]
+    #  return jsonify(cities)
