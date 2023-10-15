@@ -19,10 +19,10 @@ class TodoOrm(BaseMeta):
     self.summary = summary
     self.owner = owner
 
-  def __repr__(self):
-        return f'{{id: {self.id}, summary: {self.summary}, owner: {self.owner}, done: {self.done}}}'
+  # def __repr__(self):
+  #       return f'{{id: {self.id}, summary: {self.summary}, owner: {self.owner}, done: {self.done}}}'
     # return f'{self.id}, {self.summary}, {self.owner}, {self.done}'
-
+# db.create_all()
 
 class TodoModel(BaseModel):
   model_config = ConfigDict(from_attributes=True)

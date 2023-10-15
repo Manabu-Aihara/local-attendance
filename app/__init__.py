@@ -44,6 +44,7 @@ log_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(log_handler)
 
 from app import routes, models, errors, routes_approvals, routes_calendar
+# from app import routes_calendar, routes, models
 
 if not app.debug:
     if not os.path.exists('logs'):

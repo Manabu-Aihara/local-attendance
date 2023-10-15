@@ -6,7 +6,11 @@ from flask import Flask, render_template, request, jsonify
 from flask_login import current_user
 from flask_login.utils import login_required
 from flask_cors import CORS
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
+# from flask_login import LoginManager
 
+# from config import Config
 from app import app, db
 from app.models_tt import TodoOrm
 
@@ -35,6 +39,10 @@ class CustomHTMLCal(calendar.HTMLCalendar):
         super().__init__(firstweekday = 6)
 
 # app = Flask(__name__)
+# app.config.from_object(Config)
+# db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
+# LoginManager(app)
     
 @app.route('/month', methods=['GET'])
 @login_required
@@ -50,17 +58,20 @@ CORS(app)
 
 @app.route('/todo/add', methods=['POST'])
 @login_required
-def append_todo(summary: str, owner: str):
-     one_todo = TodoOrm(summary, owner)
-     db.session.add(one_todo)
-     db.session.commit()
+def append_todo():
+	summary = request.json('summary')
+	owner = request.json('owner')
+	one_todo = TodoOrm(summary, owner)
+	db.session.add(one_todo)
+	db.session.commit()
 
 @app.route('/todo/all', methods=['GET'])
 @login_required
 def print_all():
-     todos = TodoOrm.query.all()
-     return jsonify([todo for todo in todos])
-    #  cities = [
-    #     {"name": "Central City", "country": "USA"},
-    #     {"name": "Ottawa", "country": "Canada"},]
-    #  return jsonify(cities)
+	# todos = TodoOrm.query.all()
+	# return jsonify([todo for todo in todos])
+	cities = [
+		{"name": "Central City", "country": "USA"},
+		{"name": "Ottawa", "country": "Canada"},]
+	# return render_template('sample.json', cities=cities)
+	return jsonify([str(city) for city in cities])
