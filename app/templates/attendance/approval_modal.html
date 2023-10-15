@@ -1,0 +1,21 @@
+{% extends 'home.html' %}
+
+{% block modal %}
+<div class="modal" style="visibility: hidden;">
+	<div class="modal-inner" style="width: 50%; margin: auto; background-color: lightgray;">
+		<p>申請しました。承認をお待ちください。</p>
+	</div>
+</div>
+
+<script>
+  const modalElement = document.getElementsByClassName('modal')[0];
+  const backArea = document.getElementsByClassName('disp')[0];
+
+	const hideModal = () => {
+    modalElement.style.visibility = "hidden";
+		backArea.style.opacity = "1";
+	}
+
+	backArea.addEventListener('click', hideModal);
+</script>
+{% endblock %}

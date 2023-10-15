@@ -40,19 +40,26 @@
   });
 </script>
 <script>
+  const modalElement = document.getElementsByClassName('modal')[0];
+  const backArea = document.getElementsByClassName('disp')[0];
+
   const askButton = document.getElementsByClassName('btn-ask')[0];
   const noticeForm = document.getElementById('approval');
   
   askButton.addEventListener('click', (e) => {
     e.preventDefault();
     if(window.confirm("申請します。この内容で宜しいですか？")){
-      noticeForm.submit();
+      setTimeout(function(){
+        modalElement.style.visibility = "visible";
+        backArea.readOnly = "true";
+        backArea.style.opacity = ".7";
+        noticeForm.submit();
+      }, 1000);
     }else{
       return false;
     }
-  });
+  }); 
 </script>
 <script src="/static/js/FormRestriction.js"></script>
 <script src="/static/js/DiffDays.js"></script>
-<!-- <script src="/static/js/ConfirmModal.js"></script> -->
 {% endblock %}
