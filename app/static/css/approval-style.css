@@ -147,3 +147,16 @@ form.form-bottom .two-button button.judgement {
   width: 15%;
   height: 90%;
 }
+
+.modal {
+  display: flex;
+  visibility: hidden;
+  width: 40%;
+  height: 30%;
+  margin: auto;
+  background-color: aliceblue;
+}
+.modal p {
+  margin: auto;
+  font-size: 2rem;
+}

@@ -32,7 +32,7 @@
 
 <!-- one_data[7]id(NotificationListの)) -->
 {% if f is true and one_data[7] %}
-  <form method="post" class="form-bottom">
+  <form method="post" id="form-bottom">
     <p>申請者へコメント</p>
     <textarea name="comment"></textarea>
     <div class="two-button">
@@ -71,10 +71,13 @@
   }
 </script>
 <script>
+  // 承認済み、未承認欄ならボタンは非表示
   const status = document.getElementsByClassName('opacity-status');
-  const bottomForm = document.getElementsByClassName('form-bottom')[0];
+  const bottomForm = document.getElementById('form-bottom');
   if(status[0].textContent == "承認済" || status[0].textContent == "未承認"){
     bottomForm.style.display = "none";
   }
 </script>
+<script src="/static/js/ModalObj.js"></script>
+<script src="/static/js/ReportModal2.js"></script>
 {% endblock %}

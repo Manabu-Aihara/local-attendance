@@ -161,3 +161,16 @@ form.form-bottom {
     height: 90%;
   }
 }
+// approval_modal.html
+.modal {
+  display: flex;
+  visibility: hidden;
+  width: 40%;
+  height: 30%;
+  margin: auto;
+  background-color: aliceblue;
+  p {
+    margin: auto;
+    font-size: 2rem;
+  }
+}
