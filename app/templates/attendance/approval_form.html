@@ -32,20 +32,15 @@
   </div>
 </form>
 
+<div class="confirm-back"><input type="button" value="戻る" id="btnBack"></div>
 <script>
-  const askButton = document.getElementsByClassName('btn-ask')[0];
-  const noticeForm = document.getElementById('approval');
-  
-  askButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    if(window.confirm("申請します。この内容で宜しいですか？")){
-      noticeForm.submit();
-    }else{
-      return false;
-    }
+  let btnBack = document.getElementById('btnBack');
+  btnBack.addEventListener('click', function(){
+    history.back();
   });
 </script>
 <script src="/static/js/FormRestriction.js"></script>
 <script src="/static/js/DiffDays.js"></script>
-<!-- <script src="/static/js/ConfirmModal.js"></script> -->
+<script src="/static/js/ModalObj.js"></script>
+<script src="/static/js/ReportModal1.js"></script>
 {% endblock %}

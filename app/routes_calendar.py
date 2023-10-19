@@ -6,13 +6,13 @@ from flask import Flask, render_template, request, jsonify
 from flask_login import current_user
 from flask_login.utils import login_required
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
+# from flask_login import LoginManager
 
-from config import Config
+# from config import Config
 from app import app, db
-from app.models_tt import TodoOrm
+from app.models_tt import TodoOrm, TodoModelSchema
 
 cssclasses = ["sun red", "mon", "tue", "wed", "thu", "fri", "sat blue"]
 
@@ -36,22 +36,22 @@ def diplay_calendar():
                         html_cal=fm_month,
                         stf_login=current_user)
 
-app = Flask(__name__)
-app.config.from_object(Config)
+# app = Flask(__name__)
+# app.config.from_object(Config)
 CORS(app)
-@app.after_request
-def after_request(response):
-    allowed_origins = ['http://localhost:5173']
-    origin = request.headers.get('Origin')
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Headers', 'Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-    return response
-db = SQLAlchemy(app)
-Migrate(app, db)
+# @app.after_request
+# def after_request(response):
+#     allowed_origins = ['http://localhost:5173']
+#     origin = request.headers.get('Origin')
+#     if origin in allowed_origins:
+#         response.headers.add('Access-Control-Allow-Origin', origin)
+#         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+#         response.headers.add('Access-Control-Allow-Headers', 'Authorization')
+#         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+#         response.headers.add('Access-Control-Allow-Credentials', 'true')
+#     return response
+# db = SQLAlchemy(app)
+# Migrate(app, db)
 # LoginManager(app)
 
 @app.route('/todo/add', methods=['POST'])
@@ -68,8 +68,10 @@ def append_todo():
 def print_all():
 	# todos = TodoOrm.query.all()
 	# return jsonify([todo for todo in todos])
-	cities = [
-		{"name": "Central City", "country": "USA"},
-		{"name": "Ottawa", "country": "Canada"},]
-	# return render_template('sample.json', cities=cities)
-	return jsonify([str(city) for city in cities])
+	# cities = [
+	# 	{"name": "Central City", "country": "USA"},
+	# 	{"name": "Ottawa", "country": "Canada"},]
+	schema = TodoModelSchema()
+	dict_data = dict(summary="json data", owner="Lee")
+	data = schema.dump(dict_data)
+	return data

@@ -128,14 +128,7 @@ form.form-bottom textarea {
   width: 90%;
   height: 40%;
 }
-form.form-bottom .two-button {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  height: 20%;
-  margin-top: 2%;
-}
-form.form-bottom .two-button button.judgement {
+form.form-bottom button.judgement {
   background-color: lightslategray;
   width: 20%;
 }
@@ -146,4 +139,17 @@ form.form-bottom .two-button button.judgement {
 .confirm-back input {
   width: 15%;
   height: 90%;
+}
+
+.modal {
+  display: flex;
+  visibility: hidden;
+  width: 40%;
+  height: 30%;
+  margin: auto;
+  background-color: aliceblue;
+}
+.modal p {
+  margin: auto;
+  font-size: 2rem;
 }

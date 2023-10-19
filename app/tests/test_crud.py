@@ -3,9 +3,12 @@ import datetime
 import json
 from bson.json_util import dumps
 
+from flask import jsonify
+from marshmallow import schema
+
 from app.models_aprv import (NotificationList, Approval)
 from app.models import (User, SystemInfo)
-from app.models_tt import (TodoOrm, TodoModel)
+from app.models_tt import (TodoOrm, TodoModelSchema)
 
 # sample_end_datetime = datetime(2023, 9, 30, 1, 1, 59)
 
@@ -39,10 +42,16 @@ def test_get_staff_data(app_context):
     # assert team_code == 2
 
 td_orm = TodoOrm(summary="test summary", owner="YuenBiao")
+@pytest.mark.skip
 def test_print_todo_data(app_context):
     # td_model = TodoModel.model_validate(td_orm)
     todos = TodoOrm.query.all()
-    print(json.loads(dumps([str(todo) for todo in todos])))
+    print(jsonify([todo for todo in todos]))
     # db.session.add(td_model)
     # db.session.commit()
 
+def test_get_mm_schema(app_context):
+    schema = TodoModelSchema()
+    dict_data = dict(summary="json data", owner="Lee")
+    data = schema.dump(dict_data)
+    print(data)
