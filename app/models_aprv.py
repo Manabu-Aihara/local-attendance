@@ -27,9 +27,9 @@ class NotificationList(db.Model):
     END_TIME = db.Column(db.Time, nullable=True)
     REMARK = db.Column(db.String(255))
 
-    def __init__(self, STAFFID, N_CODE, START_DAY, START_TIME, END_DAY, END_TIME, REMARK):
+    def __init__(self, STAFFID, NOTICE_DAYTIME, N_CODE, START_DAY, START_TIME, END_DAY, END_TIME, REMARK):
         self.STAFFID = STAFFID
-        # self.NOTICE_DAYTIME = NOTICE_DAYTIME
+        self.NOTICE_DAYTIME = NOTICE_DAYTIME
         self.N_CODE = N_CODE
         self.START_DAY = START_DAY
         self.START_TIME = START_TIME

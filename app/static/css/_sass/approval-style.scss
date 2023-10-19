@@ -142,17 +142,17 @@ form.form-bottom {
     width: 90%;
     height: 40%;
   }
-  .two-button { 
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    height: 20%;
-    margin-top: 2%;
-    button.judgement {
-      background-color: lightslategray;
-      width: 20%;
-    }
+  // .two-button { 
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   justify-content: space-evenly;
+  //   height: 20%;
+  //   margin-top: 2%;
+  button.judgement {
+    background-color: lightslategray;
+    width: 20%;
   }
+  // }
 }
 .confirm-back {
   height: 4vw;

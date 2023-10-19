@@ -32,14 +32,17 @@
 
 <!-- one_data[7]id(NotificationListの)) -->
 {% if f is true and one_data[7] %}
-  <form method="post" id="form-bottom">
-    <p>申請者へコメント</p>
+  <form method="post" class="form-bottom" action="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=1) }}">
+    <p>申請者へコメント（承認する場合）</p>
     <textarea name="comment"></textarea>
-    <div class="two-button">
-      <button type="submit" formaction="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=1) }}" class="btn judgement">承認</button>
-      <button type="submit" formaction="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=2) }}" class="btn judgement">拒否</button>
-    </div>
+    <button type="submit" class="btn judgement">承認</button>
   </form>
+  <form method="post" class="form-bottom" action="{{ url_for('change_status_judge', id=one_data[7], STAFFID=w_usr.STAFFID, status=2) }}">
+    <p>申請者へコメント（未承認の場合）</p>
+    <textarea name="comment"></textarea>
+    <button type="submit" class="btn judgement">拒否</button>
+  </form>
+
 {# 下記は使えず #}
 {% elif f is true and (one_data[6] == "承認済" or one_data[6] == "未承認") %}
   <p></p>
@@ -73,9 +76,10 @@
 <script>
   // 承認済み、未承認欄ならボタンは非表示
   const status = document.getElementsByClassName('opacity-status');
-  const bottomForm = document.getElementById('form-bottom');
+  const bottomForm = document.getElementsByClassName('form-bottom');
   if(status[0].textContent == "承認済" || status[0].textContent == "未承認"){
-    bottomForm.style.display = "none";
+    bottomForm[0].style.display = "none";
+    bottomForm[1].style.display = "none";
   }
 </script>
 <script src="/static/js/ModalObj.js"></script>
