@@ -7,12 +7,6 @@
   <h3 class="h3-list">申請リスト</h3>
   <h4 class="h4-info">社員番号：{{ uinfo.STAFFID }}　氏名：{{ uinfo.LNAME }} {{ uinfo.FNAME }}</h4>
   <input type="month" value="" class="month-calender">
-  <div>
-    <!-- <select class="search-date">
-      <option>2023/6</option>
-    </select>
-    <input type="button" value="クリック" id="show-date"> -->
-  </div>
   <div class="to-notice-form"><a href="{{ url_for('get_notification_form') }}" class="btn to-notice-button">届出申請</a></div>
 {% else %}
 {# 承認者のみの申請リスト #}
@@ -25,6 +19,7 @@
     </select>
     <input type="button" value="切り替え" id="extract-status" class="btn">
   </div>
+  <!-- <input type="month" value="" class="month-calender"> -->
   <div class="charge-back"><input type="button" value="戻る" id="btnBack"></div>
 {% endif %}
 

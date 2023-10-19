@@ -288,7 +288,8 @@ def change_status_judge(id, STAFFID, status: int):
     # approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
 
     # 承認待ちユーザー
-    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+    # tupleで返る
+    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID, SystemInfo.STAFFID)\
         .filter(SystemInfo.STAFFID==STAFFID).first()
     # 承認するユーザー
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
@@ -312,7 +313,7 @@ def change_status_judge(id, STAFFID, status: int):
     ps = "データベーステーブルSystemInfoのSKYPE_IDを確認してください。"
     result_report = f'承認が完了しませんでした。'
     try:
-        check_skype_account(approval_wait_user[0], approval_wait_user.STAFF_ID)
+        check_skype_account(approval_wait_user[0], approval_wait_user[1])
     except SkypeRelatedException as skype_exception:
                 return render_template('error/exception01.html',
                                title="Exection Message",

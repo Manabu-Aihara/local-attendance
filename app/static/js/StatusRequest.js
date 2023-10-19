@@ -41,13 +41,14 @@ const showRowsByStatus = () => {
       break;
     default:
       // document.getElementById('h4-status').textContent = "申請中リスト";
-      // extractRows(statusSelect);
+      // extractRows("0");
   }
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('reload', () => {
   document.getElementById('h4-status').textContent = "申請中リスト";
   extractRows("0");
+  console.log("ここ通る");
 });
 
 const extractStatusButton = document.getElementById('extract-status');

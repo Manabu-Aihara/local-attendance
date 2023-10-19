@@ -23,11 +23,15 @@ const showRowsByNotificationDate = () => {
   }
 }
 
-const now = new Date();
-const nowYM = `${now.getFullYear()}-${now.getMonth() + 1}`;
-window.addEventListener('load', () => {
-  yearMonthDate.value = nowYM;
-  showRowsByNotificationDate();
-});
+// yearMonthDate.addEventListener('change', showRowsByNotificationDate);
 
-yearMonthDate.addEventListener('change', showRowsByNotificationDate);
+// 申請一覧画面ならデフォルトで今月
+const tail_d = /\d+$/;
+if(tail_d.test(location.pathname)){
+  const now = new Date();
+  const nowYM = `${now.getFullYear()}-${now.getMonth() + 1}`;
+  window.addEventListener('load', () => {
+    yearMonthDate.value = nowYM;
+    showRowsByNotificationDate();
+  });
+}
