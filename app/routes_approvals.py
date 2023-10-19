@@ -255,7 +255,7 @@ def append_approval():
         check_skype_account(skype_approval_account[0], approval_member.STAFFID)
     except SkypeRelatedException as skype_exception:
         return render_template('error/exception01.html',
-                               title="Exection Message",
+                               title="Exception Message",
                                message=skype_exception, ps=ps, repo=result_report)
     else:
         db.session.add(one_notification)
@@ -316,7 +316,7 @@ def change_status_judge(id, STAFFID, status: int):
         check_skype_account(approval_wait_user[0], approval_wait_user[1])
     except SkypeRelatedException as skype_exception:
                 return render_template('error/exception01.html',
-                               title="Exection Message",
+                               title="Exception Message",
                                message=skype_exception, ps=ps, repo=result_report)
     else:
         update_status(id, status)
