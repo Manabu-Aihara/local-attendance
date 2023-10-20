@@ -72,6 +72,6 @@ def print_all():
 	# 	{"name": "Central City", "country": "USA"},
 	# 	{"name": "Ottawa", "country": "Canada"},]
 	schema = TodoModelSchema()
-	dict_data = dict(summary="json data", owner="Lee")
+	dict_data = dict(id=100, summary="json data", owner="Lee", done=False)
 	data = schema.dump(dict_data)
 	return data
