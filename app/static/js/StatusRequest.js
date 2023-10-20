@@ -1,5 +1,5 @@
+const trRows = document.getElementsByClassName('body-tr');
 const extractRows = (statusNum) => {
-  const trRows = document.getElementsByClassName('body-tr');
   /**
   * https://qiita.com/uruha/items/fc9564f5a8564f075391
   * NodeListに対してfilterを使いたい場合、{NodeList} => {Array} にしてやる必要がある
@@ -20,6 +20,7 @@ const extractRows = (statusNum) => {
       trRows[i].style.display = "none";
     } else {
       trRows[i].style.display = "table-row";
+      trRows[i].classList.add("appear");
     }
   }
 }
@@ -45,11 +46,18 @@ const showRowsByStatus = () => {
   }
 }
 
-window.addEventListener('reload', () => {
+window.addEventListener('load', () => {
   document.getElementById('h4-status').textContent = "申請中リスト";
+  document.getElementById('status').options[0].setAttribute("selected", "selected");
   extractRows("0");
-  console.log("ここ通る");
 });
 
 const extractStatusButton = document.getElementById('extract-status');
-extractStatusButton.addEventListener('click', showRowsByStatus);
+const yearMonthDate = document.getElementsByClassName('month-calender')[0];
+
+// extractStatusButtons.forEach(element => {
+extractStatusButton.addEventListener('click', () => {
+  showRowsByStatus();
+  yearMonthDate.value = "";
+});
+// });

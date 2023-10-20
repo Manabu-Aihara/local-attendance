@@ -17,10 +17,11 @@
         <option value="{{ s.value }}">{{ s.name }}</option>
       {% endfor %}
     </select>
-    <input type="button" value="切り替え" id="extract-status" class="btn">
+    <input type="button" value="切り替え" id="extract-status" class="btn extract-btn" />
   </div>
-  <!-- <input type="month" value="" class="month-calender"> -->
-  <div class="charge-back"><input type="button" value="戻る" id="btnBack"></div>
+  <input type="month" value="" class="month-calender" />
+  <!-- <input type="button" value="リセット" class="btn extract-btn" /> -->
+  <div class="charge-back"><input type="button" value="戻る" id="btnBack" /></div>
 {% endif %}
 
 {% if nlst is none %}
