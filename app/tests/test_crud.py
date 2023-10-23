@@ -8,7 +8,7 @@ from marshmallow import schema
 
 from app.models_aprv import (NotificationList, Approval)
 from app.models import (User, SystemInfo)
-from app.models_tt import (TodoOrm, TodoModelSchema)
+from app.models_tt import (TodoOrm, TodoTypeModel, TodoModelSchema)
 
 # sample_end_datetime = datetime(2023, 9, 30, 1, 1, 59)
 
@@ -41,15 +41,16 @@ def test_get_staff_data(app_context):
     assert type(approval_member) == Approval
     # assert team_code == 2
 
-td_orm = TodoOrm(summary="test summary", owner="YuenBiao")
-@pytest.mark.skip
+td_orm = TodoOrm(id=123, summary="test summary", owner="YuenBiao", done=True)
 def test_print_todo_data(app_context):
-    # td_model = TodoModel.model_validate(td_orm)
+    td_model = TodoTypeModel.model_validate(td_orm)
     todos = TodoOrm.query.all()
-    print(jsonify([todo for todo in todos]))
+    for todo in todos:
+        print(todo.__dict__)
     # db.session.add(td_model)
     # db.session.commit()
 
+@pytest.mark.skip
 def test_get_mm_schema(app_context):
     schema = TodoModelSchema()
     dict_data = dict(summary="json data", owner="Lee")

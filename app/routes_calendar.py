@@ -2,7 +2,7 @@ import calendar
 import json
 from bson.json_util import dumps
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect
 from flask_login import current_user
 from flask_login.utils import login_required
 from flask_cors import CORS
@@ -57,21 +57,22 @@ CORS(app)
 @app.route('/todo/add', methods=['POST'])
 # @login_required
 def append_todo():
-	summary = request.json('summary')
-	owner = request.json('owner')
-	one_todo = TodoOrm(summary, owner)
+	schema = TodoModelSchema()
+	summary = request.json['summary']
+	owner = request.json['owner']
+	one_todo = TodoOrm(summary=summary, owner=owner)
 	db.session.add(one_todo)
 	db.session.commit()
+
+	return redirect('/todo/all')
 
 @app.route('/todo/all', methods=['GET'])
 # @login_required
 def print_all():
-	# todos = TodoOrm.query.all()
-	# return jsonify([todo for todo in todos])
-	# cities = [
-	# 	{"name": "Central City", "country": "USA"},
-	# 	{"name": "Ottawa", "country": "Canada"},]
 	schema = TodoModelSchema()
-	dict_data = dict(id=100, summary="json data", owner="Lee", done=False)
-	data = schema.dump(dict_data)
-	return data
+	todos = TodoOrm.query.order_by(TodoOrm.id).all()
+	list_data = []
+	for todo in todos:
+		# dict_data = dict(todo)
+		list_data.append(schema.dump(todo))
+	return list_data
