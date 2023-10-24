@@ -133,6 +133,15 @@ form#approval {
     }
   }
 }
+.field-invalid::after {
+	content: "このフィールドは必須です。";
+	display: block;
+	color: red;
+}
+.field-invalid select,
+.field-invalid input {
+	border: 1px solid red;
+}
 // 承認詳細(approval_confirm.html)
 form.form-bottom {
   height: 15vw;

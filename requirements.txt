@@ -1,4 +1,5 @@
 alembic
+annotated-types
 bcrypt
 beautifulsoup4
 blinker
@@ -7,11 +8,13 @@ cffi
 charset-normalizer
 click
 cryptography
+dnspython
 dominate
 exceptiongroup
 Flask
 Flask-Bcrypt
 Flask-Bootstrap
+Flask-Cors
 Flask-Login
 Flask-Migrate
 Flask-Moment
@@ -27,11 +30,15 @@ Jinja2
 jpholiday
 Mako
 MarkupSafe
+marshmallow
 MonthDelta
 numpy
 packaging
 pluggy
 pycparser
+pydantic
+pydantic_core
+pymongo
 PyMySQL
 pytest
 python-dateutil
