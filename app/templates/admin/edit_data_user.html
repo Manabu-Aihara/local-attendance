@@ -22,7 +22,13 @@
     <div class="form-group">
       <form method="POST" action="{{ url_for('edit_data_user', STAFFID=STAFFID, intFlg=0) }}">
         {{ form.csrf_token }}
-
+        <div>
+          <a href="/dummy.html" onclick="window.open(`{{ url_for('action_sub', target_id=STAFFID) }}`, 'DummyWindow', 'width=500,height=500');
+            return false; ">
+            Please open
+          </a>
+          Test comment: <input type="text" value="" class="dummy-comment" />{{ res }}
+        </div>
         {{ wtf.form_field(form.lname) }}
         <br>
         {{ wtf.form_field(form.fname) }}

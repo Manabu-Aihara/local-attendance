@@ -1,0 +1,16 @@
+{% extends 'home.html' %}
+
+{% block child_content %}
+<div id="container">
+  <form action="" method="post">
+    <!-- ID: <input type="text" />
+    Team: <select></select>
+    Type: <input type="text" />
+    グループ: <input type="text" /> -->
+    <input type="text" name="coment" class="test-value" />
+    <input type="button" value="REFRECT" id="reflect" />
+  </form>
+  <p id="target-number">{{ t_num }}</p>
+</div>
+<script src="/static/js/SubAction.js"></script>
+{% endblock %}
