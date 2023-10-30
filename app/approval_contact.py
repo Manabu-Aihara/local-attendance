@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 
 from skpy import Skype
 
@@ -27,8 +28,22 @@ def make_skype_object(skype_user: str, skype_password: str):
 #             chat.sendMsg(message)
 #             break
 def make_system_skype_object():
-    skype_destination = make_skype_object(os.getenv("SKYPE_ACCOUNT"), os.getenv("SYSTEM_PASS"))
-    return skype_destination
+    skype_provider = make_skype_object(os.getenv("SKYPE_ACCOUNT"), os.getenv("SYSTEM_PASS"))
+    return skype_provider
+
+@dataclass
+class SkypeBaseException(Exception):
+    skype_account: str
+    
+class SkypeRelatedException(SkypeBaseException):
+    def __str__(self) -> str:
+        return (
+            f'こちらのIDのSkypeIdがないか、無効です。：　{super().__str__()}\n'
+        )
+
+def check_skype_account(skype_liveId: str, manager_id: int):
+    if skype_liveId == "":
+        raise SkypeRelatedException(str(manager_id))      
 
 ### 以下メール機能 ###
 # 以下https://zenn.dev/shimakaze_soft/articles/9601818a95309c を参考

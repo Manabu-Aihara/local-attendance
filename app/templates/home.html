@@ -18,6 +18,7 @@
     <title>yoboiryo株式会社 System - サインイン</title>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
   </head>
+  {% include "attendance/approval_modal.html" %}
   <div class="disp center-block">
   <nav class="navbar navbar-default navbar-bgc">
     <div class="container">
@@ -36,7 +37,7 @@
     </div>
   </nav>
 
-  <body>
+  <!-- <body> -->
     <div id="kintai-input" class="center-block">
       <br />
       {% import "bootstrap/wtf.html" as wtf %}
@@ -135,6 +136,6 @@
         {% endblock %}
       </div>
     </div>
-  </body>
+  <!-- </body> -->
   </div>
 </html>

@@ -365,7 +365,14 @@ def edit_data_user(STAFFID, intFlg):
     if form.errors:
         flash(form.errors, 'danger')
 
-    return render_template('admin/edit_data_user.html', form=form, STAFFID=STAFFID, u=u, stf_login=stf_login, intFlg=intFlg)
+    # 10月27日追加
+    # dummyデータ受取
+    response = {}
+    if request.method == 'POST':
+        response = request.get_json()
+
+    return render_template('admin/edit_data_user.html', form=form, STAFFID=STAFFID, u=u, stf_login=stf_login, intFlg=intFlg,
+                           res=response)
 
 
 @app.route('/admin/delete-user/<STAFFID>')

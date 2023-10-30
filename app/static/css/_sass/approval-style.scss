@@ -133,6 +133,15 @@ form#approval {
     }
   }
 }
+.field-invalid::after {
+	content: "このフィールドは必須です。";
+	display: block;
+	color: red;
+}
+.field-invalid select,
+.field-invalid input {
+	border: 1px solid red;
+}
 // 承認詳細(approval_confirm.html)
 form.form-bottom {
   height: 15vw;
@@ -142,22 +151,35 @@ form.form-bottom {
     width: 90%;
     height: 40%;
   }
-  .two-button { 
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    height: 20%;
-    margin-top: 2%;
-    button.judgement {
-      background-color: lightslategray;
-      width: 20%;
-    }
+  // .two-button { 
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   justify-content: space-evenly;
+  //   height: 20%;
+  //   margin-top: 2%;
+  button.judgement {
+    background-color: lightslategray;
+    width: 20%;
   }
+  // }
 }
 .confirm-back {
   height: 4vw;
   input {
     width: 15%;
     height: 90%;
+  }
+}
+// approval_modal.html
+.modal {
+  display: flex;
+  visibility: hidden;
+  width: 40%;
+  height: 30%;
+  margin: auto;
+  background-color: aliceblue;
+  p {
+    margin: auto;
+    font-size: 2rem;
   }
 }

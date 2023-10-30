@@ -32,5 +32,5 @@ const compareDays2 = () => {
   }
 }
 
-formDays[0].addEventListener('change', compareDays2);
+// formDays[0].addEventListener('change', compareDays2);
 formDays[1].addEventListener('change', compareDays1);

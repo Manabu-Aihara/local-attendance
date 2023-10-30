@@ -14,7 +14,7 @@ from app.models_aprv import (NotificationList, Approval)
 from app.errors import not_admin
 from app.approval_util import (toggle_notification_type, NoZeroTable)
 from app.approval_contact import (make_skype_object, make_system_skype_object,
-                                  send_mail)
+                                  SkypeRelatedException, check_skype_account, send_mail)
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -200,6 +200,7 @@ def retrieve_form_data(form_data: List[str]) -> list:
 @login_required
 def append_approval():
 
+    # tkinterさくらサーバーでは、動かないんです！！
     # import tkinter as tk
     # from tkinter import messagebox
 
@@ -212,21 +213,18 @@ def append_approval():
     # こちらは数値(CODE)に変換
     # form_content: int = toggle_notification_type(Todokede, request.form.get('content'))
     
-    approval_list = ['start-day', 'end-day', 'start-time', 'end-time', 'remark', 'content']
+    approval_list = ['content', 'start-day', 'end-day', 'start-time', 'end-time', 'remark']
     form_list_data = retrieve_form_data(approval_list)
 
     # end-day空白の際
-    if form_list_data[1] == '':
-        form_list_data[1] = None
+    if form_list_data[2] == '':
+        form_list_data[2] = None
 
     # 注意: start-day, start-time, end_day...の順
     one_notification = NotificationList(
-        current_user.STAFFID, form_list_data[5], form_list_data[0], form_list_data[2],
-        form_list_data[1], form_list_data[3], form_list_data[4]
+        current_user.STAFFID, datetime.now(), form_list_data[0], form_list_data[1], form_list_data[3],
+        form_list_data[2], form_list_data[4], form_list_data[5]
     )
-
-    db.session.add(one_notification)
-    db.session.commit()
 
     # skypeにて、申請の通知
     # 所属コード
@@ -235,7 +233,8 @@ def append_approval():
         .filter(User.STAFFID==current_user.STAFFID).first()
     
     approval_member: Approval = Approval.query.filter(Approval.TEAM_CODE==team_code[0]).first()
-    # 承認者Skypeログイン情報
+    
+    # 承認者SkypeID
     skype_approval_account = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
         .filter(SystemInfo.STAFFID==approval_member.STAFFID).first()
     
@@ -243,15 +242,29 @@ def append_approval():
     asking_user = User.query.get(current_user.STAFFID)
     asking_message = f"「{asking_user.LNAME} {asking_user.FNAME}」さんから申請依頼が出ています。\n\
         {request.url_root}approval-list/charge"
-
+    
+    # こっちからでも出来なくはない
     # skype_approval_obj = make_skype_object(skype_account.MAIL, skype_account.MICRO_PASS)
+    
     skype_system_obj = make_system_skype_object()
 
-    # Skypeシステム（仲介）から送信
-    channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
-    channel.sendMsg(asking_message)
+    ps = "データベーステーブルSystemInfoのSKYPE_IDを確認してください。"
+    result_report = f'申請が出来ませんでした。'
+    try:
+        # Skypeシステム（仲介）から承認者へ送信
+        check_skype_account(skype_approval_account[0], approval_member.STAFFID)
+    except SkypeRelatedException as skype_exception:
+        return render_template('error/exception01.html',
+                               title="Exception Message",
+                               message=skype_exception, ps=ps, repo=result_report)
+    else:
+        db.session.add(one_notification)
+        db.session.commit()
 
-    return redirect('/')
+        channel = skype_system_obj.contacts[skype_approval_account.SKYPE_ID].chat
+        channel.sendMsg(asking_message)
+
+        return redirect('/')
     
 """
     申請依頼に対して、許可か拒否か、DBupdate
@@ -274,9 +287,9 @@ def update_status(id: int, judgement: int) -> None:
 def change_status_judge(id, STAFFID, status: int):
     # approval_certificate_user = Approval.query.filter(Approval.STAFFID==current_user.STAFFID).first()
 
-    update_status(id, status)
     # 承認待ちユーザー
-    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID)\
+    # tupleで返る
+    approval_wait_user = SystemInfo.query.with_entities(SystemInfo.SKYPE_ID, SystemInfo.STAFFID)\
         .filter(SystemInfo.STAFFID==STAFFID).first()
     # 承認するユーザー
     approval_reply_user = SystemInfo.query.filter(SystemInfo.STAFFID==current_user.STAFFID).first()
@@ -294,10 +307,21 @@ def change_status_judge(id, STAFFID, status: int):
     # send_mail(approval_reply_user.MAIL, approval_wait_user.MAIL,
     #           approval_reply_user.MAIL_PASS, approval_reply_message)
     skype_system_obj = make_system_skype_object()
+    # こっちからでも出来なくはない
     # skype_user_obj = make_skype_object(approval_wait_user.MAIL, approval_wait_user.MICRO_PASS)
 
-    channel = skype_system_obj.contacts[approval_wait_user.SKYPE_ID].chat
-    channel.sendMsg(approval_reply_message)
+    ps = "データベーステーブルSystemInfoのSKYPE_IDを確認してください。"
+    result_report = f'承認が完了しませんでした。'
+    try:
+        check_skype_account(approval_wait_user[0], approval_wait_user[1])
+    except SkypeRelatedException as skype_exception:
+                return render_template('error/exception01.html',
+                               title="Exception Message",
+                               message=skype_exception, ps=ps, repo=result_report)
+    else:
+        update_status(id, status)
+        channel = skype_system_obj.contacts[approval_wait_user.SKYPE_ID].chat
+        channel.sendMsg(approval_reply_message)
     
     # やはりこちらはダメ、url_forクセがすごい
     # return redirect(url_for('get_middle_approval'))
