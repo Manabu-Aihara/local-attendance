@@ -14,24 +14,32 @@ class ModalAppear {
     let myself = this;
     
     const appearModalSubmit = (dialog_phrase, modal_phrase) => {
-
-      if(window.confirm(`${dialog_phrase}宜しいですか？`)){
-        setTimeout(function(){
-          myself.bottom_item.style.opacity = ".5";
-          myself.top_item.style.visibility = "visible";
-          let modal_p = myself.top_item.children;
-          modal_p[0].innerText = modal_phrase;
-          myself.form.submit();
-        }, 1000);
+      // globalFlag: ValidationCheck.jsより
+      if(globalFlag === true){
+        console.log(globalFlag);
+        if(window.confirm(`${dialog_phrase}宜しいですか？`)){
+          setTimeout(function(){
+            myself.bottom_item.style.opacity = ".5";
+            myself.top_item.style.visibility = "visible";
+            let modal_p = myself.top_item.children;
+            modal_p[0].innerText = modal_phrase;
+            myself.form.submit();
+          }, 1000);
+        }else{
+          return false;
+        }
       }else{
-        return false;
+        alert("入力必須項目があります。");
       }
     }
 
     this.callModal = function(arg1, arg2){
       myself.button_item.addEventListener('click', (e) => {
-        appearModalSubmit(arg1, arg2);
         e.preventDefault();
+        // selectArea, startDayArea: ValidationCheck.jsより
+        blurArea(e, startDayArea) ? blurArea(e, selectArea) : globalFlag = false;
+        // blurArea(e, selectArea) ? blurArea(e, startDayArea) : globalFlag = false;
+        appearModalSubmit(arg1, arg2);
       });
     }
   }

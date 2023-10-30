@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .container a.btn-notice {
   background-color: lightgrey;
   color: green;
@@ -117,6 +118,17 @@ form#approval #confirm-modal .submit-area {
 form#approval #confirm-modal .submit-area span input {
   width: 30%;
   margin: 3%;
+}
+
+.field-invalid::after {
+  content: "このフィールドは必須です。";
+  display: block;
+  color: red;
+}
+
+.field-invalid select,
+.field-invalid input {
+  border: 1px solid red;
 }
 
 form.form-bottom {
