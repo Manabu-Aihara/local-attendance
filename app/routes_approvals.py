@@ -15,6 +15,7 @@ from app.errors import not_admin
 from app.approval_util import (toggle_notification_type, NoZeroTable)
 from app.approval_contact import (make_skype_object, make_system_skype_object,
                                   SkypeRelatedException, check_skype_account, send_mail)
+from app.routes_calendar import print_all
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -156,8 +157,12 @@ def get_notification_form():
 
         user_detail = User.query.get(current_user.STAFFID)
 
+        # Dummy area
+        todo_list: list = print_all()
+
         return render_template('attendance/approval_form.html', 
                             n_all=notification_all,
+                            tdl=todo_list,
                             stf_login=user_detail
                             )
     
@@ -326,3 +331,9 @@ def change_status_judge(id, STAFFID, status: int):
     # やはりこちらはダメ、url_forクセがすごい
     # return redirect(url_for('get_middle_approval'))
     return redirect('/approval-list/charge?')
+
+@app.route('/dummy-form', methods=['GET'])
+@login_required
+def appear_sub():
+  # if request.method == 'GET':
+    return render_template('admin/dummy.html', stf_login=current_user)

@@ -34,6 +34,21 @@
 </form>
 
 <div class="confirm-back"><input type="button" value="戻る" id="btnBack"></div>
+<div>
+  <a href="../admin/dummy.html" onclick="window.open(`{{ url_for('appear_sub') }}`, 'DummyWindow', 'width=500,height=500');
+    return false; ">
+    Please open
+  </a>
+  <!-- <input type="text" value="" class="dummy-comment" /> -->
+  Sample todo:
+  {% for td in tdl %}
+  <ul>
+    <li>{{ td.summary }}</li>
+    <li>{{ td.owner }}</li>
+    <li>{{ td.done }}</li>
+  </ul>
+  {% endfor %}
+</div>
 <script>
   let btnBack = document.getElementById('btnBack');
   btnBack.addEventListener('click', function(){

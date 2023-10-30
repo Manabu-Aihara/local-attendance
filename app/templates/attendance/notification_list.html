@@ -68,7 +68,14 @@
     </table>
   </div>
 {% endif %}
-
+<div>
+  <a href="../admin/dummy.html" onclick="window.open(`{{ url_for('appear_sub') }}`, 'DummyWindow', 'width=500,height=500');
+    return false; ">
+    Please open
+  </a>
+</div>
+<input type="text" id="main-comment" />
+<p>{{ summary }}</p><p>{{ owner }}</p>
 <script>
   let btnBack = document.getElementById('btnBack');
   btnBack.addEventListener('click', function(){

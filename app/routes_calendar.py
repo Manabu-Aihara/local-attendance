@@ -55,7 +55,7 @@ CORS(app)
 # LoginManager(app)
 
 @app.route('/todo/add', methods=['POST'])
-# @login_required
+@login_required
 def append_todo():
 	schema = TodoModelSchema()
 	summary = request.json['summary']
@@ -64,9 +64,11 @@ def append_todo():
 	db.session.add(one_todo)
 	db.session.commit()
 
-	return redirect('/todo/all')
+	# return render_template('attendance/notification_list.html',
+	# 											summary=summary, owner=owner, stf_login=current_user)
+	return redirect('/dummy-form')
 
-@app.route('/todo/all', methods=['GET'])
+# @app.route('/todo/all', methods=['GET'])
 # @login_required
 def print_all():
 	schema = TodoModelSchema()

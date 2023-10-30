@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+
+{% block child_content %}
+<div id="dummy-area">
+  <!-- <form action="/dummy/display" method="post"> -->
+    <!-- ID: <input type="text" />
+    Team: <select></select>
+    Type: <input type="text" />
+    グループ: <input type="text" /> -->
+  さまりー：
+  <input type="text" name="summary" class="summary-form" /><p></p>
+  おーなー：
+  <input type="text" name="owner" class="owner-form" />
+  <input type="button" value="REFRECT" id="reflect" />
+  <!-- </form> -->
+  <p id="target-number">{{ t_num }}</p>
+</div>
+<script src="/static/js/SubAction.js"></script>
+{% endblock %}
