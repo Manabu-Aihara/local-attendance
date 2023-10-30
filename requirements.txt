@@ -30,6 +30,7 @@ Jinja2
 jpholiday
 Mako
 MarkupSafe
+marshmallow
 MonthDelta
 numpy
 packaging
