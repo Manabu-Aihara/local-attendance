@@ -1,11 +1,10 @@
 import calendar
-import json
-from bson.json_util import dumps
 
-from flask import Flask, render_template, request, redirect
+from flask import render_template, request, redirect
 from flask_login import current_user
 from flask_login.utils import login_required
 from flask_cors import CORS
+
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
 # from flask_login import LoginManager
@@ -17,24 +16,28 @@ from app.models_tt import TodoOrm, TodoModelSchema
 cssclasses = ["sun red", "mon", "tue", "wed", "thu", "fri", "sat blue"]
 
 calendar.setfirstweekday(calendar.SUNDAY)
+
+
 class CustomHTMLCal(calendar.HTMLCalendar):
-    cssclasses = [style + " text-nowrap" for style in
-                calendar.HTMLCalendar.cssclasses]
+    cssclasses = [style + " text-nowrap" for style in calendar.HTMLCalendar.cssclasses]
     cssclass_month_head = "text-center month-head"
     cssclass_month = "text-center month"
     cssclass_year = "text-italic lead"
+
     def __init__(self, firstweekday: int = 0) -> None:
-        super().__init__(firstweekday = 6)
-    
-@app.route('/month', methods=['GET'])
+        super().__init__(firstweekday=6)
+
+
+@app.route("/month", methods=["GET"])
 @login_required
 def diplay_calendar():
-	html_calendar = CustomHTMLCal()
-	fm_month = html_calendar.formatmonth(2023, 9)
+    html_calendar = CustomHTMLCal()
+    fm_month = html_calendar.formatmonth(2023, 9)
 
-	return render_template('attendance/month_calendar.html',
-                        html_cal=fm_month,
-                        stf_login=current_user)
+    return render_template(
+        "attendance/month_calendar.html", html_cal=fm_month, stf_login=current_user
+    )
+
 
 # app = Flask(__name__)
 # app.config.from_object(Config)
@@ -54,27 +57,29 @@ CORS(app)
 # Migrate(app, db)
 # LoginManager(app)
 
-@app.route('/todo/add', methods=['POST'])
+
+@app.route("/todo/add", methods=["POST"])
 @login_required
 def append_todo():
-	schema = TodoModelSchema()
-	summary = request.json['summary']
-	owner = request.json['owner']
-	one_todo = TodoOrm(summary=summary, owner=owner)
-	db.session.add(one_todo)
-	db.session.commit()
+    schema = TodoModelSchema()
+    summary = request.json["summary"]
+    owner = request.json["owner"]
+    one_todo = TodoOrm(summary=summary, owner=owner)
+    db.session.add(one_todo)
+    db.session.commit()
 
-	# return render_template('attendance/notification_list.html',
-	# 											summary=summary, owner=owner, stf_login=current_user)
-	return redirect('/dummy-form')
+    # return render_template('attendance/notification_list.html',
+    # 											summary=summary, owner=owner, stf_login=current_user)
+    return redirect("/dummy-form")
+
 
 # @app.route('/todo/all', methods=['GET'])
 # @login_required
 def print_all():
-	schema = TodoModelSchema()
-	todos = TodoOrm.query.order_by(TodoOrm.id).all()
-	list_data = []
-	for todo in todos:
-		# dict_data = dict(todo)
-		list_data.append(schema.dump(todo))
-	return list_data
+    schema = TodoModelSchema()
+    todos = TodoOrm.query.order_by(TodoOrm.id).all()
+    list_data = []
+    for todo in todos:
+        # dict_data = dict(todo)
+        list_data.append(schema.dump(todo))
+    return list_data
