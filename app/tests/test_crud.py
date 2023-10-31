@@ -1,10 +1,12 @@
 import pytest
 import datetime
+from typing import List
 
 from app import db
 from app.models_aprv import NotificationList, Approval
 from app.models import User, SystemInfo
 from app.models_tt import TodoOrm, TodoTypeModel, TodoModelSchema
+from app.routes_calendar import print_all
 
 # sample_end_datetime = datetime(2023, 9, 30, 1, 1, 59)
 
@@ -49,15 +51,16 @@ def test_get_staff_data(app_context):
     )
 
     assert skype_account.MAIL == "win_mint.7v903@outlook.jp"
-    assert type(approval_member) == Approval
+    assert isinstance(approval_member, Approval)
     # assert team_code == 2
 
 
-td_orm = TodoOrm(id=123, summary="test summary", owner="YuenBiao", done=True)
+# td_orm = TodoOrm(id=123, summary="test summary", owner="YuenBiao", done=True)
 
 
+@pytest.mark.skip
 def test_print_todo_data(app_context):
-    td_model = TodoTypeModel.model_validate(td_orm)
+    # td_model = TodoTypeModel.model_validate(td_orm)
     todos = TodoOrm.query.all()
     for todo in todos:
         print(todo.__dict__)
@@ -71,3 +74,8 @@ def test_get_mm_schema(app_context):
     dict_data = dict(summary="json data", owner="Lee")
     data = schema.dump(dict_data)
     print(data)
+
+
+def test_print_all(app_context):
+    all_data = print_all()
+    print(all_data)

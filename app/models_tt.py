@@ -1,14 +1,11 @@
 from typing import Optional
 
-from flask_sqlalchemy.model import DefaultMeta
+# from flask_sqlalchemy.model import DefaultMeta
 from pydantic import BaseModel, constr, ConfigDict
-import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declarative_base
 
 from app import db
 
 # BaseMeta: DefaultMeta = db.Model
-Base = declarative_base()
 
 
 class TodoTypeModel(BaseModel):
