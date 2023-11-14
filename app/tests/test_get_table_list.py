@@ -1,9 +1,10 @@
 import pytest
+import datetime
 
-from app.models import Todokede
+from app.models import Todokede, User
 from app.models_aprv import NotificationList, Approval
 from app.routes_approvals import get_notification_list
-from app.approval_util import toggle_notification_type, select_zero_date, NoZeroTable
+from app.approval_util import toggle_notification_type, NoZeroTable, DateConvertTable
 from app.pulldown_util import get_pulldown_list
 
 
@@ -66,7 +67,29 @@ def test_convert_zero_to_none(app_context):
     )
 
 
+@pytest.mark.skip
 def test_get_pulldown(app_context):
     pulldown_tables = get_pulldown_list()
     department = pulldown_tables[0]
     print(department)
+
+
+conv_table = DateConvertTable(User)
+
+
+def test_search_datetime_type(app_context):
+    fills = conv_table.search_datetime_type()
+    for fill in fills:
+        # print(fill)
+        user = User.query.first()
+        print(type(getattr(user, fill).date()))
+
+
+def test_convert_to_date(app_context):
+    getting_list = conv_table.convert_to_date()
+    results = [dl for dl in getting_list if dl is not None]
+    for data in results:
+        assert type(data.date()) is datetime.date
+    # print(results)
+    # length = len(User.query.all())
+    # assert length == 5

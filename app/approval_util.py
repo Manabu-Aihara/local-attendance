@@ -1,6 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import TypeVar, List, Callable, Union
+import numpy
 
 from sqlalchemy import or_
 
@@ -51,14 +52,34 @@ class NoZeroTable:
     #     datetime_query: List[T]
 
 
-def select_zero_date(table: T, *args: datetime) -> List[T]:
-    filters = []
-    for arg in args:
-        #   if arg==0:
-        filters.append(arg == 0)
+@dataclass
+class DateConvertTable:
+    table: T
 
-    datetime_query = table.query.filter(or_(*filters)).all()
-    return datetime_query
+    def search_datetime_type(self) -> List[str]:
+        columns = dir(self.table)
+        one_instance = self.table.query.first()
+        column_list: List[str] = [
+            c for c in columns if type(getattr(one_instance, c)) is datetime
+        ]
+
+        return column_list
+
+    def get_datetime(self, func=search_datetime_type):
+        # TypeError: search_datetime_type() missing 1 required positional argument: 'self'
+        target_column_list = func(self)
+        target_date_list = []
+        for target_column in target_column_list:
+            target_date_list.append(
+                self.table.query.with_entities(getattr(self.table, target_column)).all()
+            )
+
+        return target_date_list
+
+    def convert_to_date(self) -> list:
+        datetime_list = self.get_datetime()
+        datetime_np_list = numpy.array(datetime_list)
+        return datetime_np_list.flatten()
 
 
 def toggle_notification_type(table, arg: Union[str, int]) -> Union[int, str]:

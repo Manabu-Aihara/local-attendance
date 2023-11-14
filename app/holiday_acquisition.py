@@ -19,7 +19,7 @@ class HolidayAcquire:
     # acquire: 日数
     # get: 日付
     def convert_base_day(self) -> date:
-        ##### 基準月に変換 #####
+        #### 基準月に変換 #####
         #     入社日が4月〜9月
         #     10月1日に年休付与
         if self.in_day.month >= 4 and self.in_day.month < 10:
@@ -38,9 +38,10 @@ class HolidayAcquire:
             change_day = self.in_day.replace(month=4, day=1)
             return change_day
 
-    # 付与日のリストを返す（一日足りないか？）
+    # 付与日のリストを返す（一回足りないか？）
     def calcurate_days(self, base_day: date) -> List[datetime]:
         self.holidays_get_list = []
+        # self.holidays_get_list.append(base_day)
         while base_day < datetime.today():
             self.base_day = base_day + relativedelta(months=12)
             self.holidays_get_list.append(self.base_day)
@@ -53,11 +54,11 @@ class HolidayAcquire:
         # return self.holidays_get_list[-1].date()
 
     # おそらくこれも次回付与日を求める
-    def get_next_holiday(self):
-        base_day = self.convert_base_day()
+    # def get_next_holiday(self):
+    #     base_day = self.convert_base_day()
 
-        next_acquire_day = date(date.today().year, base_day.month, 1)
-        return next_acquire_day
+    #     next_acquire_day = date(date.today().year, base_day.month, 1)
+    #     return next_acquire_day
 
     def acquire_start_holidays(self):
         self.given_holidays = []
