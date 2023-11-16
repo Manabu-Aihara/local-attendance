@@ -192,7 +192,7 @@ def get_individual_approval(id: int, STAFFID=None):
 
 
 # 届出内容対照を返す関数
-def get_notification_list():
+def get_notification_content_list():
     todokede_list = GetPullDownList(
         Todokede, Todokede.CODE, Todokede.NAME, Todokede.CODE
     )
@@ -204,7 +204,7 @@ def get_notification_list():
 @login_required
 def get_notification_form():
     # if request.method == 'GET':
-    notification_all = get_notification_list()
+    notification_all = get_notification_content_list()
 
     user_detail = User.query.get(current_user.STAFFID)
 
