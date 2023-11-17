@@ -367,12 +367,11 @@ def edit_data_user(STAFFID, intFlg):
 
     # 10月27日追加
     # dummyデータ受取
-    response = {}
-    if request.method == 'POST':
-        response = request.get_json()
+    # response = {}
+    # if request.method == 'POST':
+    #     response = request.json['comment']
 
-    return render_template('admin/edit_data_user.html', form=form, STAFFID=STAFFID, u=u, stf_login=stf_login, intFlg=intFlg,
-                           res=response)
+    return render_template('admin/edit_data_user.html', form=form, STAFFID=STAFFID, u=u, stf_login=stf_login, intFlg=intFlg)
 
 
 @app.route('/admin/delete-user/<STAFFID>')
