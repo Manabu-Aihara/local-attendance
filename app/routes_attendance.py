@@ -654,7 +654,7 @@ def indextime(STAFFID):
             ##### 勤怠条件分け #####
             atd = AttendanceAnalysys(
                 c,
-                data0,  # いるこれ？
+                data0,
                 data1,
                 data2,
                 data3,
@@ -708,51 +708,51 @@ def indextime(STAFFID):
         tm_attendance = TimeAttendance.query.get(STAFFID)
         cnt_attemdance = CountAttendance.query.get(STAFFID)
 
-        # else:  # 初期登録
+    else:  # 初期登録
         for c in cal:
-            sh = (
-                Shinsei.query.filter(Shinsei.STAFFID == STAFFID)
-                .filter(Shinsei.WORKDAY == c.strftime("%Y-%m-%d"))
-                .first()
+            # sh = (
+            #     Shinsei.query.filter(Shinsei.STAFFID == STAFFID)
+            #     .filter(Shinsei.WORKDAY == c.strftime("%Y-%m-%d"))
+            #     .first()
+            # )
+            # if sh is None and STAFFID != 10000:
+            WORKDAY = c.strftime("%Y-%m-%d")
+            STARTTIME = "00:00"
+            ENDTIME = "00:00"
+            MILEAGE = "0.0"
+            STAFFID = STAFFID
+            ONCALL = 0
+            ONCALL_COUNT = "0"
+            NOTIFICATION = ""
+            NOTIFICATION2 = ""
+            OVERTIME = 0
+            ENGEL_COUNT = "0"
+            REMARK = ""
+            HOLIDAY = ""
+            default_stump = Shinsei(
+                STAFFID,
+                WORKDAY,
+                HOLIDAY,
+                STARTTIME,
+                ENDTIME,
+                MILEAGE,
+                ONCALL,
+                ONCALL_COUNT,
+                ENGEL_COUNT,
+                NOTIFICATION,
+                NOTIFICATION2,
+                OVERTIME,
+                REMARK,
             )
-            if sh is None and STAFFID != 10000:
-                WORKDAY = c.strftime("%Y-%m-%d")
-                STARTTIME = "00:00"
-                ENDTIME = "00:00"
-                MILEAGE = "0.0"
-                STAFFID = STAFFID
-                ONCALL = 0
-                ONCALL_COUNT = "0"
-                NOTIFICATION = ""
-                NOTIFICATION2 = ""
-                OVERTIME = 0
-                ENGEL_COUNT = "0"
-                REMARK = ""
-                HOLIDAY = ""
-                sh = Shinsei(
-                    STAFFID,
-                    WORKDAY,
-                    HOLIDAY,
-                    STARTTIME,
-                    ENDTIME,
-                    MILEAGE,
-                    ONCALL,
-                    ONCALL_COUNT,
-                    ENGEL_COUNT,
-                    NOTIFICATION,
-                    NOTIFICATION2,
-                    OVERTIME,
-                    REMARK,
-                )
-                # db.session.add(sh)
-                # db.session.commit()
+            # db.session.add(sh)
+            # db.session.commit()
 
     return render_template(
         "attendance/index.html",
         title="ホーム",
-        data0=request.form.get("dat" + str(0)),
         cal=cal,
         shinseis=shinseis,
+        stump=default_stump,
         y=y,
         m=m,
         form=form,

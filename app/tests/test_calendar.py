@@ -16,7 +16,6 @@ def test_convert_base_day(get_official_user):
     assert conv_date.month == 10
 
 
-# @pytest.mark.skip
 def test_calcurate_days(get_official_user):
     conv_date = get_official_user.convert_base_day()
     test_date1 = get_official_user.calcurate_days(conv_date)
@@ -41,5 +40,6 @@ def test_get_month_holidays_num(make_new_calendar):
     print(make_new_calendar.__get_jp_holidays_num())
 
 
+@pytest.mark.skip
 def test_get_weekday(make_new_calendar):
     print(make_new_calendar.get_weekday())

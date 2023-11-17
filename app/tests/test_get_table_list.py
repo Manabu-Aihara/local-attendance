@@ -78,13 +78,13 @@ conv_table = DateConvertTable(User)
 
 
 def test_search_datetime_type(app_context):
-    fills = conv_table.search_datetime_type(datetime.datetime)
+    fills = conv_table.search_target_column_type(int)
     for fill in fills:
         print(fill)
 
 
 def test_convert_to_date(app_context):
-    date_data_list = conv_table.convert_to_date()
+    date_data_list = conv_table.convert_to_date(datetime.datetime)
     for data in date_data_list:
         # assert type(data) is datetime.date
         print(data)

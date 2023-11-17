@@ -63,8 +63,8 @@ class DateConvertTable:
     table: T
     U = TypeVar("U")
 
-    # datetime型のカラム名を取得
-    def search_datetime_type(self, U) -> List[str]:
+    # 目的の型のカラムリストを返す。汎用性高し
+    def search_target_column_type(self, U) -> List[str]:
         columns = dir(self.table)
         # 一行目だけ抽出し、列の型リストを取得
         one_instance = self.table.query.first()
@@ -75,10 +75,10 @@ class DateConvertTable:
         return column_list
 
     # search_datetime_typeより、datetimeデータを取得
-    def get_datetime(self) -> List[U]:
+    def __get_time_data(self, U, func=search_target_column_type) -> List[U]:
         # TypeError: search_datetime_type() missing 1 required positional argument: 'self'
-        # target_column_list = func(self)
-        target_column_list = self.search_datetime_type(datetime)
+        target_column_list: List[str] = func(self, U)
+        # target_column_list = self.search_datetime_type(datetime)
         target_date_list = []
         for target_column in target_column_list:
             # こちらはgetattr(クラス,)...不思議
@@ -90,8 +90,8 @@ class DateConvertTable:
         # 多次元配列を一次元に変換
         return np_date_list.flatten()
 
-    def convert_to_date(self) -> List[datetime.date]:
-        datetime_list = self.get_datetime()
+    def convert_to_date(self, U) -> List[datetime.date]:
+        datetime_list = self.__get_time_data(U)
         date_result_list = [dl.date() for dl in datetime_list if dl is not None]
         return date_result_list
 
