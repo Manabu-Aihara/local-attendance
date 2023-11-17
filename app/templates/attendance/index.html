@@ -177,6 +177,7 @@
                 {% set ms = namespace(m=0) %} {% set ns = namespace(n = hld|length) %} {% for c in cal %}
                 <tr>
                   <h3>{{ data0 }}</h3>
+                  {# 日付け #}
                   <td>
                     <div class="text-center">
                       {% if c.strftime('%a') == 'Sun' %}
@@ -195,6 +196,7 @@
                     </div>
                   </td>
 
+                  {# 曜日 #}
                   <td>
                     <div class="text-center">
                       {% if c.strftime('%a') == 'Sun' %}
