@@ -17,6 +17,7 @@ from app.approval_contact import (
     SkypeRelatedException,
     check_skype_account,
 )
+from app.holiday_acquisition import HolidayAcquire
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -79,12 +80,16 @@ def get_notification_list(STAFFID):
         .all()
     )
 
+    holidays_print_obj = HolidayAcquire(STAFFID)
+    start_and_holiday = holidays_print_obj.plus_next_holidays()
+
     # date_now_month = datetime.now().strftime('%Y-%m')
     return render_template(
         "attendance/notification_list.html",
         uinfo=user_basic_info,
         nlst=user_notification_list,
         f=get_current_url_flag(),
+        holiday_info=start_and_holiday.items(),
         stf_login=current_user,
     )
 
