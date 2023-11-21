@@ -16,10 +16,28 @@ def test_convert_base_day(get_official_user):
     assert conv_date.month == 10
 
 
+@pytest.mark.skip
 def test_calcurate_days(get_official_user):
     conv_date = get_official_user.convert_base_day()
     test_date1 = get_official_user.calcurate_days(conv_date)
     print(test_date1)
+
+
+@pytest.mark.skip
+def test_print_date_type_list(get_official_user):
+    test_result = get_official_user.print_date_type_list()
+    print(test_result)
+
+
+def test_plus_2years_over_holidays(get_official_user):
+    test_result_dict = get_official_user.plus_next_holidays()
+    print(test_result_dict)
+
+
+def test_plus_range():
+    sum_data = []
+    sum_data = list(range(10, 12)) + list(range(12, 20, 2))
+    print(sum_data)
 
 
 # おニューカレンダーテスト
