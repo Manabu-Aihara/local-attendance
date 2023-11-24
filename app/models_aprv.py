@@ -69,8 +69,8 @@ class PaidHoliday(db.Model):
     )
     STARTDAY = db.Column(db.Date, primary_key=True, nullable=False)
     ENDDAY = db.Column(db.Date, primary_key=True, nullable=False)
-    paid_holiday = db.Column(db.Float, nullable=False)
-    carry_forward = db.Column(db.Float)
+    paid_holiday = db.Column(db.Integer, nullable=False)
+    carry_forward = db.Column(db.Integer)
 
     def __init__(self, STAFFID):
         self.STAFFID = STAFFID

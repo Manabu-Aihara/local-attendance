@@ -24,12 +24,12 @@
 <div class="charge-back"><input type="button" value="戻る" id="btnBack" /></div>
 {% endif %}
 
-<ul id="status">
-  <li></li>
-  {% for k, v in holiday_info %}
-  <li>{{ k }} | {{ v }}</li>
+<select id="status">
+  <option></option>
+  {% for k, v in holiday %}
+  <option>{{ k }} | {{ v }}</option>
   {% endfor %}
-</ul>
+</select>
 
 
 {% if nlst is none %}
