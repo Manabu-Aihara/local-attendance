@@ -58,7 +58,7 @@ class NotificationList(db.Model):
         self.REMARK = REMARK
 
 
-class PaidHoliday(db.Model):
+class PaidHolidayModel(db.Model):
     __tablename__ = "M_PAIDHOLIDAY"
     STAFFID = db.Column(
         db.Integer,

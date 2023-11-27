@@ -1,6 +1,7 @@
+import enum
 from datetime import date, datetime
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 from collections import OrderedDict
 from monthdelta import monthmod
 from dateutil.relativedelta import relativedelta
@@ -8,10 +9,27 @@ from dateutil.relativedelta import relativedelta
 from app.models import User
 
 
+# コンストラクタを作って、その引数に、各項目に与えた値の
+# 1つめ、2つめ、3つめが何を意味しているか名前を与えて、
+# インスタンス変数に格納して上げると、特にインスタンスを作らなくても、
+# アクセス出来るようになります。
+# https://note.com/yucco72/n/ne69ea7fb26e7
+class AcquisitionType(enum.Enum):
+    full_time = (list(range(10, 12)) + list(range(12, 20, 2)), 20)  # 以降20
+    part_timeB = ([7, 8, 9, 10, 12, 13], 15)  # 以降15
+    part_timeC = ([5, 6, 6, 8, 9, 10], 11)  # 以降11
+    part_timeD = ([3, 4, 4, 5, 6, 6], 7)  # 以降7
+    part_timeE = ([1, 2, 2, 2, 3, 3], 3)  # 以降3
+
+    def __init__(self, under5y: list, onward: int):
+        super().__init__()
+        self.under5y = under5y
+        self.onward = onward
+
+
 @dataclass
 class HolidayAcquire:
     id: int
-    # acquisition_pair: Optional(List[OrderedDict(date, int)])
 
     def __post_init__(self):
         target_user = User.query.filter(User.STAFFID == self.id).first()
@@ -95,20 +113,38 @@ class HolidayAcquire:
         holiday_pair: OrderedDict<date, int>
     """
 
-    def plus_next_holidays(
-        self, next_list: List[int], onward: int
-    ) -> OrderedDict[date, int]:
+    # def plus_next_holidays(
+    #     self, next_list: List[int], onward: int
+    # ) -> OrderedDict[date, int]:
+    def plus_next_holidays(self, frame: AcquisitionType) -> OrderedDict[date, int]:
         day_list = self.print_date_type_list()
         holiday_pair = self.acquire_start_holidays()
 
-        for i, acquisition_day in enumerate(next_list):
+        for i, acquisition_day in enumerate(frame.under5y):
             if i == len(day_list):
                 break
             else:
                 holiday_pair[day_list[i + 1]] = acquisition_day
 
-        if len(day_list) > len(next_list):
+        if len(day_list) > len(frame.under5y):
             for day in day_list[7:]:
-                holiday_pair[day] = onward
+                holiday_pair[day] = frame.onward
 
         return holiday_pair
+
+    # ENDDAYを含めたDBinsert用
+    def print_holidays_data(
+        self, frame: AcquisitionType
+    ) -> Tuple[list[date], list[date], list[int]]:
+        # 取得日、日数のペア
+        holiday_dict = self.plus_next_holidays(frame)
+
+        end_day_list = [
+            end_day + relativedelta(years=1, days=-1) for end_day in holiday_dict.keys()
+        ]
+
+        return (
+            list(holiday_dict.keys()),
+            end_day_list,
+            list(holiday_dict.values()),
+        )

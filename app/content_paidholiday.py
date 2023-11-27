@@ -1,49 +1,53 @@
 from typing import Tuple
-from datetime import date, time
+from datetime import time
 from monthdelta import monthmod
-from dateutil.relativedelta import relativedelta
 
-from app.holiday_acquisition import HolidayAcquire
+from dataclasses import dataclass
+
+from app.holiday_acquisition import HolidayAcquire, AcquisitionType
 from app.models_aprv import NotificationList
 
 
-# 個別申請リストページへ
-def get_holidays_area(staff_id: int) -> Tuple[list[date], list[date], list[int]]:
-    full_time = list(range(10, 12)) + list(range(12, 20, 2))  # 以降20
+@dataclass
+class HolidayCalcurate:
+    # 勤務時間
+    job_time: int
+    # 勤務形態 Acqisition.full_timeといった形式で指定
+    work_type: AcquisitionType
 
-    holidays_print_obj = HolidayAcquire(staff_id)
-    # 取得日、日数のペア
-    holiday_dict = holidays_print_obj.plus_next_holidays(full_time, 20)
+    """
+    勤務時間に応じた、申請時間を計算
+    @Param
+        notification_id: int
+    @Return
+        calcurate_time: time
+    """
 
-    end_day_list = [end_day + relativedelta(days=-1) for end_day in holiday_dict.keys()]
-    end_day_list[0] = None
-
-    return (
-        list(holiday_dict.keys()),
-        end_day_list,
-        list(holiday_dict.values()),
-    )
-
-
-def get_sum_rests(id: int, base_times: int) -> time:
-    start_day, end_day, start_time, end_time = (
-        NotificationList.query.with_entities(
-            NotificationList.START_DAY,
-            NotificationList.END_DAY,
-            NotificationList.START_TIME,
-            NotificationList.END_TIME,
+    def get_sum_rests(self, notification_id: int) -> time:
+        start_day, end_day, start_time, end_time = (
+            NotificationList.query.with_entities(
+                NotificationList.START_DAY,
+                NotificationList.END_DAY,
+                NotificationList.START_TIME,
+                NotificationList.END_TIME,
+            )
+            .filter(NotificationList.id == notification_id)
+            .first()
         )
-        .filter(NotificationList.id == id)
-        .first()
-    )
-    calcurate_times: time = int(monthmod(start_day, end_day)) * base_times
-    calcurate_times += monthmod(start_time, end_time)
-    return calcurate_times
+        calcurate_times: time = int(monthmod(start_day, end_day)) * self.job_times
+        calcurate_times += monthmod(start_time, end_time)
+        return calcurate_times
 
+    def decrement_stock(self, staff_id: int) -> Tuple[int, int]:
+        acquisition_holiday_obj = HolidayAcquire(staff_id)
+        holiday_dict = acquisition_holiday_obj.plus_next_holidays(self.work_type)
+        holiday_list = []
+        for holiday in holiday_dict.values():
+            holiday_list.append(holiday)
 
-def decrement_stock(staff_id: int, notification_id: int) -> Tuple[int, int]:
-    holiday_list = get_holidays_area(staff_id)[2]
-
-    default_sum_holiday = (
-        sum(holiday_list[-4:-2]) if len(holiday_list) >= 4 else sum(holiday_list[:-2])
-    )
+        default_sum_holiday = (
+            sum(holiday_list[-4:-1])
+            if len(holiday_list) >= 4
+            else sum(holiday_list[:-1])
+        )
+        return default_sum_holiday * self.job_time

@@ -17,7 +17,7 @@ from app.approval_contact import (
     SkypeRelatedException,
     check_skype_account,
 )
-from app.content_paidholiday import get_holidays_area
+from app.content_paidholiday import HolidayAcquire, AcquisitionType
 
 """
     戻り値に代入される変数名は、必ずstf_login！！
@@ -81,7 +81,10 @@ def get_notification_list(STAFFID):
     )
 
     # 年休エリア
-    holiday_items: dict = get_holidays_area(STAFFID)
+    acquisition_holiday_obj = HolidayAcquire(STAFFID)
+    holiday_items: dict = acquisition_holiday_obj.print_holidays_data(
+        AcquisitionType.full_time
+    )
 
     # date_now_month = datetime.now().strftime('%Y-%m')
     return render_template(

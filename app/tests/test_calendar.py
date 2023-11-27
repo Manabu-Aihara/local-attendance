@@ -2,11 +2,10 @@ import pytest
 import datetime
 from typing import Tuple
 
-from app import db
-from app.holiday_acquisition import HolidayAcquire
+from app.holiday_acquisition import HolidayAcquire, AcquisitionType
+from app.content_paidholiday import HolidayCalcurate
 from app.new_calendar import NewCalendar
-from app.content_paidholiday import get_holidays_area
-from app.models_aprv import PaidHoliday
+from app.models_aprv import PaidHolidayModel
 
 
 @pytest.fixture
@@ -27,42 +26,42 @@ def test_calcurate_days(get_official_user):
     print(final_data_list)
 
 
-full_time = list(range(10, 12)) + list(range(12, 20, 2))  # 以降20
-part_timeB = [7, 8, 9, 10, 12, 13]  # 以降15
-part_timeC = [5, 6, 6, 8, 9, 10]  # 以降11
-part_timeD = [3, 4, 4, 5, 6, 6]  # 以降7
-part_timeE = [1, 2, 2, 2, 3, 3]  # 以降3
+# @pytest.mark.skip
+def test_plus_2years_over_holidays(get_official_user):
+    test_result_dict = get_official_user.plus_next_holidays(AcquisitionType.full_time)
+    # print(AcquisitionType.full_time.__dict__["onward"])
+    # print(AcquisitionType.full_time.under5y)
+    print(test_result_dict)
+    assert AcquisitionType.full_time.onward == 20
 
 
 @pytest.mark.skip
-def test_plus_2years_over_holidays(get_official_user):
-    test_result_dict = get_official_user.plus_next_holidays(full_time, 20)
-    print(test_result_dict)
+def test_print_holiday_data(get_official_user):
+    print_result = get_official_user.print_holidays_data(AcquisitionType.full_time)
+    print(print_result)
 
 
-# @pytest.mark.skip
-def test_get_holiday_area(app_context):
-    # print(make_user_object.STAFFID)
-    holiday_info: Tuple[datetime.date, datetime.date, int] = get_holidays_area(20)
-    print(holiday_info[0])
+@pytest.mark.skip
+def test_insert_ph_db(get_official_user):
+    start_list, end_list, acquisition_list = get_official_user.print_holidays_data(
+        AcquisitionType.full_time.under5y, AcquisitionType.full_time.onward
+    )
+    for start_day, end_day, acquisition in zip(start_list, end_list, acquisition_list):
+        paid_holiday_obj = PaidHolidayModel(20)
+        paid_holiday_obj.STAFFID = 20
+        paid_holiday_obj.STARTDAY = start_day
+        paid_holiday_obj.ENDDAY = end_day
+        paid_holiday_obj.paid_holiday = acquisition
+        print(paid_holiday_obj)
+
+    # db.session.commit()
 
 
-def test_insert_ph_db(app_context):
-    # paid_holiday_obj = PaidHoliday(20)
-    start_list, end_list, acquisition_list = get_holidays_area(20)
-    # holiday_info = get_holidays_area(20)
-    # for start_day, end_day, acquisition in start_list, end_list, acquisition_list:
-    for value in start_list:
-        print(value)
-
-
-#     paid_holiday_obj.STAFFID = 20
-#     paid_holiday_obj.STARTDAY = start_day
-#     paid_holiday_obj.ENDDAY = end_day
-#     paid_holiday_obj.paid_holiday = acquisition
-#     db.session.add(paid_holiday_obj)
-
-# db.session.commit()
+def test_decrement_stock(app_context):
+    hc_object = HolidayCalcurate(8, AcquisitionType.full_time)
+    sum_num = hc_object.decrement_stock(20)
+    print(sum_num)
+    # assert sum_num == 48
 
 
 # おニューカレンダーテスト
