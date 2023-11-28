@@ -141,19 +141,19 @@ class KinmuTaisei(db.Model):
     CONTRACT_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
     NAME = db.Column(db.String(50), index=True, nullable=True)
 
-    def __init__(self, CONTACT_CODE):
-        self.CODE = CONTACT_CODE
+    def __init__(self, CONTRACT_CODE):
+        self.CODE = CONTRACT_CODE
 
 
 class M_TIMECARD_TEMPLATE(db.Model):
     __tablename__ = "M_TIMECARD_TEMPLATE"
     JOBTYPE_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
-    CONTACT_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
+    CONTRACT_CODE = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
     TEMPLATE_NO = db.Column(db.Integer, index=True, nullable=False)
 
-    def __init__(self, JOBTYPE_CODE, CONTACT_CODE, TEMPLATE_NO):
+    def __init__(self, JOBTYPE_CODE, CONTRACT_CODE, TEMPLATE_NO):
         self.JOBTYPE_CODE = JOBTYPE_CODE
-        self.CONTACT_CODE = CONTACT_CODE
+        self.CONTRACT_CODE = CONTRACT_CODE
         self.TEMPLATE_NO = TEMPLATE_NO
 
 
@@ -172,9 +172,9 @@ class D_JOB_HISTORY(db.Model):
         index=True,
         nullable=False,
     )
-    CONTACT_CODE = db.Column(
+    CONTRACT_CODE = db.Column(
         db.Integer,
-        db.ForeignKey("M_TIMECARD_TEMPLATE.CONTACT_CODE"),
+        db.ForeignKey("M_TIMECARD_TEMPLATE.CONTRACT_CODE"),
         index=True,
         nullable=False,
     )
@@ -182,9 +182,9 @@ class D_JOB_HISTORY(db.Model):
     START_DAY = db.Column(db.Date(), primary_key=True, index=True, nullable=True)
     END_DAY = db.Column(db.Date(), index=True, nullable=True)
 
-    def __init__(self, JOBTYPE_CODE, CONTACT_CODE, PART_WORKTIME, START_DAY, END_DAY):
+    def __init__(self, JOBTYPE_CODE, CONTRACT_CODE, PART_WORKTIME, START_DAY, END_DAY):
         self.JOBTYPE_CODE = JOBTYPE_CODE
-        self.CONTACT_CODE = CONTACT_CODE
+        self.CONTRACT_CODE = CONTRACT_CODE
         self.PART_WORKTIME = PART_WORKTIME
         self.START_DAY = START_DAY
         self.END_DAY = END_DAY

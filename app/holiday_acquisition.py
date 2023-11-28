@@ -15,11 +15,11 @@ from app.models import User
 # アクセス出来るようになります。
 # https://note.com/yucco72/n/ne69ea7fb26e7
 class AcquisitionType(enum.Enum):
-    full_time = (list(range(10, 12)) + list(range(12, 20, 2)), 20)  # 以降20
-    part_timeB = ([7, 8, 9, 10, 12, 13], 15)  # 以降15
-    part_timeC = ([5, 6, 6, 8, 9, 10], 11)  # 以降11
-    part_timeD = ([3, 4, 4, 5, 6, 6], 7)  # 以降7
-    part_timeE = ([1, 2, 2, 2, 3, 3], 3)  # 以降3
+    A = (list(range(10, 12)) + list(range(12, 20, 2)), 20)  # 以降20
+    B = ([7, 8, 9, 10, 12, 13], 15)  # 以降15
+    C = ([5, 6, 6, 8, 9, 10], 11)  # 以降11
+    D = ([3, 4, 4, 5, 6, 6], 7)  # 以降7
+    E = ([1, 2, 2, 2, 3, 3], 3)  # 以降3
 
     def __init__(self, under5y: list, onward: int):
         super().__init__()
@@ -107,8 +107,7 @@ class HolidayAcquire:
     """
     入職日＋以降の年休付与日数
     @Param
-        next_list: list<int>    年休付与日数のリスト
-        onward: int next_list以降の付与日数
+        frame: AcquisitionType  勤務形態
     @Return
         holiday_pair: OrderedDict<date, int>
     """
@@ -132,7 +131,7 @@ class HolidayAcquire:
 
         return holiday_pair
 
-    # ENDDAYを含めたDBinsert用
+    # ENDDAYを含めた表示・DBinsert用
     def print_holidays_data(
         self, frame: AcquisitionType
     ) -> Tuple[list[date], list[date], list[int]]:

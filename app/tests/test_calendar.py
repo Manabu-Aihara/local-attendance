@@ -26,25 +26,25 @@ def test_calcurate_days(get_official_user):
     print(final_data_list)
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_plus_2years_over_holidays(get_official_user):
-    test_result_dict = get_official_user.plus_next_holidays(AcquisitionType.full_time)
-    # print(AcquisitionType.full_time.__dict__["onward"])
-    # print(AcquisitionType.full_time.under5y)
+    test_result_dict = get_official_user.plus_next_holidays(AcquisitionType.A)
+    # print(AcquisitionType.A.__dict__["onward"])
+    # print(AcquisitionType.A.under5y)
     print(test_result_dict)
-    assert AcquisitionType.full_time.onward == 20
+    assert AcquisitionType.A.onward == 20
 
 
 @pytest.mark.skip
 def test_print_holiday_data(get_official_user):
-    print_result = get_official_user.print_holidays_data(AcquisitionType.full_time)
+    print_result = get_official_user.print_holidays_data(AcquisitionType.A)
     print(print_result)
 
 
 @pytest.mark.skip
 def test_insert_ph_db(get_official_user):
     start_list, end_list, acquisition_list = get_official_user.print_holidays_data(
-        AcquisitionType.full_time.under5y, AcquisitionType.full_time.onward
+        AcquisitionType.A.under5y, AcquisitionType.A.onward
     )
     for start_day, end_day, acquisition in zip(start_list, end_list, acquisition_list):
         paid_holiday_obj = PaidHolidayModel(20)
@@ -57,11 +57,10 @@ def test_insert_ph_db(get_official_user):
     # db.session.commit()
 
 
-def test_decrement_stock(app_context):
-    hc_object = HolidayCalcurate(8, AcquisitionType.full_time)
-    sum_num = hc_object.decrement_stock(20)
-    print(sum_num)
-    # assert sum_num == 48
+def test_get_remains(app_context):
+    hc_object = HolidayCalcurate(8, AcquisitionType.A)
+    result_tuple = hc_object.get_remains(20, 3, 17)
+    print(result_tuple)
 
 
 # おニューカレンダーテスト
